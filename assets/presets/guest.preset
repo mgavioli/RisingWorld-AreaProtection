@@ -1,0 +1,12 @@
+GroupName=Guest
+
+CanEnter=true
+CanLeave=true
+InventoryToChest=true
+
+# No longer supported:
+#133 = Gift object
+ObjectsPlaceFilter=133
+ObjectsRemoveDestroyFilter=
+ConstructionsFilter=
+BlockFilter=

@@ -1,0 +1,4 @@
+GroupName=Lockout
+
+CanEnter=false
+CanLeave=true

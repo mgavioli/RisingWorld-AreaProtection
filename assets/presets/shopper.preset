@@ -1,0 +1,7 @@
+GroupName=Shopper
+
+CanEnter=true
+CanLeave=true
+InventoryToChest=true
+ChestToInventory=true
+ChestDrop=false

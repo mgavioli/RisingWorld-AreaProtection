@@ -1,0 +1,8 @@
+name: org.miwarre.AreaProtection
+main: org.miwarre.ap.AreaProtection
+version: 0.9.2
+author: Maurizio M. Gavioli aka Miwarre
+team: VistaMare Software
+description: "Manages protection and permissions for world areas."
+license: Creative Common by-sa
+website: http://www.vistamaresoft.com

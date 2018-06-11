@@ -1,0 +1,42 @@
+GroupName=Friend
+
+CanEnter=true
+CanLeave=true
+DestroyBlock=true
+PlaceBlock=true
+DestroyConstructions=true
+PlaceConstructions=true
+RemoveConstructions=true
+DestroyObjects=true
+PlaceObjects=true
+RemoveObjects=true
+# same as:
+PickupObject=true
+DestroyWorld=true
+FillWorld=true
+DestroyVegetation=true
+PlaceVegetation=true
+RemoveVegetation=true
+# same as:
+PickupVegetation=true
+CutGrass=true
+ChangeObjectStatus=true
+InventoryToChest=true
+ChestToInventory=true
+ChestDrop=true
+CanAddPlayer=false
+Owner=false
+
+# New permissions:
+PlaceGrass=true
+CreateBlueprint=true
+PlaceBlueprint=true
+RemoveBlueprint=true
+PlaceWater=true
+RemoveWater=true
+
+# No longer supported:
+ObjectsPlaceFilter=
+ObjectsRemoveDestroyFilter=
+ConstructionsFilter=
+BlockFilter=

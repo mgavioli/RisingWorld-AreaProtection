@@ -1,0 +1,60 @@
+# Directories #
+build/
+bin/
+target/
+workfiles/
+
+# Temps and Backups #
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.db
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# OSX
+.DS_Store
+
+######################
+# Eclipse
+######################
+*.pydevproject
+.gradle
+.project
+.metadata
+local.properties
+.classpath
+.settings/
+.loadpath
+# External tool builders
+.externalToolBuilders/
+# Locally stored "Eclipse launch configurations"
+*.launch
+# CDT-specific
+.cproject
+# PDT-specific
+.buildpath
+# sbteclipse plugin
+.target
+# TeXlipse plugin
+.texlipse
+
+######################
+# NetBeans
+######################
+/nbproject/
+build.xml
+
+######################
+# Java
+######################
+*.class
