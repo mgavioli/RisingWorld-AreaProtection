@@ -2,41 +2,36 @@ GroupName=Owner
 
 CanEnter=true
 CanLeave=true
-DestroyBlock=true
 PlaceBlock=true
-DestroyConstructions=true
+DestroyBlock=true
 PlaceConstructions=true
 RemoveConstructions=true
-DestroyObjects=true
+DestroyConstructions=true
 PlaceObjects=true
 RemoveObjects=true
-# same as:
-PickupObject=true
-DestroyWorld=true
+DestroyObjects=true
 FillWorld=true
-DestroyVegetation=true
+DestroyWorld=true
 PlaceVegetation=true
 RemoveVegetation=true
-# same as:
-PickupVegetation=true
+DestroyVegetation=true
 CutGrass=true
-ChangeObjectStatus=true
 InventoryToChest=true
 ChestToInventory=true
-ChestDrop=true
+ChangeObjectStatus=true
+# same as:
+OtherInteraction=true
 CanAddPlayer=true
 Owner=true
 
 # New permissions:
 PlaceGrass=true
-CreateBlueprint=true
-PlaceBlueprint=true
-RemoveBlueprint=true
 PlaceWater=true
 RemoveWater=true
-
-# No longer supported:
-ObjectsPlaceFilter=
-ObjectsRemoveDestroyFilter=
-ConstructionsFilter=
-BlockFilter=
+CreateBlueprint=true
+PlaceBlueprint=true
+CreativePlaceBlock=true
+CreativePlaceVegetation=true
+CreativeTerrainEdit=true
+DoorInteraction=true
+FurnaceInteraction=true

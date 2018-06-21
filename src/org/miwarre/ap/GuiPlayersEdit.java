@@ -5,9 +5,17 @@
 
 	Created by : Maurizio M. Gavioli 2017-03-14
 
-	(C) Maurizio M. Gavioli (a.k.a. Miwarre), 2017
-	Licensed under the Creative Commons by-sa 3.0 license (see http://creativecommons.org/licenses/by-sa/3.0/ for details)
+(C) Copyright 2018 Maurizio M. Gavioli (a.k.a. Miwarre)
+This Area Protection plug-in is licensed under the the terms of the GNU General
+Public License as published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version.
 
+This Area Protection plug-in is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this plug-in.  If not, see <https://www.gnu.org/licenses/>.
 *****************************/
 
 package org.miwarre.ap;
@@ -31,8 +39,8 @@ public class GuiPlayersEdit extends GuiModalWindow
 	//
 	// CONSTANTS
 	//
-	private static final	int	MAX_NUM_OF_ROWS		= 10;
-	private static final	int	UNKNOWN_ID			= -1;
+	private static final	int	MAX_NUM_OF_ROWS	= 10;
+	private static final	int	UNKNOWN_ID		= -1;
 	// An ID which is unlikely to be exceeded by the player list
 	private static final	int	MAX_PLAYER_DBID	= 1000000;
 	// for the dialogue box controls, use ID's which do not clashes with player ID's
@@ -43,30 +51,28 @@ public class GuiPlayersEdit extends GuiModalWindow
 	//
 	// FIELDS
 	//
-	private	ProtArea		area;
-	private	int				selPlayerIdx;	// data for the selected player (if any)
-	private	String			selPlayerName;
+	private final	ProtArea			area;
+	private			int					selPlayerIdx;	// data for the selected player (if any)
+	private			String				selPlayerName;
 	// GUI elements
-	private	GuiLabel		addButt;
-	private	GuiLabel		nameLabel;
-	private	GuiLabel		deleteButt;
-	private	GuiLabel		editButt;
-	private	int				nextPlayerId;
-	private	GuiAreaPlayerEdit	playerEditor;
-	private GuiScrollList	playerList;
-	private	GuiTwoListsSelector	playerSelector;
-	private	int				type;
+	private			GuiLabel			addButt;
+	private			GuiLabel			nameLabel;
+	private			GuiLabel			deleteButt;
+	private			GuiLabel			editButt;
+	private			GuiAreaPlayerEdit	playerEditor;
+	private			GuiScrollList		playerList;
+	private			GuiTwoListsSelector	playerSelector;
+	private final	int					type;
 
 	public GuiPlayersEdit(ProtArea area, int type)
 	{
-		super(AreaProtection.plugin, Msgs.msg[type == Db.LIST_TYPE_PLAYER ?
-					Msgs.gui_specPermPlayersTitle :
-					Msgs.gui_specPermGroupsTitle],
-				GuiDefs.GROUPTYPE_NONE, null);
+		super(AreaProtection.plugin, Msgs.msg[type == Db.LIST_TYPE_GROUP ?
+					Msgs.gui_specPermGroupsTitle:
+					Msgs.gui_specPermPlayersTitle] ,
+				GuiDefs.GROUPTYPE_NONE, 0, null);
 		setCallback(new DlgHandler());
 		this.area	= area;
 		this.type	= type;
-		nextPlayerId= 1;			// the next player added to the list will have ID = 1
 		selPlayerIdx= UNKNOWN_ID;
 		selPlayerName= null;
 		setPanel(new PlayersEditPanel(area.name));
@@ -99,9 +105,9 @@ public class GuiPlayersEdit extends GuiModalWindow
 				// open a user/preset selection dialogue box, allowing to select one
 				// player and one permissions preset and managing the actual addition
 				playerSelector	= new GuiTwoListsSelector(AreaProtection.plugin,
-						Msgs.msg[type == Db.LIST_TYPE_PLAYER ?
-								Msgs.gui_selectPlayerTitle :
-								Msgs.gui_selectGroup],
+						Msgs.msg[type == Db.LIST_TYPE_GROUP ?
+								Msgs.gui_selectGroup :
+								Msgs.gui_selectPlayer],
 						new SelectorHandler(), area, MAX_NUM_OF_ROWS, type);
 				push(player, playerSelector);
 				break;
@@ -109,14 +115,14 @@ public class GuiPlayersEdit extends GuiModalWindow
 				if (selPlayerIdx != UNKNOWN_ID && selPlayerName != null)
 				{
 					playerEditor	= new GuiAreaPlayerEdit(player, area,
-							selPlayerName, type, new PlayerHandler());
+							selPlayerIdx, selPlayerName, type, new PlayerHandler());
 					push(player, playerEditor);
 				}
 				break;
 			case DELETEBUTT_ID:			// "DELETE player" button
 				if (selPlayerIdx != UNKNOWN_ID && selPlayerName != null)
 				{
-					Db.removePlayerFromArea(area, selPlayerName, type);
+					Db.removePlayerFromArea(area, selPlayerIdx, type);
 					playerList.removeTextItem(selPlayerIdx);
 					selPlayerIdx	= UNKNOWN_ID;
 				}
@@ -138,25 +144,27 @@ public class GuiPlayersEdit extends GuiModalWindow
 			if (id == GuiDefs.OK_ID && playerSelector != null)
 			{
 				// retrieve the name of the player and of the preset
-				String	playerName	= playerSelector.getList1SelectedItem();
-				String	presetName	= playerSelector.getList2SelectedItem();
+				String	playerName	= playerSelector.getSelectedItemText(true);
+				Integer	playerId	= playerSelector.getSelectedItemId(true);
+				String	presetName	= (type == Db.LIST_TYPE_MANAGERS ? "" : playerSelector.getSelectedItemText(false));
 				// check both are valid
-				if (playerName != null && playerName.length() > 0 &&
-						presetName != null && presetName.length() > 0)
+				if (playerId != null && presetName != null /*&& presetName.length() > 0*/)
 				{
 					// add the new pair to the DB
-					Integer	permissions	= AreaProtection.presets.get(presetName);
-					if (permissions != null)
-					{
+					Integer	permissions	= type == Db.LIST_TYPE_MANAGERS ? AreaProtection.PERM_ALL & ~(AreaProtection.PERM_OWNER):
+							AreaProtection.presets.get(presetName);
+//					if (permissions != null)
+//					{
 						// OWNERship is not transferable
-						if (!player.isAdmin() || AreaProtection.adminNoPriv)
+						if (!(Boolean)player.getAttribute(AreaProtection.key_isAdmin) || AreaProtection.adminNoPriv)
 							permissions	&= ~(AreaProtection.PERM_OWNER);
-						Db.addPlayerToArea(area, playerName, permissions, type);
-					}
+						Db.addPlayerToArea(area, playerId, permissions, type);
+//					}
 					// add it to the shown list too
-					String	txt	= playerName + " (" + presetName + ")";
-					playerList.addTextItem(txt, nextPlayerId, playerName);
-					nextPlayerId++;
+					String	txt	= playerName;
+					if (type != Db.LIST_TYPE_MANAGERS)
+						txt += " (" + presetName + ")";
+					playerList.addTextItem(txt, playerId, playerName);
 					// remove the GuiTwoListsSelector dialogue box
 					playerSelector.pop(player);
 					playerSelector	= null;
@@ -172,7 +180,7 @@ public class GuiPlayersEdit extends GuiModalWindow
 	private class PlayerHandler implements GuiCallback
 	{
 		@Override
-		public void onCall(Player player, int id, Object permPlayerName)
+		public void onCall(Player player, int id, Object permPlayerId)
 		{
 			// GuiAreaPlayerEdit dialogue box notifies OK_ID when its "DO" button is pressed
 			if (id == GuiDefs.OK_ID && playerEditor != null)
@@ -180,10 +188,10 @@ public class GuiPlayersEdit extends GuiModalWindow
 				int	permissions	= playerEditor.getPermissions();
 				// add the edited player name / permission pair to the DB
 				// OWNERship is not transferable
-				if (!player.isAdmin() || AreaProtection.adminNoPriv)
+				if (!(Boolean)player.getAttribute(AreaProtection.key_isAdmin) || AreaProtection.adminNoPriv)
 					permissions	&= ~(AreaProtection.PERM_OWNER);
-				Db.addPlayerToArea(area, (String)permPlayerName, permissions, type);
-				String	txt	= permPlayerName +
+				Db.addPlayerToArea(area, (Integer)permPlayerId, permissions, type);
+				String	txt	= playerEditor.getPlayerName() +
 						" (" + AreaProtection.getPresetNameFromPermissions(permissions) + ")";
 				playerList.setItemText(selPlayerIdx, txt);
 				// remove the GuiAreaPlayerEdit dialogue box
@@ -203,11 +211,11 @@ public class GuiPlayersEdit extends GuiModalWindow
 	 */
 	private void updateButtons()
 	{
-		boolean	hasSelected	= (selPlayerIdx != UNKNOWN_ID);
+		boolean	hasSelected	= (selPlayerIdx != UNKNOWN_ID && selPlayerName != null);
 		editButt.setColor(hasSelected ? GuiDefs.ACTIVE_COLOUR : GuiDefs.INACTIVE_COLOUR);
-		editButt.setClickable(hasSelected ? true : false);
+		editButt.setClickable(hasSelected);
 		deleteButt.setColor(hasSelected ? GuiDefs.ACTIVE_COLOUR : GuiDefs.INACTIVE_COLOUR);
-		deleteButt.setClickable(hasSelected ? true : false);
+		deleteButt.setClickable(hasSelected);
 	}
 
 	//********************
@@ -230,14 +238,15 @@ public class GuiPlayersEdit extends GuiModalWindow
 			addChild(playerList, null, null);
 			playerList.setBorderThickness(1, false);
 			playerList.setMargin(GuiDefs.DEFAULT_PADDING);
-			for (Entry<String,Integer> entry :
-				(type == Db.LIST_TYPE_PLAYER ? area.players : area.groups).entrySet())
+			for (Entry<Integer,Integer> entry :
+				(type == Db.LIST_TYPE_GROUP ? area.groups : area.players).entrySet())
 			{
-				String	playerName	= entry.getKey();
-				String	txt	= playerName +
-						" (" + AreaProtection.getPresetNameFromPermissions(entry.getValue()) + ")";
-				playerList.addTextItem(txt, nextPlayerId, playerName);
-				nextPlayerId++;
+				int		playerId	= entry.getKey();
+				String	playerName	= Db.getPlayerNameFromId(playerId);
+				String	txt	= playerName;
+				if (type != Db.LIST_TYPE_MANAGERS)
+					txt	+= " (" + AreaProtection.getPresetNameFromPermissions(entry.getValue()) + ")";
+				playerList.addTextItem(txt, playerId, playerName);
 			}
 
 			// The BUTTON ROW
@@ -247,6 +256,10 @@ public class GuiPlayersEdit extends GuiModalWindow
 			editButt	= addTextItem(Msgs.msg[Msgs.gui_editEdit], EDITBUTT_ID,  null);
 			editButt.setPivot(PivotPosition.Center);
 			editButt.setColor(GuiDefs.INACTIVE_COLOUR);
+			// while editing managers, editing individual player permissions
+			// makes no sense: all have admin level by definition
+			if (type == Db.LIST_TYPE_MANAGERS)
+				editButt.setVisible(false);
 			deleteButt	= addTextItem(Msgs.msg[Msgs.gui_editDelete], DELETEBUTT_ID, null);
 			deleteButt.setPivot(PivotPosition.Center);
 			deleteButt.setColor(GuiDefs.INACTIVE_COLOUR);

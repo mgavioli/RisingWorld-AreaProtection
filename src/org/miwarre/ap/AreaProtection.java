@@ -5,9 +5,17 @@
 
 	Created by : Maurizio M. Gavioli 2017-02-25
 
-	(C) Maurizio M. Gavioli (a.k.a. Miwarre), 2017
-	Licensed under the Creative Commons by-sa 3.0 license (see http://creativecommons.org/licenses/by-sa/3.0/ for details)
+(C) Copyright 2018 Maurizio M. Gavioli (a.k.a. Miwarre)
+This Area Protection plug-in is licensed under the the terms of the GNU General
+Public License as published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version.
 
+This Area Protection plug-in is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this plug-in.  If not, see <https://www.gnu.org/licenses/>.
 *****************************/
 
 package org.miwarre.ap;
@@ -33,8 +41,9 @@ import net.risingworld.api.utils.Utils.ChunkUtils;
 public class AreaProtection extends Plugin
 {
 	// Constants
-	public static final		String		version				= "0.9.1";
+	public static final		String		version				= "0.10.0";
 	public static final		String		publicName			= "Area Protection";
+	public static final		int			AREAMANAGER_AREAID	= -1;
 	// Some common return codes
 	public static final		int			ERR_SUCCESS			= 0;
 	public static final		int			ERR_INVALID_ARG		= -1;
@@ -43,50 +52,52 @@ public class AreaProtection extends Plugin
 	public static final		int			ERR_CANNOT_LEAVE	= -4;
 	public static final		int			ERR_NOTFOUND		= -5;
 	// The bits corresponding to each permission
-	public static final		int			PERM_ENTER			= 0x00000001;
-	public static final		int			PERM_LEAVE			= 0x00000002;
-	public static final		int			PERM_DESTROYBLOCKS	= 0x00000004;
-	public static final		int			PERM_PLACEBLOCKS	= 0x00000008;
-	public static final		int			PERM_DESTROYCONSTR	= 0x00000010;
-	public static final		int			PERM_PLACECONSTR	= 0x00000020;
-	public static final		int			PERM_REMOVECONSTR	= 0x00000040;
-	public static final		int			PERM_DESTROYOBJECTS	= 0x00000080;
-	public static final		int			PERM_PLACEOBJECTS	= 0x00000100;
-	public static final		int			PERM_REMOVEOBJECTS	= 0x00000200;
-	public static final		int			PERM_DESTROYTERRAIN	= 0x00000400;
-	public static final		int			PERM_PLACETERRAIN	= 0x00000800;
-	public static final		int			PERM_DESTROYVEGET	= 0x00001000;
-	public static final		int			PERM_PLACEVEGET		= 0x00002000;
-	public static final		int			PERM_REMOVEVEGET	= 0x00004000;
-	public static final		int			PERM_PLACEGRASS		= 0x00008000;
-	public static final		int			PERM_REMOVEGRASS	= 0x00010000;
-	public static final		int			PERM_PLACEWATER		= 0x00020000;
-	public static final		int			PERM_REMOVEWATER	= 0x00040000;
-	public static final		int			PERM_CREATEBLUEPR	= 0x00080000;
-	public static final		int			PERM_PLACEBLUEPRINT	= 0x00100000;
-	public static final		int			PERM_REMOVEBLUEPR	= 0x00200000;
-	public static final		int			PERM_CHANGESTATUS	= 0x00400000;
-	public static final		int			PERM_INVENT2CHEST	= 0x00800000;
-	public static final		int			PERM_CHEST2INVENT	= 0x01000000;
-	public static final		int			PERM_CHESTDROP		= 0x02000000;
-	public static final		int			PERM_RESERVED_26	= 0x04000000;
-	public static final		int			PERM_RESERVED_27	= 0x08000000;
-	public static final		int			PERM_RESERVED_28	= 0x10000000;
-	public static final		int			PERM_RESERVED_29	= 0x20000000;
-	public static final		int			PERM_ADDPLAYER		= 0x40000000;
-	public static final		int			PERM_OWNER			= 0x80000000;
-	public static final		int			PERM_ALL			= 0xFFFFFFFF;
-	public static final		int			PERM_DEFAULT		= (PERM_ENTER | PERM_LEAVE);
+	public static final		int			PERM_ENTER				= 0x00000001;
+	public static final		int			PERM_LEAVE				= 0x00000002;
+	public static final		int			PERM_PLACEBLOCKS		= 0x00000004;
+	public static final		int			PERM_DESTROYBLOCKS		= 0x00000008;
+	public static final		int			PERM_PLACECONSTR		= 0x00000010;
+	public static final		int			PERM_REMOVECONSTR		= 0x00000020;
+	public static final		int			PERM_DESTROYCONSTR		= 0x00000040;
+	public static final		int			PERM_PLACEOBJECTS		= 0x00000080;
+	public static final		int			PERM_REMOVEOBJECTS		= 0x00000100;
+	public static final		int			PERM_DESTROYOBJECTS		= 0x00000200;
+	public static final		int			PERM_PLACETERRAIN		= 0x00000400;
+	public static final		int			PERM_DESTROYTERRAIN		= 0x00000800;
+	public static final		int			PERM_PLACEVEGET			= 0x00001000;
+	public static final		int			PERM_REMOVEVEGET		= 0x00002000;
+	public static final		int			PERM_DESTROYVEGET		= 0x00004000;
+	public static final		int			PERM_PLACEGRASS			= 0x00008000;
+	public static final		int			PERM_REMOVEGRASS		= 0x00010000;
+	public static final		int			PERM_PLACEWATER			= 0x00020000;
+	public static final		int			PERM_REMOVEWATER		= 0x00040000;
+	public static final		int			PERM_CREATEBLUEPR		= 0x00080000;
+	public static final		int			PERM_PLACEBLUEPRINT		= 0x00100000;
+	public static final		int			PERM_CREAT_PLACEBLOCKS	= 0x00200000;
+	public static final		int			PERM_CREAT_PLACEVEGET	= 0x00400000;
+	public static final		int			PERM_CREAT_TERRAINEDIT	= 0x00800000;
+	public static final		int			PERM_PUT2CHEST			= 0x01000000;
+	public static final		int			PERM_GETFROMCHEST		= 0x02000000;
+//	public static final		int			PERM_CHESTDROP			= 0x02000000;
+	public static final		int			PERM_DOORINTERACT		= 0x04000000;
+	public static final		int			PERM_FURNACEINTERACT	= 0x08000000;
+	public static final		int			PERM_OTHERINTERACT		= 0x10000000;
+	public static final		int			PERM_BIT29				= 0x20000000;
+	public static final		int			PERM_ADDPLAYER			= 0x40000000;
+	public static final		int			PERM_OWNER				= 0x80000000;
+	public static final		int			PERM_ALL					= 0xFFFFFFFF;
+	public static final		int			PERM_DEFAULT			= (PERM_ENTER | PERM_LEAVE);
 	// to convert a permission index (0 - 31) into the corresponding bit flag;
 	public static final		int[]		permIdx2bit	=
 	{
-		PERM_ENTER,			PERM_LEAVE,			PERM_DESTROYBLOCKS,	PERM_PLACEBLOCKS,
-		PERM_DESTROYCONSTR,	PERM_PLACECONSTR,	PERM_REMOVECONSTR,	PERM_DESTROYOBJECTS,
-		PERM_PLACEOBJECTS,	PERM_REMOVEOBJECTS,	PERM_DESTROYTERRAIN,PERM_PLACETERRAIN,
-		PERM_DESTROYVEGET,	PERM_PLACEVEGET,	PERM_REMOVEVEGET,	PERM_PLACEGRASS,
-		PERM_REMOVEGRASS,	PERM_PLACEWATER,	PERM_REMOVEWATER,	PERM_CREATEBLUEPR,
-		PERM_PLACEBLUEPRINT,PERM_REMOVEBLUEPR,	PERM_CHANGESTATUS,	PERM_INVENT2CHEST,
-		PERM_CHEST2INVENT,	PERM_CHESTDROP,		PERM_ADDPLAYER,		PERM_OWNER
+		PERM_ENTER,				PERM_LEAVE,				PERM_PLACEBLOCKS,		PERM_DESTROYBLOCKS,
+		PERM_PLACECONSTR,		PERM_REMOVECONSTR,		PERM_DESTROYCONSTR,		PERM_PLACEOBJECTS,
+		PERM_REMOVEOBJECTS,		PERM_DESTROYOBJECTS,	PERM_PLACETERRAIN,		PERM_DESTROYTERRAIN,
+		PERM_PLACEVEGET,		PERM_REMOVEVEGET,		PERM_DESTROYVEGET,		PERM_PLACEGRASS,
+		PERM_REMOVEGRASS,		PERM_PLACEWATER,		PERM_REMOVEWATER,		PERM_CREATEBLUEPR,
+		PERM_PLACEBLUEPRINT,	PERM_CREAT_PLACEBLOCKS,	PERM_CREAT_PLACEVEGET,	PERM_CREAT_TERRAINEDIT,
+		PERM_PUT2CHEST,			PERM_GETFROMCHEST,		PERM_DOORINTERACT,		PERM_FURNACEINTERACT,
+		PERM_OTHERINTERACT,		PERM_ADDPLAYER,			PERM_OWNER
 	};
 	// player attribute keys
 	public static final		String		key_areas			= "com.mwr.apAreas";	// the areas the player has special permission for
@@ -94,21 +105,26 @@ public class AreaProtection extends Plugin
 	public static final		String		key_areasShown		= "com.mwr.apShown";	// whether areas are shown or not for the player
 	public static final		String		key_areasText		= "com.mwr.apText";		// the names of the areas the player is in
 	public static final		String		key_inAreas			= "com.mwr.apInAreas";	// the areas the player is in at the moment
+	public static final		String		key_isAdmin			= "com.mwr.apIsAdmin";	// whether the player is admin or manager
 
 	// The default values for the settings
-	protected static final	boolean		adminNoPrivDef		= false;
-	protected static final	boolean		adminOnlyDef		= true;
-	protected static final	int			infoBkgColourDef	= 0xE0E0A0E0;
-	protected static final	int			infoFontColourDef	= 0x000000FF;
-	protected static final	int			infoXPosDef			= 20;
-	protected static final	int			infoYPosDef			= 70;
-	protected static final	String		localeLanguageDef	= "en";
+	private static final	boolean		adminNoPrivDef		= false;
+	private static final	boolean		adminOnlyDef		= true;
+	private static final	int			heightTopDef		= 400;
+	private static final	int			heightBottomDef		= -600;
+	private static final	int			infoBkgColourDef	= 0xE0E0A0E0;
+	private static final	int			infoFontColourDef	= 0x000000FF;
+	private static final	int			infoXPosDef			= 20;
+	private static final	int			infoYPosDef			= 70;
+	private static final	String		localeLanguageDef	= "en";
 
 	// FIELDS
 	//
 	protected static		boolean		adminNoPriv			= adminNoPrivDef;
 	protected static		boolean		adminOnly			= adminOnlyDef;
 	protected static		String		commandPrefix		= "/ap";
+	protected static		int			heightTop			= heightTopDef;
+	protected static		int			heightBottom		= heightBottomDef;
 	protected static		int			infoBkgColour		= infoBkgColourDef;
 	protected static		int			infoFontColour		= infoFontColourDef;
 	protected static		int			infoXPos			= infoXPosDef;
@@ -119,7 +135,7 @@ public class AreaProtection extends Plugin
 	protected static		Map<String, Integer>	presets;	
 
 	/**
-	 * Called by the API when the plug-in is initially enabled after being loaded.
+	 * Called by the API when the plug-in is enabled after being loaded.
 	 */
 	@Override
 	public void onEnable()
@@ -198,7 +214,7 @@ public class AreaProtection extends Plugin
 
 	/**
 	 * Retrieves the permissions associated with a preset given the preset name.
-	 * @param name	the name of preset
+	 * @param	name	the name of preset
 	 * @return	the preset permissions or 0 if such a preset does not exists.
 	 */
 	public static int getPresetPermissionsFromName(String name)
@@ -211,9 +227,9 @@ public class AreaProtection extends Plugin
 
 	/**
 	 * Returns the name of the first listed preset whose permissions match a given permission set.
-	 * @param perms		the permission to match
-	 * @return			the name of the first found group matching the permissions
-	 * 					or "Custom if no group matching group is found.
+	 * @param	perms		the permission to match
+	 * @return	the name of the first found group matching the permissions
+	 * 			or "Custom if no group matching group is found.
 	 */
 	public static String getPresetNameFromPermissions(int perms)
 	{
@@ -231,8 +247,8 @@ public class AreaProtection extends Plugin
 	 * point with max x,y,z coordinates.
 	 * <p>The area span is not changed in any way, but the starting and ending point may be moved.
 	 * <p>Needed to circumvent a bug in Area.rearrange().
-	 * @param area	the area to rearrange.
-	 * @return		true if coordinates have been rearranged | false if not.
+	 * @param	area	the area to rearrange.
+	 * @return	true if coordinates have been rearranged | false if not.
 	 */
 	public static boolean rearrangeArea(Area area)
 	{
@@ -282,8 +298,8 @@ public class AreaProtection extends Plugin
 
 	/**
 	 * Returns the 3D coordinates of the centre of an RW area as a String.
-	 * @param rwArea	the area for which to retrieve the centre.
-	 * @return			a String describing the area centre.
+	 * @param	rwArea	the area for which to retrieve the centre.
+	 * @return	a String describing the area centre.
 	 */
 	public static String getAreaCentre(Area rwArea)
 	{
@@ -312,8 +328,8 @@ public class AreaProtection extends Plugin
 	}
 	/**
 	 * Returns the 3D span of an RW area as a String.
-	 * @param rwArea	the are for which to retrieve the spans.
-	 * @return			a String describing the area spans.
+	 * @param	rwArea	the area for which to retrieve the spans.
+	 * @return	a String describing the area spans.
 	 */
 	public static String getAreaSpans(Area rwArea)
 	{
@@ -349,6 +365,8 @@ public class AreaProtection extends Plugin
 
 			adminNoPriv		= propertyToInt(settings, "adminNoPriv",	adminNoPrivDef ? 1 : 0) != 0;
 			adminOnly		= propertyToInt(settings, "adminOnly",		adminOnlyDef ? 1 : 0) != 0;
+			heightTop		= propertyToInt(settings, "heightTop",		heightTopDef);
+			heightBottom	= propertyToInt(settings, "heightBottom",	heightBottomDef);
 			infoBkgColour	= propertyToInt(settings, "infoBkgColour",	infoBkgColourDef);
 			infoFontColour	= propertyToInt(settings, "infoFontColour",	infoFontColourDef);
 			infoXPos		= propertyToInt(settings, "infoXPos",		infoXPosDef);
@@ -381,28 +399,32 @@ public class AreaProtection extends Plugin
 	// Permission names, as used in the preset/group definition files
 	static private final String permNames[]	=
 	{
-		"CanEnter",					"CanLeave",					"DestroyBlock",					"PlaceBlock",
-		"DestroyConstructions",		"PlaceConstructions",		"RemoveConstructions",			"DestroyObjects",
-		"PlaceObjects",			"RemoveObjects","PickupObject",	"DestroyWorld",					"FillWorld",
-		"DestroyVegetation",		"PlaceVegetation",	"RemoveVegetation","PickupVegetation",	"PlaceGrass",
-		"CutGrass",					"PlaceWater",				"RemoveWater",					"CreateBlueprint",					
-		"PlaceBlueprint",			"RemoveBlueprint",			"ChangeObjectStatus",			"InventoryToChest",
-		"ChestToInventory",			"ChestDrop",				"CanAddPlayer",					"Owner"
+		"CanEnter",								"CanLeave",						"PlaceBlock",					"DestroyBlock",
+		"PlaceConstructions",					"RemoveConstructions",			"DestroyConstructions",			"PlaceObjects",
+"RemoveObjects","PickupObject",					"DestroyObjects",				"FillWorld",					"DestroyWorld",
+		"PlaceVegetation",			"RemoveVegetation","PickupVegetation",		"DestroyVegetation",			"PlaceGrass",
+		"CutGrass",								"PlaceWater",					"RemoveWater",					"CreateBlueprint",					
+		"PlaceBlueprint",						"CreativePlaceBlock",			"CreativePlaceVegetation",		"CreativeTerrainEdit",
+"InventoryToChest","PutToChest", "ChestToInventory","ChestDrop","GetFromChest",	"DoorInteraction",				"FurnaceInteraction",
+"OtherInteraction","ChangeObjectStatus",		"CanAddPlayer",					"Owner"
 	};
 	// old permissions, currently not implemented
 	//	"ObjectsPlaceFilter", "ObjectsRemoveDestroyFilter", "ConstructionsFilter", "BlockFilter"
 	// New permissions added:
-	//	"PlaceGrass", "PlaceWater", "RemoveWater", "CreateBlueprints", "PlaceBlueprints", "RemoveBlueprints"
+	//	"PlaceGrass", "PlaceWater", "RemoveWater", "CreateBlueprints", "PlaceBlueprints", "RemoveBlueprints",
+	//	"CreativePlaceBlock", "CreativePlaceVegetation", "CreativeTerrainEdit", "DoorInteraction", "FurnaceInteraction",
+	//	"OtherInteraction"
 	// Permission flags associated with each permission name
 	static private final int	permValues[]	=
 	{
-		PERM_ENTER,					PERM_LEAVE,						PERM_DESTROYBLOCKS,			PERM_PLACEBLOCKS,
-		PERM_DESTROYCONSTR,			PERM_PLACECONSTR,				PERM_REMOVECONSTR,			PERM_DESTROYOBJECTS,
-		PERM_PLACEOBJECTS,	PERM_REMOVEOBJECTS,PERM_REMOVEOBJECTS,	PERM_DESTROYTERRAIN,		PERM_PLACETERRAIN,
-		PERM_DESTROYVEGET,			PERM_PLACEVEGET,		PERM_REMOVEVEGET,PERM_REMOVEVEGET,	PERM_PLACEGRASS,
-		PERM_REMOVEGRASS,			PERM_PLACEWATER,				PERM_REMOVEWATER,			PERM_CREATEBLUEPR,
-		PERM_PLACEBLUEPRINT,		PERM_REMOVEBLUEPR,				PERM_CHANGESTATUS,			PERM_INVENT2CHEST,
-		PERM_CHEST2INVENT,			PERM_CHESTDROP,					PERM_ADDPLAYER,				PERM_OWNER
+			PERM_ENTER,							PERM_LEAVE,								PERM_PLACEBLOCKS,			PERM_DESTROYBLOCKS,
+			PERM_PLACECONSTR,					PERM_REMOVECONSTR,						PERM_DESTROYCONSTR,			PERM_PLACEOBJECTS,
+PERM_REMOVEOBJECTS,PERM_REMOVEOBJECTS,			PERM_DESTROYOBJECTS,					PERM_PLACETERRAIN,			PERM_DESTROYTERRAIN,
+			PERM_PLACEVEGET,			PERM_REMOVEVEGET,PERM_REMOVEVEGET,				PERM_DESTROYVEGET,			PERM_PLACEGRASS,
+			PERM_REMOVEGRASS,					PERM_PLACEWATER,						PERM_REMOVEWATER,			PERM_CREATEBLUEPR,
+			PERM_PLACEBLUEPRINT,				PERM_CREAT_PLACEBLOCKS,					PERM_CREAT_PLACEVEGET,		PERM_CREAT_TERRAINEDIT,
+PERM_PUT2CHEST,PERM_PUT2CHEST,	PERM_GETFROMCHEST,PERM_GETFROMCHEST,PERM_GETFROMCHEST,	PERM_DOORINTERACT,			PERM_FURNACEINTERACT,
+			PERM_OTHERINTERACT,					PERM_ADDPLAYER,							PERM_OWNER
 	};
 	/**
 	 * Initialises preset/group data from preset/group definition files
@@ -411,7 +433,7 @@ public class AreaProtection extends Plugin
 	 */
 	static Map<String, Integer> initPresets(String path)
 	{
-		TreeMap<String, Integer>	map 	= new TreeMap<String, Integer>();
+		TreeMap<String, Integer>	map 	= new TreeMap<>();
 		File dir = new File(path);
 		File[] directoryListing = dir.listFiles();
 		if (directoryListing != null)

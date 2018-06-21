@@ -5,13 +5,24 @@
 
 	Created by : Maurizio M. Gavioli 2017-02-25
 
-	(C) Maurizio M. Gavioli (a.k.a. Miwarre), 2017
-	Licensed under the Creative Commons by-sa 3.0 license (see http://creativecommons.org/licenses/by-sa/3.0/ for details)
+(C) Copyright 2018 Maurizio M. Gavioli (a.k.a. Miwarre)
+This Area Protection plug-in is licensed under the the terms of the GNU General
+Public License as published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version.
 
+This Area Protection plug-in is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this plug-in.  If not, see <https://www.gnu.org/licenses/>.
 *****************************/
 
 package org.miwarre.ap;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import net.risingworld.api.events.Cancellable;
 import net.risingworld.api.events.EventMethod;
 import net.risingworld.api.events.Listener;
@@ -19,11 +30,15 @@ import net.risingworld.api.events.player.PlayerCommandEvent;
 import net.risingworld.api.events.player.PlayerConnectEvent;
 import net.risingworld.api.events.player.PlayerEnterAreaEvent;
 import net.risingworld.api.events.player.PlayerLeaveAreaEvent;
+import net.risingworld.api.events.player.PlayerObjectInteractionEvent;
 import net.risingworld.api.events.player.inventory.PlayerChestDropEvent;
 import net.risingworld.api.events.player.inventory.PlayerChestToInventoryEvent;
 import net.risingworld.api.events.player.inventory.PlayerInventoryToChestEvent;
-//import net.risingworld.api.events.player.world.PlayerChangeObjectStatusEvent;
+import net.risingworld.api.events.player.world.PlayerChangeObjectStatusEvent;
 import net.risingworld.api.events.player.world.PlayerCreateBlueprintEvent;
+import net.risingworld.api.events.player.world.PlayerCreativePlaceBlockEvent;
+import net.risingworld.api.events.player.world.PlayerCreativePlaceVegetationEvent;
+import net.risingworld.api.events.player.world.PlayerCreativeTerrainEditEvent;
 import net.risingworld.api.events.player.world.PlayerDestroyBlockEvent;
 import net.risingworld.api.events.player.world.PlayerDestroyConstructionEvent;
 import net.risingworld.api.events.player.world.PlayerDestroyObjectEvent;
@@ -45,6 +60,7 @@ import net.risingworld.api.events.player.world.PlayerRemoveWaterEvent;
 import net.risingworld.api.gui.GuiLabel;
 import net.risingworld.api.gui.PivotPosition;
 import net.risingworld.api.objects.Player;
+import net.risingworld.api.utils.Definitions.ObjectDefinition;
 
 /**
  * Manages events for the plug-in.
@@ -52,9 +68,17 @@ import net.risingworld.api.objects.Player;
 public class ListenerPlayer implements Listener
 {
 	// Constants
-	public static final		int			INFO_FONT_SIZE			= 16;
-
-	private static ListenerPlayer ourInstance = new ListenerPlayer();
+	public static final		int			INFO_FONT_SIZE	= 16;
+	private static final	int			APPLE_FRUIT_ID	= 46;
+	private static final	int			CHERRY_FRUIT_ID	= 47;
+	private static final	int			LEMON_FRUIT_ID	= 48;
+	private static final	int			TOMATO_FRUIT_ID	= 100;
+	private static final	int			COTTON_FRUIT_ID	= 145;
+	private static final	int			CORN_FRUIT_ID	= 151;
+	private static final	int			CHILI_FRUIT_ID	= 176;
+	private static final ListenerPlayer ourInstance		= new ListenerPlayer();
+	private static final	Set<Integer> pickables		= new HashSet<Integer>(Arrays.asList(
+		APPLE_FRUIT_ID, CHERRY_FRUIT_ID, LEMON_FRUIT_ID, TOMATO_FRUIT_ID, COTTON_FRUIT_ID, CORN_FRUIT_ID, CHILI_FRUIT_ID));
 
 	public static ListenerPlayer getInstance()		{	return ourInstance;	}
 
@@ -74,6 +98,8 @@ public class ListenerPlayer implements Listener
 	public void onPlayerConnect(PlayerConnectEvent event)
 	{
 		Player	player	= event.getPlayer();
+		if (event.isNewPlayer())
+			Db.resetPlayers();
 		player.setAttribute(AreaProtection.key_areasShown, false);
 		// The label with the names of the areas
 		GuiLabel	info	= new GuiLabel("", AreaProtection.infoXPos, AreaProtection.infoYPos, false);
@@ -84,7 +110,6 @@ public class ListenerPlayer implements Listener
 		player.addGuiElement(info);
 		player.setAttribute(AreaProtection.key_areasText, info);
 		Db.loadPlayer(player);
-		player.setListenForObjectInteractions(true);
 	}
 
 	/**	Called when the player issues a command ("/...") in the chat window
@@ -117,27 +142,22 @@ public class ListenerPlayer implements Listener
 	}
 
 	//
-	// DESTROY / PLACE BLOCK EVENTS
+	// PLACE / DESTROY BLOCK EVENTS
 	//
-	@EventMethod
-	public void onPlayerDestroyBlock(PlayerDestroyBlockEvent event)
-	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYBLOCKS);
-	}
 	@EventMethod
 	public void onPlayerPlaceBlock(PlayerPlaceBlockEvent event)
 	{
 		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PLACEBLOCKS);
 	}
+	@EventMethod
+	public void onPlayerDestroyBlock(PlayerDestroyBlockEvent event)
+	{
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYBLOCKS);
+	}
 
 	//
-	// DESTROY / PLACE / REMOVE CONSTRUCTION EVENTS
+	// PLACE / REMOVE / DESTROY CONSTRUCTION EVENTS
 	//
-	@EventMethod
-	public void onPlayerDestroyConstruction(PlayerDestroyConstructionEvent event)
-	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYCONSTR);
-	}
 	@EventMethod
 	public void onPlayerPlaceConstruction(PlayerPlaceConstructionEvent event)
 	{
@@ -148,15 +168,15 @@ public class ListenerPlayer implements Listener
 	{
 		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_REMOVECONSTR);
 	}
+	@EventMethod
+	public void onPlayerDestroyConstruction(PlayerDestroyConstructionEvent event)
+	{
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYCONSTR);
+	}
 
 	//
-	// DESTROY / PLACE / REMOVE OBJECT EVENTS
+	// PLACE / REMOVE / DESTROY OBJECT EVENTS
 	//
-	@EventMethod
-	public void onPlayerDestroyObject(PlayerDestroyObjectEvent event)
-	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYOBJECTS);
-	}
 	@EventMethod
 	public void onPlayerPlaceObject(PlayerPlaceObjectEvent event)
 	{
@@ -167,29 +187,29 @@ public class ListenerPlayer implements Listener
 	{
 		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_REMOVEOBJECTS);
 	}
+	@EventMethod
+	public void onPlayerDestroyObject(PlayerDestroyObjectEvent event)
+	{
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYOBJECTS);
+	}
 
 	//
-	// DESTROY / PLACE TERRAIN EVENTS
+	// PLACE / DESTROY TERRAIN EVENTS
 	//
-	@EventMethod
-	public void onPlayerDestroyTerrain(PlayerDestroyTerrainEvent event)
-	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYTERRAIN);
-	}
 	@EventMethod
 	public void onPlayerPlaceTerrain(PlayerPlaceTerrainEvent event)
 	{
 		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PLACETERRAIN);
 	}
+	@EventMethod
+	public void onPlayerDestroyTerrain(PlayerDestroyTerrainEvent event)
+	{
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYTERRAIN);
+	}
 
 	//
-	// DESTROY / PLACE / REMOVE VEGETATION EVENTS
+	// PLACE / REMOVE / DESTROY VEGETATION EVENTS
 	//
-	@EventMethod
-	public void onPlayerDestroyVegetation(PlayerDestroyVegetationEvent event)
-	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYVEGET);
-	}
 	@EventMethod
 	public void onPlayerPlaceVegetation(PlayerPlaceVegetationEvent event)
 	{
@@ -198,7 +218,15 @@ public class ListenerPlayer implements Listener
 	@EventMethod
 	public void onPlayerRemoveVegetation(PlayerRemoveVegetationEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_REMOVEVEGET);
+		// if picking up some kind fruit while leaving the plant => PERM_REMOVEVEGET
+		// if picking up the plant with the fruit => PERM_DESTROYVEGET
+		onCancellableEvent(event, event.getPlayer(), (pickables.contains(Integer.valueOf(event.getPlantTypeID())) ?
+				AreaProtection.PERM_REMOVEVEGET : AreaProtection.PERM_DESTROYVEGET));
+	}
+	@EventMethod
+	public void onPlayerDestroyVegetation(PlayerDestroyVegetationEvent event)
+	{
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYVEGET);
 	}
 
 	//
@@ -249,35 +277,72 @@ public class ListenerPlayer implements Listener
 	}
 */
 	//
-	// MISCELLANEOUS EVENTS
+	// EVENTS IN CREATIVE MODE (F5 / F6)
 	//
-//	@EventMethod
-//	public void onPlayerChangeObjectStatus(PlayerChangeObjectStatusEvent event)
-//	{
-//		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_CHANGESTATUS);
-//	}
+	@EventMethod
+	public void onPlayerCreativePlaceBlock(PlayerCreativePlaceBlockEvent event)
+	{
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_CREAT_PLACEBLOCKS);
+	}
+	@EventMethod
+	public void onPlayerCreativePlaceVegetation(PlayerCreativePlaceVegetationEvent event)
+	{
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_CREAT_PLACEVEGET);
+	}
+	@EventMethod
+	public void onPlayerCreativeTerrainEdit(PlayerCreativeTerrainEditEvent event)
+	{
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_CREAT_TERRAINEDIT);
+	}
+
+	//
+	// CHEST EVENTS
+	//
 	@EventMethod
 	public void onPlayerInventoryToChest(PlayerInventoryToChestEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_INVENT2CHEST);
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PUT2CHEST);
 	}
+	// CHEST-TO-INVENTORY and CHEST-DROP are both taking from chests
 	@EventMethod
 	public void onPlayerChestToInventory(PlayerChestToInventoryEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_CHEST2INVENT);
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_GETFROMCHEST);
 	}
 	@EventMethod
 	public void onPlayerChestDrop(PlayerChestDropEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_CHESTDROP);
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_GETFROMCHEST);
 	}
 
 	//
+	// OBJECT INTERACTION EVENTS
+	//
+	@EventMethod
+	public void onPlayerChangeObjectStatus(PlayerChangeObjectStatusEvent event)
+	{
+		ObjectDefinition	def	= event.getObjectDefinition();
+		int	perm	= def.isDoor() ? AreaProtection.PERM_DOORINTERACT :
+						(def.isFurnace() ? AreaProtection.PERM_FURNACEINTERACT : AreaProtection.PERM_OTHERINTERACT);
+		onCancellableEvent(event, event.getPlayer(), perm);
+	}
+	@EventMethod
+	public void onPlayerObjectInteraction(PlayerObjectInteractionEvent event)
+	{
+		ObjectDefinition	def	= event.getObjectDefinition();
+		int	perm	= def.isDoor() ? AreaProtection.PERM_DOORINTERACT :
+						(def.isFurnace() ? AreaProtection.PERM_FURNACEINTERACT : AreaProtection.PERM_OTHERINTERACT);
+		onCancellableEvent(event, event.getPlayer(), perm);
+	}
+	
+	//
 	// PRIVATE METHODS
+	//
+	// Matches event with actual player permissions
 	//
 	private void onCancellableEvent(Cancellable event, Player player, int permissionFlag)
 	{
-		if (!AreaProtection.adminNoPriv && player.isAdmin())		// any permission is enabled
+		if (!AreaProtection.adminNoPriv && (Boolean)player.getAttribute(AreaProtection.key_isAdmin))	// any permission is enabled
 			return;
 		Integer	perms	= (Integer)player.getAttribute(AreaProtection.key_areaPerms);
 		if (perms != null && (perms & permissionFlag) == 0)

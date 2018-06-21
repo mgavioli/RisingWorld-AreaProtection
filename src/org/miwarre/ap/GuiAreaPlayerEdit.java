@@ -5,9 +5,17 @@
 
 	Created by : Maurizio M. Gavioli 2017-04-03
 
-	(C) Maurizio M. Gavioli (a.k.a. Miwarre), 2017
-	Licensed under the Creative Commons by-sa 3.0 license (see http://creativecommons.org/licenses/by-sa/3.0/ for details)
+(C) Copyright 2018 Maurizio M. Gavioli (a.k.a. Miwarre)
+This Area Protection plug-in is licensed under the the terms of the GNU General
+Public License as published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version.
 
+This Area Protection plug-in is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this plug-in.  If not, see <https://www.gnu.org/licenses/>.
 *****************************/
 
 package org.miwarre.ap;
@@ -21,6 +29,9 @@ import net.risingworld.api.gui.GuiLabel;
 import net.risingworld.api.gui.PivotPosition;
 import net.risingworld.api.objects.Player;
 
+/**
+ * A dialogue box to edit the permission given to a player for an area
+ */
 public class GuiAreaPlayerEdit extends GuiModalWindow
 {
 	// Control positions: X
@@ -45,32 +56,35 @@ public class GuiAreaPlayerEdit extends GuiModalWindow
 	//
 	// FIELDS
 	//
-	private GuiCallback		callerCallback;
-	private	int				permissions;
-	private	String			permPlayerName;
-	private	boolean			updated;
+	private final	GuiCallback		callerCallback;
+	private			int				permissions;
+	private final	int				permPlayerId;
+	private final	String			permPlayerName;
+	private			boolean			updated;
 	// GUI elements
-	private GuiAreaPerms	permissGroup;
-	private GuiLabel		doButton;
+	private final	GuiAreaPerms	permissGroup;
+	private final	GuiLabel		doButton;
 
 	/**
-	 * Creates a new dialogue box to edit the permissions given to a player for an area.
+	 * Creates a new dialogue box.
 	 * @param	editingPlayer	the player doing the editing (HIS own permissions affect which
 	 *							permissions he can edit).
 	 * @param	area			the area.
+	 * @param	permPlayerId	the DBId of the player whose permissions are being edited.
 	 * @param	permPlayerName	the name of the player whose permissions are being edited.
-	 * @param	type			either Db.LIST_TYPE_PLAYER or Db.LIST_TYPE_PLAYER
+	 * @param	type			either Db.LIST_TYPE_PLAYER or Db.LIST_TYPE_GROUP
 	 * @param	callback		a GuiCallback to which to report events.
 	 */
-	public GuiAreaPlayerEdit(Player editingPlayer, ProtArea area, String permPlayerName,
+	public GuiAreaPlayerEdit(Player editingPlayer, ProtArea area, int permPlayerId, String permPlayerName,
 			int type, GuiCallback callback)
 	{
 		// construct the containing modal window (callback cannot be created and passed in the
 		// call to the c'tor, as there is no context yet, until the modal window object is created)
-		super(AreaProtection.plugin, Msgs.msg[Msgs.gui_areaPlayerPermsTitle], GuiDefs.GROUPTYPE_STATIC, null);
+		super(AreaProtection.plugin, Msgs.msg[Msgs.gui_areaPlayerPermsTitle], GuiDefs.GROUPTYPE_STATIC, 0, null);
 		// create and set the callback
 		setCallback(new DlgHandler());
 		callerCallback		= callback;
+		this.permPlayerId	= permPlayerId;
 		this.permPlayerName	= permPlayerName;
 		updated				= false;
 		int	width			= getTitleBarMinWidth();
@@ -96,17 +110,17 @@ public class GuiAreaPlayerEdit extends GuiModalWindow
 
 		// retrieve the permissions granted to the target player for this area
 		// (used to initialise the permission panel check boxes)
-		Map<String, Integer>	areaPerms	=
+		Map<Integer,Integer>	areaPerms	=
 				Db.getAllPlayerPermissionsForArea(area.id, type);
-		Integer	areaPerm	= areaPerms.get(permPlayerName);
+		Integer	areaPerm	= areaPerms.get(permPlayerId);
 		// if this player has no special permissions for this area,
 		// default to general area permissions
-		permissions	= (areaPerms == null) ? permissions	= area.permissions : areaPerm;
+		permissions	= (areaPerm == null) ? permissions	= area.permissions : areaPerm;
 		// retrieve the permissions granted to the player doing the editing,
 		// (used to mask the permissions to which the editing player has no access)
 		int	permMask	= Db.getPlayerPermissionsForArea(editingPlayer, area.id);
 		// OWNERship permissions is not transferable
-		if (!editingPlayer.isAdmin() || AreaProtection.adminNoPriv)
+		if (!(Boolean)editingPlayer.getAttribute(AreaProtection.key_isAdmin) || AreaProtection.adminNoPriv)
 		{
 			permissions	&= ~AreaProtection.PERM_OWNER;
 			permMask	&= ~AreaProtection.PERM_OWNER;
@@ -129,8 +143,15 @@ public class GuiAreaPlayerEdit extends GuiModalWindow
 	//
 	/**
 	 * Returns the permissions set in the dialogue box.
+	 * @return the permissions as set in the dialogue box
 	 */
 	public int getPermissions()	{ return permissions;	}
+
+	/**
+	 * Returns the name of player for whom permission are being edited.
+	 * @return the player name.
+	 */
+	public String getPlayerName()	{ return permPlayerName;	}
 
 	//********************
 	// HANDLERS
@@ -157,7 +178,7 @@ public class GuiAreaPlayerEdit extends GuiModalWindow
 			case DOBUTT_ID:				// the DO button
 				// retrieve final permissions
 				permissions	= permissGroup.getPermissions();
-				callerCallback.onCall(player, GuiDefs.OK_ID, permPlayerName);
+				callerCallback.onCall(player, GuiDefs.OK_ID, permPlayerId);
 				break;
 			}
 		}
@@ -169,12 +190,12 @@ public class GuiAreaPlayerEdit extends GuiModalWindow
 
 	/**
 	 * Activates / de-activates the DO button according to dialogue box conditions
-	 * Activation requires an area name to exists and something to have been updated.
+	 * Activation requires something to have been updated.
 	 */
 	private void updateDoButton()
 	{
 		doButton.setColor(updated ? GuiDefs.ACTIVE_COLOUR : GuiDefs.INACTIVE_COLOUR);
-		doButton.setClickable(updated ? true : false);
+		doButton.setClickable(updated);
 	}
 
 }

@@ -5,16 +5,23 @@
 
 	Created by : Maurizio M. Gavioli 2017-03-04
 
-	(C) Maurizio M. Gavioli (a.k.a. Miwarre), 2017
-	Licensed under the Creative Commons by-sa 3.0 license (see http://creativecommons.org/licenses/by-sa/3.0/ for details)
+(C) Copyright 2018 Maurizio M. Gavioli (a.k.a. Miwarre)
+This Area Protection plug-in is licensed under the the terms of the GNU General
+Public License as published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version.
 
+This Area Protection plug-in is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this plug-in.  If not, see <https://www.gnu.org/licenses/>.
 *****************************/
 
 package org.miwarre.ap.gui;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.miwarre.ap.gui.GuiGroup;
 import org.miwarre.ap.gui.GuiDefs.Pair;
 import net.risingworld.api.gui.GuiElement;
 import net.risingworld.api.gui.GuiImage;
@@ -46,23 +53,24 @@ public class GuiScrollList extends GuiGroup
 	//
 	// FIELDS
 	//
-	private	GuiLabel[]		guiItems;			// the visible items of the list
-	private GuiImage		buttonNext;			// the button to scroll down
-	private GuiImage		buttonPrev;			// the button to scroll up
-	private	int				firstItem;			// the index of the first shown item in the list of
+	private			GuiLabel[]		guiItems;			// the visible items of the list
+	private			GuiImage		buttonNext;			// the button to scroll down
+	private			GuiImage		buttonPrev;			// the button to scroll up
+	private			int				firstItem;			// the index of the first shown item in the list of
 												// all the items;
-	private	boolean			fixedHeight;		// if true, the height for max NumOfShownItem is always allocated
-	private List<Pair<String,Pair<Integer,Object>>>	items;	// the text items and their data
-	private int				itemsWidth;			// the max width of the shown items
-	private	int				maxNumOfShownItems;	// the max number of items to show
-	private	int				numOfItems;			// total number of items in list
-	private	int				numOfShownItems;	// number of items actually shown
-	private	int				selectedItemId;		// the item id of the selected item, if any
-	private	int				shown;
+	private final	boolean			fixedHeight;		// if true, the height for max NumOfShownItem is always allocated
+	private final	List<Pair<String,Pair<Integer,Object>>>	items;	// the text items and their data
+	private			int				itemsWidth;			// the max width of the shown items
+	private final	int				maxNumOfShownItems;	// the max number of items to show
+	private			int				numOfItems;			// total number of items in list
+	private			int				numOfShownItems;	// number of items actually shown
+	private			int				selectedItemId;		// the item id of the selected item, if any
+	private			int				shown;
 
 	/**
 		Creates an empty scrollable list layout.
-		@param	maxSize	the max number of items to show
+		@param	maxSize		the max number of items to show
+		@param	fixedHeight	if true, the height for max NumOfShownItem is always allocated
 	 */
 	public GuiScrollList(int maxSize, boolean fixedHeight)
 	{
@@ -70,7 +78,7 @@ public class GuiScrollList extends GuiGroup
 		firstItem		= 0;
 		this.fixedHeight= fixedHeight;
 		guiItems		= new GuiLabel[maxNumOfShownItems];
-		items			= new ArrayList<Pair<String,Pair<Integer,Object>>>();
+		items			= new ArrayList<>();
 		itemsWidth		= 0;
 		numOfItems		= 0;
 		selectedItemId	= SELECTED_ID_NONE;
@@ -103,7 +111,7 @@ public class GuiScrollList extends GuiGroup
 	 * has more items, arrow buttons allow to scroll it.
 	 * @param val	the maximum number of visible rows.
 	 */
-	public void setMaxVisibleRows(int val)	{ maxNumOfShownItems = val; }
+//	public void setMaxVisibleRows(int val)	{ maxNumOfShownItems = val; }
 
 	/**
 	 * This method does nothing, as list text items are not statically linked
@@ -156,8 +164,7 @@ public class GuiScrollList extends GuiGroup
 	@Override
 	public GuiLabel addTextItem(String text, Integer id, Object data)
 	{
-		Pair<String,Pair<Integer,Object>>	item	=
-				new Pair<String,Pair<Integer,Object>>(text, new Pair<Integer,Object>(id,data));
+		Pair<String,Pair<Integer,Object>>	item	= new Pair<>(text, new Pair<>(id,data));
 		items.add(item);
 		// adjust panel width if new item is longer than current max item width (including left and right padding)
 		int		textWidth;
@@ -192,6 +199,12 @@ public class GuiScrollList extends GuiGroup
 			if (item != null && item.getR().getL() == id)
 			{
 				items.remove(index);
+				if (numOfItems < maxNumOfShownItems)
+				{
+					numOfShownItems--;
+					guiItems[numOfItems-1].setText("");	// clear the last text
+				}
+				numOfItems--;
 				// if the panel is already shown, update visible items
 				if (shown > 0)
 				{
@@ -235,12 +248,12 @@ public class GuiScrollList extends GuiGroup
 		if (element == buttonPrev)
 		{
 			scrollUp();
-			return (new Pair<Integer,Object>(GuiDefs.INTERNAL_ID, null));
+			return (new Pair<>(GuiDefs.INTERNAL_ID, null));
 		}
 		if (element == buttonNext)
 		{
 			scrollDown();
-			return (new Pair<Integer,Object>(GuiDefs.INTERNAL_ID, null));
+			return (new Pair<>(GuiDefs.INTERNAL_ID, null));
 		}
 		// check for GuiLabel's 
 		int	count	= 0;

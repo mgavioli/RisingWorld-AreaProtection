@@ -7,11 +7,3 @@ DestroyWorld=true
 FillWorld=true
 InventoryToChest=true
 ChestToInventory=true
-ChestDrop=true
-
-# No longer supported
-#133 = Gift object
-ObjectsPlaceFilter=133
-ObjectsRemoveDestroyFilter=
-ConstructionsFilter=
-BlockFilter=

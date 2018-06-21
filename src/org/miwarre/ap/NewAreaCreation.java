@@ -8,6 +8,17 @@
 	(C) Maurizio M. Gavioli (a.k.a. Miwarre), 2017
 	Licensed under the Creative Commons by-sa 3.0 license (see http://creativecommons.org/licenses/by-sa/3.0/ for details)
 
+(C) Copyright 2018 Maurizio M. Gavioli (a.k.a. Miwarre)
+This Area Protection plug-in is licensed under the the terms of the GNU General
+Public License as published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version.
+
+This Area Protection plug-in is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this plug-in.  If not, see <https://www.gnu.org/licenses/>.
 *****************************/
 
 package org.miwarre.ap;
@@ -27,15 +38,17 @@ import org.miwarre.ap.gui.*;
 
 public class NewAreaCreation extends Thread implements Listener
 {
+	// CONSTANTS
 	private static final	int		AREASELECT_ID		= 1;
 	private static final	int		AREAEDIT_ID			= 2;
 
-	private	Vector3f	from, to;
-	private	int			step;
-	private	Player		player;
-	private	boolean		running;
-	private	boolean		aborted;
-	private	GuiModelessWindow	dataWindow;
+	// FIELDS
+	private			Vector3f	from, to;
+	private			int			step;
+	private final	Player		player;
+	private			boolean		running;
+	private			boolean		aborted;
+	private			GuiModelessWindow	dataWindow;
 
 	/**
 	 * Creates a New Area Creation (NAC) thread for player.
@@ -53,13 +66,14 @@ public class NewAreaCreation extends Thread implements Listener
 	{
 		running	= true;
 		aborted	= false;
-		List<String>	texts	= new ArrayList<String>();
+		List<String>	texts	= new ArrayList<>();
 		texts.add(Msgs.msg[Msgs.gui_areaKeys]);
 		step	= AREASELECT_ID;
 		dataWindow	= new GuiModelessWindow(AreaProtection.plugin, player, Msgs.msg[Msgs.gui_newArea], texts);
 		AreaProtection.plugin.registerEventListener(this);
 		player.registerKeys(KeyInput.KEY_LEFT, KeyInput.KEY_RIGHT, KeyInput.KEY_UP, KeyInput.KEY_DOWN,
-				KeyInput.KEY_SUBTRACT, KeyInput.KEY_ADD, KeyInput.KEY_RETURN, KeyInput.KEY_ESCAPE);
+				KeyInput.KEY_SUBTRACT, KeyInput.KEY_ADD, KeyInput.KEY_PGUP, KeyInput.KEY_PGDN,
+				KeyInput.KEY_RETURN, KeyInput.KEY_ESCAPE);
 		player.setListenForKeyInput(true);
 		// enable area selection and wait for selection to be over
 		player.enableAreaSelectionTool();
@@ -87,7 +101,7 @@ public class NewAreaCreation extends Thread implements Listener
 		// show Area Edit dlg box and wait for dlg closed
 		running	= true;
 		step	= AREAEDIT_ID;
-		ProtArea	area		= new ProtArea(from, to, "", /*0,*/ AreaProtection.PERM_DEFAULT);
+		ProtArea	area		= new ProtArea(from, to, "", AreaProtection.PERM_DEFAULT);
 		GuiAreaEdit	winAreaEdit	= new GuiAreaEdit(this, area, player, GuiAreaEdit.TYPE_CREATE);
 		winAreaEdit.show(player);
 		while (true)
@@ -102,10 +116,6 @@ public class NewAreaCreation extends Thread implements Listener
 		}
 		try								{ sleep(100); }
 		catch (InterruptedException e)	{ /* nothing to do! */ }
-		if (from.y != 0 && to.y != 0 && area.name.length() > 0)
-			Db.addArea(area);
-//		winAreaEdit.pop(player);
-		winAreaEdit	= null;
 		AreaProtection.plugin.unregisterEventListener(this);
 	}
 
@@ -115,6 +125,7 @@ public class NewAreaCreation extends Thread implements Listener
 
 	/**
 	 *  Manages key pressed during the area selection phase
+	 * @param	event	The key event being reported
 	 */
 	@EventMethod
 	public void OnKey(PlayerKeyEvent event)
@@ -131,6 +142,8 @@ public class NewAreaCreation extends Thread implements Listener
 			case KeyInput.KEY_RIGHT:
 			case KeyInput.KEY_UP:
 			case KeyInput.KEY_DOWN:
+			case KeyInput.KEY_PGDN:
+			case KeyInput.KEY_PGUP:
 			case KeyInput.KEY_ADD:
 			case KeyInput.KEY_SUBTRACT:
 				// update the area data in dataWindow, without stopping the thread
@@ -190,7 +203,7 @@ public class NewAreaCreation extends Thread implements Listener
 			{
 				AreaProtection.rearrangeArea(result);
 				// update the texts in dataWindow
-				ArrayList<String>	texts	= new ArrayList<String>();
+				ArrayList<String>	texts	= new ArrayList<>();
 				texts.add(Msgs.msg[Msgs.gui_areaKeys]);
 				texts.add(AreaProtection.getAreaCentre(result));
 				texts.add(AreaProtection.getAreaSpans(result));

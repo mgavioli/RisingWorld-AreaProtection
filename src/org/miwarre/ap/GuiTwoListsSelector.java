@@ -5,23 +5,29 @@
 
 	Created by : Maurizio M. Gavioli 2017-03-15
 
-	(C) Maurizio M. Gavioli (a.k.a. Miwarre), 2017
-	Licensed under the Creative Commons by-sa 3.0 license (see http://creativecommons.org/licenses/by-sa/3.0/ for details)
+(C) Copyright 2018 Maurizio M. Gavioli (a.k.a. Miwarre)
+This Area Protection plug-in is licensed under the the terms of the GNU General
+Public License as published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version.
 
+This Area Protection plug-in is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this plug-in.  If not, see <https://www.gnu.org/licenses/>.
 *****************************/
 
 package org.miwarre.ap;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Map.Entry;
+import java.util.Set;
 import org.miwarre.ap.gui.GuiDefs;
 import org.miwarre.ap.gui.GuiGroupStatic;
 import org.miwarre.ap.gui.GuiDefs.GuiCallback;
 import org.miwarre.ap.gui.GuiModalWindow;
 import org.miwarre.ap.gui.GuiScrollList;
 import net.risingworld.api.Plugin;
-import net.risingworld.api.database.WorldDatabase;
 import net.risingworld.api.gui.GuiLabel;
 import net.risingworld.api.gui.PivotPosition;
 import net.risingworld.api.objects.Player;
@@ -31,47 +37,50 @@ public class GuiTwoListsSelector extends GuiModalWindow
 	//
 	// CONSTANTS
 	//
-	public static final	int		DOBUTTON_ID		= 20000;
-	public static final	int		MIN_PRESET_ID	= 10000;
+	public static final	int		DOBUTTON_ID		= 2000000;
+	public static final	int		MIN_PRESET_ID	= 1000001;
 
 	//
 	// FIELDS
 	//
-	private GuiCallback		callerCallback;
-	private GuiLabel		doButton;
-	private TwoListPanel	panel;
-	private String			selected1, selected2;
+	private final	GuiCallback		callerCallback;
+	private			GuiLabel		doButton;
+	private final	TwoListPanel	panel;
+	private			Integer			selId1, selId2;
+	private			String			selText1, selText2;
+	private final	int				type;
 
-	public GuiTwoListsSelector(Plugin plugin, String title, GuiCallback callback, ProtArea area,
-			int maxLines, int type)
+	public GuiTwoListsSelector(final Plugin plugin, final String title, final GuiCallback callback,
+			final ProtArea area, final int maxLines, final int type)
 	{
-		super(plugin, title, GuiDefs.GROUPTYPE_NONE, null);
+		super(plugin, title, GuiDefs.GROUPTYPE_NONE, 0, null);
 		setCallback(new DlgHandler());
 		callerCallback	= callback;
+		selId1		= selId2 = null;
+		selText1	= "";
+		selText2	= "";
 		panel	= new TwoListPanel(area, maxLines, type);
 		setPanel(panel);
-		selected1	= "";
-		selected2	= "";
+		this.type	= type;
 	}
 
 	//********************
 	// PUBLIC METHODS
 	//********************
 
-	public String getList1SelectedItem()
+	public String getSelectedItemText(boolean list1)
 	{
-		if (selected1 != null && selected1.length() > 0)
-			return selected1;
+		String	selected	= (list1 ? selText1 : selText2);
+		if (selected != null && selected.length() > 0)
+			return selected;
 		else
 			return null;
 	}
 
-	public String getList2SelectedItem()
+	public Integer getSelectedItemId(boolean list1)
 	{
-		if (selected2 != null && selected2.length() > 0)
-			return selected2;
-		else
-			return null;
+		Integer	selected	= (list1 ? selId1 : selId2);
+		return selected;
 	}
 
 	//********************
@@ -85,14 +94,16 @@ public class GuiTwoListsSelector extends GuiModalWindow
 		{
 			if (id >= 1 && id < MIN_PRESET_ID)
 			{
-				selected1	= (String)data;
+				selId1		= id;
+				selText1	= (String)data;
 				panel.list1.selectItem(id);
 				updateDoButton();
 				return;
 			}
 			if (id >= MIN_PRESET_ID && id < DOBUTTON_ID)
 			{
-				selected2	= (String)data;
+				selId2		= id;
+				selText2	= (String)data;
 				panel.list2.selectItem(id);
 				updateDoButton();
 				return;
@@ -109,9 +120,9 @@ public class GuiTwoListsSelector extends GuiModalWindow
 
 	private void updateDoButton()
 	{
-		boolean	complete	= selected1.length() > 0 && selected2.length() > 0;
+		boolean	complete	= selText1.length() > 0 && (selText2.length() > 0 || type == Db.LIST_TYPE_MANAGERS);
 		doButton.setColor(complete ? GuiDefs.ACTIVE_COLOUR : GuiDefs.INACTIVE_COLOUR);
-		doButton.setClickable(complete ? true : false);
+		doButton.setClickable(complete);
 	}
 
 	//********************
@@ -134,42 +145,36 @@ public class GuiTwoListsSelector extends GuiModalWindow
 			setMargin(GuiDefs.DEFAULT_PADDING);
 			// The list HEADINGS
 			list1Head	= addTextItem(
-					Msgs.msg[type == Db.LIST_TYPE_PLAYER ? Msgs.gui_selectPlayer : Msgs.gui_selectGroup],
+					Msgs.msg[type == Db.LIST_TYPE_GROUP ? Msgs.gui_selectGroup : Msgs.gui_selectPlayer],
 					null, null);
-			list2Head	= addTextItem(Msgs.msg[Msgs.gui_selectPreset], null, null);
+			list2Head	= addTextItem(type == Db.LIST_TYPE_MANAGERS ? "" : Msgs.msg[Msgs.gui_selectPreset], null, null);
 			// The PLAYER/GROUP LIST
 			list1	= new GuiScrollList(maxLines, true);
 			addChild(list1, null, null);
 			list1.setBorderThickness(1, false);
 			list1.setMargin(GuiDefs.DEFAULT_PADDING);
-			if (type == Db.LIST_TYPE_PLAYER)
+			if (type == Db.LIST_TYPE_GROUP)
 			{
-				// Query world data base for known players
-				WorldDatabase	db = AreaProtection.plugin.getWorldDatabase();
-				try(ResultSet result = db.executeQuery("SELECT `ID`,`Name` FROM `Player` ORDER BY `Name`ASC"))
+				for (Entry<Integer,String> entry : Db.groupNames.entrySet())
 				{
-					while(result.next())
+					int		groupId	= entry.getKey();
+					if (!area.groups.containsKey(groupId))
 					{
-						int		id		= result.getInt(1);
-						String	name	= result.getString(2);
-						// add the item, if not already in the player list of the area
-						if (!area.players.containsKey(name))
-							list1.addTextItem(name, id, name);
+						String	groupName	= entry.getValue();
+						list1.addTextItem(groupName, groupId, groupName);
 					}
-				}
-				catch(SQLException e)
-				{
-					//on errors, do nothing and simply use what we got.
 				}
 			}
 			else
 			{
-				int	id	= 1;
-				for (String groupName : Db.permGroups)
+				Set<Integer> playerIds	= Db.getPlayerIdSet();
+				for (Integer id : playerIds)
 				{
-					if (!area.groups.containsKey(groupName))
-						list1.addTextItem(groupName, id, groupName);
-					id++;
+					if (!area.players.containsKey(id))
+					{
+						String	name	= Db.getPlayerNameFromId(id);
+						list1.addTextItem(name, id, name);
+					}
 				}
 			}
 			// The PRESET LIST
@@ -177,15 +182,24 @@ public class GuiTwoListsSelector extends GuiModalWindow
 			addChild(list2, null, null);
 			list2.setBorderThickness(1, false);
 			list2.setMargin(GuiDefs.DEFAULT_PADDING);
-			int	presetId	= 10000;		// a number larger enough not to clash with player DN ID's
-			for (Entry<String,Integer> entry : AreaProtection.presets.entrySet())
+			int	presetId	= MIN_PRESET_ID;		// a number larger enough not to clash with player DN ID's
+			// while adding an area manager, presets and permissions make no sense
+			// as managers all have admin level by definition
+			if (type == Db.LIST_TYPE_MANAGERS)
 			{
-				list2.addTextItem(entry.getKey(), presetId, entry.getKey());
-				presetId++;
+				selId2		= MIN_PRESET_ID;
+				selText2	= "Admin";
+				list2.setVisible(false);
 			}
+			else
+				for (Entry<String,Integer> entry : AreaProtection.presets.entrySet())
+				{
+					list2.addTextItem(entry.getKey(), presetId, entry.getKey());
+					presetId++;
+				}
 
 			// The ADD BUTTON
-			doButton		= addTextItem(Msgs.msg[Msgs.gui_editAdd], DOBUTTON_ID, null);
+			doButton	= addTextItem(Msgs.msg[Msgs.gui_editAdd], DOBUTTON_ID, null);
 			doButton.setPivot(PivotPosition.Center);
 			doButton.setColor(GuiDefs.INACTIVE_COLOUR);
 			doButton.setClickable(false);

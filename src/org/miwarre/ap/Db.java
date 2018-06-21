@@ -5,9 +5,17 @@
 
 	Created by : Maurizio M. Gavioli 2017-02-25
 
-	(C) Maurizio M. Gavioli (a.k.a. Miwarre), 2017
-	Licensed under the Creative Commons by-sa 3.0 license (see http://creativecommons.org/licenses/by-sa/3.0/ for details)
+(C) Copyright 2018 Maurizio M. Gavioli (a.k.a. Miwarre)
+This Area Protection plug-in is licensed under the the terms of the GNU General
+Public License as published by the Free Software Foundation, either version 3 of
+the License, or (at your option) any later version.
 
+This Area Protection plug-in is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this plug-in.  If not, see <https://www.gnu.org/licenses/>.
 *****************************/
 
 package org.miwarre.ap;
@@ -24,11 +32,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.Set;
 import net.risingworld.api.Server;
 import net.risingworld.api.database.Database;
-//import net.risingworld.api.database.WorldDatabase;
+import net.risingworld.api.database.WorldDatabase;
 import net.risingworld.api.gui.GuiLabel;
 import net.risingworld.api.objects.Player;
 import net.risingworld.api.utils.Area;
@@ -53,10 +62,13 @@ public class Db
 	//
 	public static final	int	LIST_TYPE_PLAYER	= 1;
 	public static final	int	LIST_TYPE_GROUP		= 2;
+	public static final	int	LIST_TYPE_MANAGERS	= 3;
 	// Globals
-	private	static	TreeMap<Integer,ProtArea>	areas		= null;
-			static	String[]					permGroups	= null;
-			static	Database					db			= null;
+	private	static	Map<Integer,ProtArea>	areas		= null;
+			static	Map<Integer,String>		groupNames	= null;
+	private	static	Map<String,Integer>		groupIds	= null;
+	private static	Map<Integer,String>		playerNames	= null;
+	private	static	Database				db			= null;
 
 	//********************
 	// PROTECTED METHODS
@@ -72,6 +84,7 @@ public class Db
 			db = AreaProtection.plugin.getSQLiteConnection(AreaProtection.plugin.getPath()
 					+ "/ap-" + AreaProtection.plugin.getWorld().getName()+".db");
 
+		// the areas, with the name, the extent and the default permissions
 		db.execute(
 			"CREATE TABLE IF NOT EXISTS `areas` ("
 			+ "`id`      INTEGER PRIMARY KEY, "
@@ -84,36 +97,53 @@ public class Db
 			+ "`a_perm`  INTEGER NOT NULL DEFAULT ( 0 ),"
 			+ "`name`    CHAR(64) NOT NULL DEFAULT ('[NoName]')"
 			+ ");");
+		// the users with specific permissions for one or more areas;
+		// users with permissions for area id 0 (which does not exist) are area managers
 		db.execute(
 			"CREATE TABLE IF NOT EXISTS `users` ("
 			+ "`id`      INTEGER PRIMARY KEY,"
 			+ "`area_id` INTEGER NOT NULL DEFAULT ( 0 ),"
 			+ "`user_id` INTEGER NOT NULL DEFAULT ( 0 ),"
-			+ "`u_perm`  INTEGER NOT NULL DEFAULT ( 0 )"
+			+ "`u_perm`  INTEGER NOT NULL DEFAULT ( 0 ),"
+			+ "UNIQUE (`user_id`, `area_id`) ON CONFLICT REPLACE "
 			+ ");");
 		db.execute(
 			"CREATE INDEX IF NOT EXISTS `user` ON `users` (`user_id`);"
 		);
+		// the server permission groups (primarily used to have a persistent id for each group)
 		db.execute(
-			"CREATE UNIQUE INDEX IF NOT EXISTS `user_area` ON `users` (`user_id`, `area_id`);"
-		);
+			"CREATE TABLE IF NOT EXISTS `perm_groups` ("
+			+ "`id`      INTEGER PRIMARY KEY,"
+			+ "`name`    CHAR(64) NOT NULL DEFAULT ('[NoName]') UNIQUE ON CONFLICT REPLACE"
+			+ ");");
+		// the groups with specific permissions for one or more areas
 		db.execute(
 			"CREATE TABLE IF NOT EXISTS `groups` ("
-			+ "`id`      INTEGER PRIMARY KEY,"
-			+ "`area_id` INTEGER NOT NULL DEFAULT ( 0 ),"
-			+ "`user_id` INTEGER NOT NULL DEFAULT ( 0 ),"
-			+ "`u_perm`  INTEGER NOT NULL DEFAULT ( 0 )"
+			+ "`id`       INTEGER PRIMARY KEY,"
+			+ "`area_id`  INTEGER NOT NULL DEFAULT ( 0 ),"
+			+ "`group_id` INTEGER NOT NULL DEFAULT ( 0 ),"
+			+ "`g_perm`   INTEGER NOT NULL DEFAULT ( 0 ),"
+			+ "UNIQUE (`group_id`, `area_id`) ON CONFLICT REPLACE "
 			+ ");");
 		db.execute(
-			"CREATE INDEX IF NOT EXISTS `group` ON `groups` (`user_id`);"
+			"CREATE INDEX IF NOT EXISTS `group` ON `groups` (`group_id`);"
 		);
+		// the chests with specific permissions
 		db.execute(
-			"CREATE UNIQUE INDEX IF NOT EXISTS `group_area` ON `groups` (`user_id`, `area_id`);"
-		);
-		areas	= new TreeMap<>();
-		AP3LUAImport();
+			"CREATE TABLE IF NOT EXISTS `chests` ("
+			+ "`id`       INTEGER PRIMARY KEY,"
+			+ "`chest_id` INTEGER NOT NULL DEFAULT ( 0 ) UNIQUE ON CONFLICT REPLACE,"
+			+ "`c_perm`   INTEGER NOT NULL DEFAULT ( 0 ),"
+			+ "`name`     CHAR(64) NOT NULL DEFAULT ('')"
+			+ ");");
+		// using LinkedHashMap ensures areas are enumerated in the same order as they are inserted;
+		// as areas are loaded from DB in name order, this makes area lists mostly in name order
+		// (exceptions are newly created areas which are at the end and will be sordet at next
+		// server and plug-in restart).
+		areas	= new LinkedHashMap<>();
 		initAreas();
 		initGroups();
+		AP3LUAImport();
 	}
 	static void deinit()
 	{
@@ -136,6 +166,8 @@ public class Db
 	*/
 	static void loadPlayer(Player player)
 	{
+		// admin/manager attribute
+		player.setAttribute(AreaProtection.key_isAdmin, player.isAdmin());
 		// the map with player-specific area permissions
 		HashMap<Integer,Integer>	permAreas	= new HashMap<>();
 		player.setAttribute(AreaProtection.key_areas, permAreas);
@@ -149,7 +181,13 @@ public class Db
 				+ player.getDbID())) 
 		{
 			while (result.next())
-				permAreas.put(result.getInt(1), result.getInt(2));
+			{
+				int		areaId	= result.getInt(1);
+				if (areaId == AreaProtection.AREAMANAGER_AREAID)
+					player.setAttribute(AreaProtection.key_isAdmin, true);
+				else
+					permAreas.put(areaId, result.getInt(2));
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -181,7 +219,7 @@ public class Db
 		// if not admin OR no admin special privilege,
 		// retrieve the permissions for this player and this area.
 		Integer						areaPerm	= AreaProtection.PERM_ALL;
-		if (AreaProtection.adminNoPriv || !player.isAdmin())
+		if (!(Boolean)player.getAttribute(AreaProtection.key_isAdmin) || AreaProtection.adminNoPriv)
 		{
 			if (areaPerms != null)
 				areaPerm	= areaPerms.get(area.id);	// the player-specific permission for this area
@@ -190,19 +228,11 @@ public class Db
 				Integer	groupPerm;						// ...get the group the player belongs to
 				String	groupName	= player.getPermissionGroup();
 				// convert group name into group ID
-				int	groupId	= -1;
-				if (groupName != null && !groupName.isEmpty())
-				{
-					for (int i= 0 ; i < permGroups.length; i++)
-						if (permGroups[i].equals(groupName))
-						{
-							groupId	= i;
-							break;
-						}
-					
-				}
 				// and look for group-specific permission for this area
-				if (groupId > -1 && (groupPerm = area.groups.get(groupId)) != null)
+				Integer	groupId;
+				if (groupName != null && !groupName.isEmpty() &&
+						(groupId=groupIds.get(groupName)) != null &&
+						(groupPerm = area.groups.get(groupId)) != null)
 					areaPerm	= groupPerm;			// if found, use them as player perms. for area
 				else									// if neither group-specific permission (or no group)
 					areaPerm	= area.permissions;		// ...use default area permissions
@@ -251,7 +281,7 @@ public class Db
 			((GuiLabel)player.getAttribute(AreaProtection.key_areasText)).setText(text);
 		}
 		// if admin (and admin privileges are not limited), any permission is enabled
-		if (!AreaProtection.adminNoPriv && player.isAdmin())
+		if ((Boolean)player.getAttribute(AreaProtection.key_isAdmin) && !AreaProtection.adminNoPriv)
 			cumulPerm	= AreaProtection.PERM_ALL;
 		player.setAttribute(AreaProtection.key_areaPerms, cumulPerm);
 		return retVal;
@@ -301,6 +331,8 @@ public class Db
 		// show the new area to any player with area display turned on
 		for(Player player : AreaProtection.plugin.getServer().getAllPlayers())
 		{
+			if (area.isPointInArea(player.getPosition()))	// if player happens to be inside the area,
+				onPlayerArea(player, area, true);			// notifyhim he just entered it
 			if ((boolean)player.getAttribute(AreaProtection.key_areasShown))
 				showAreaToPlayer(player, area);
 		}
@@ -327,7 +359,10 @@ public class Db
 		for(Player player : AreaProtection.plugin.getServer().getAllPlayers())
 		{
 			if ( (inAreas = (HashMap<Integer, Integer>)player.getAttribute(AreaProtection.key_inAreas)) != null)
-				inAreas.remove(areaId);
+			{
+				if (inAreas.remove(areaId) != null)		// if the player was inside this area,
+					onPlayerArea(player, area, false);	// norify him he left it
+			}
 			if ( (permAreas	= (HashMap<Integer, Integer>)player.getAttribute(AreaProtection.key_areas)) != null)
 				permAreas.remove(areaId);
 			if ((boolean)player.getAttribute(AreaProtection.key_areasShown))
@@ -383,18 +418,13 @@ public class Db
 				AreaProtection.plugin.getServer().removeArea(oldArea);
 				AreaProtection.plugin.getServer().addArea(area);
 			}
-			if (oldArea.getEndBlockPosition() != area.getEndBlockPosition() ||
-					oldArea.getEndChunkPosition() != area.getEndChunkPosition() ||
-					oldArea.getStartBlockPosition() != area.getStartBlockPosition() ||
-					oldArea.getStartChunkPosition() != area.getStartChunkPosition())
-			{
-				AreaProtection.plugin.getServer().removeArea(oldArea);
-				AreaProtection.plugin.getServer().addArea(area);
-			}
 			// update PermArea in cache, unless it is the same object as the area it would replace
 			if (area != oldArea)
 				areas.put(area.id, area);
 		}
+		//
+		//	TODO : check for players included or excluded by area boundary changes
+		//
 		return AreaProtection.ERR_SUCCESS;
 	}
 
@@ -412,20 +442,22 @@ public class Db
 	 */
 	static int addPlayerToArea(ProtArea area, int playerId, int permissions, int type)
 	{
-		if (area == null || area.id < 1)
+		if (area == null || area.id == 0)
 			return AreaProtection.ERR_INVALID_ARG;
 		// add the player/perm for this area to the DB
 		// prepare name parameter to avoid quoting issues
 		try(PreparedStatement stmt	= db.getConnection().prepareStatement(
-				type == LIST_TYPE_PLAYER ?
-						"INSERT OR REPLACE INTO `users`  (area_id,user_id,u_perm) VALUES ("+area.id+",?,"+permissions+")"
-					:	"INSERT OR REPLACE INTO `groups` (area_id,user_id,u_perm) VALUES ("+area.id+",?,"+permissions+")"
+				type == LIST_TYPE_GROUP ?
+						"INSERT OR REPLACE INTO `groups` (area_id,group_id,g_perm) VALUES ("+area.id+",?,"+permissions+")"
+					:	"INSERT OR REPLACE INTO `users`  (area_id,user_id,u_perm) VALUES ("+area.id+",?,"+permissions+")"
 				)
 		)
 		{
 			stmt.setInt(1, playerId);
 			stmt.executeUpdate();
-			if (type == LIST_TYPE_PLAYER)
+			if (type == LIST_TYPE_GROUP)
+				area.groups.put(playerId, permissions);
+			else
 			{
 				area.players.put(playerId, permissions);
 				// if the player is connected right now, add the details to the player
@@ -433,16 +465,19 @@ public class Db
 				Player	player	= AreaProtection.plugin.getServer().getPlayer(playerId);
 				if (player != null)
 				{
-					// the map with player-specific area permissions
-					@SuppressWarnings("unchecked")
-					HashMap<Integer,Integer>	permAreas	=
-							(HashMap<Integer, Integer>)player.getAttribute(AreaProtection.key_areas);
-					if (permAreas != null)
-						permAreas.put(area.id, permissions);
+					if (area.id == AreaProtection.AREAMANAGER_AREAID)
+						player.setAttribute(AreaProtection.key_isAdmin, true);
+					else
+					{
+						// the map with player-specific area permissions
+						@SuppressWarnings("unchecked")
+						HashMap<Integer,Integer>	permAreas	=
+								(HashMap<Integer, Integer>)player.getAttribute(AreaProtection.key_areas);
+						if (permAreas != null)
+							permAreas.put(area.id, permissions);
+					}
 				}
 			}
-			else
-				area.groups.put(playerId, permissions);
 		} catch (SQLException e)
 		{
 			e.printStackTrace();
@@ -460,19 +495,21 @@ public class Db
 	 */
 	static int removePlayerFromArea(ProtArea area, int playerId, int type)
 	{
-		if (area == null || area.id < 1)
+		if (area == null || area.id == 0)
 			return AreaProtection.ERR_INVALID_ARG;
 		// remove the player row(s) for this area from the DB
 		// prepare name parameter to avoid quoting issues
 		try(PreparedStatement stmt	= db.getConnection().prepareStatement(
-				type == LIST_TYPE_PLAYER ?
-						"DELETE FROM `users`  WHERE user_id = ? AND area_id="+area.id
-					:	"DELETE FROM `groups` WHERE user_id = ? AND area_id="+area.id)
+				type == LIST_TYPE_GROUP ?
+						"DELETE FROM `groups` WHERE group_id = ? AND area_id="+area.id
+					:	"DELETE FROM `users`  WHERE user_id = ? AND area_id="+area.id)
 		)
 		{
 			stmt.setInt(1, playerId);
 			stmt.executeUpdate();
-			if (type == LIST_TYPE_PLAYER)
+			if (type == LIST_TYPE_GROUP)
+				area.groups.remove(playerId);
+			else
 			{
 				area.players.remove(playerId);
 				// if the player is connected right now, remove the details from the player
@@ -480,16 +517,19 @@ public class Db
 				Player	player	= AreaProtection.plugin.getServer().getPlayer(playerId);
 				if (player != null)
 				{
-					// the map with player-specific area permissions
-					@SuppressWarnings("unchecked")
-					HashMap<Integer,Integer>	permAreas	=
-							(HashMap<Integer, Integer>)player.getAttribute(AreaProtection.key_areas);
-					if (permAreas != null)
-						permAreas.remove(area.id);
+					if (area.id == AreaProtection.AREAMANAGER_AREAID)
+						player.setAttribute(AreaProtection.key_isAdmin, player.isAdmin());
+					else
+					{
+						// the map with player-specific area permissions
+						@SuppressWarnings("unchecked")
+						HashMap<Integer,Integer>	permAreas	=
+								(HashMap<Integer, Integer>)player.getAttribute(AreaProtection.key_areas);
+						if (permAreas != null)
+							permAreas.remove(area.id);
+					}
 				}
 			}
-			else
-				area.groups.remove(playerId);
 		} catch (SQLException e)
 		{
 			e.printStackTrace();
@@ -507,7 +547,7 @@ public class Db
 	 */
 	static Map<Integer,Integer> getAllPlayerPermissionsForArea(int areaId, int type)
 	{
-		Map<Integer,Integer> areaUsers	= new TreeMap<>();
+		Map<Integer,Integer> areaUsers	= new HashMap<>();
 		// run the query from a separate statement, so that it can be
 		// run in parallel with other queries.
 		try (Statement	stmt	= db.getConnection().createStatement())
@@ -516,7 +556,7 @@ public class Db
 					stmt.executeQuery(
 						type == LIST_TYPE_PLAYER
 						?	"SELECT user_id, u_perm FROM `users`  WHERE area_id = "+areaId
-						:	"SELECT user_id, u_perm FROM `groups` WHERE area_id = "+areaId
+						:	"SELECT group_id, g_perm FROM `groups` WHERE area_id = "+areaId
 							);
 			while(result.next())
 				areaUsers.put(result.getInt(1), result.getInt(2));
@@ -545,7 +585,7 @@ public class Db
 		{
 			// if player is an admin, he has all the permissions,
 			// unless revoked by settings
-			if (player.isAdmin() && !AreaProtection.adminNoPriv)
+			if ((Boolean)player.getAttribute(AreaProtection.key_isAdmin) && !AreaProtection.adminNoPriv)
 				return AreaProtection.PERM_ALL;
 			// the map with player-specific area permissions
 			@SuppressWarnings("unchecked")
@@ -578,10 +618,10 @@ public class Db
 	static Map<Integer,ProtArea> getOwnedAreas(Player player)
 	{
 		// if player is an admin AND admin priviledges are not blocked, return the list of all known areas.
-		if (player.isAdmin() && !AreaProtection.adminNoPriv)
+		if ((Boolean)player.getAttribute(AreaProtection.key_isAdmin) && !AreaProtection.adminNoPriv)
 			return areas;
 
-		Map<Integer,ProtArea> ownedAreas	= new TreeMap<>();
+		Map<Integer,ProtArea> ownedAreas	= new HashMap<>();
 		try(ResultSet result = db.executeQuery("SELECT area_id FROM `users` WHERE user_id = '" +
 				player.getDbID() + "' AND (u_perm & ("+
 				AreaProtection.PERM_OWNER + " | " + AreaProtection.PERM_ADDPLAYER + ")) != 0"))
@@ -628,6 +668,27 @@ public class Db
 		return show;
 	}
 
+	/**
+	 * Returns the name of a player from the DB id. The player needs not to be connected.
+	 * @param	playerId	the DB id of the player
+	 * @return	the player name or null if no such a player id.
+	 */
+	static String getPlayerNameFromId(int playerId)
+	{
+		if (playerNames == null)
+			initPLayers();
+		return playerNames.get(playerId);
+	}
+
+	static Set<Integer> getPlayerIdSet()
+	{
+		if (playerNames == null)
+			initPLayers();
+		return playerNames.keySet();
+	}
+
+	static void resetPlayers()		{ playerNames = null; }
+
 	//********************
 	// PRIVATE HELPER METHODS
 	//********************
@@ -649,7 +710,7 @@ public class Db
 	private static void initAreas()
 	{
 		Server	server	= AreaProtection.plugin.getServer();
-		try(ResultSet result = db.executeQuery("SELECT * FROM `areas`"))
+		try(ResultSet result = db.executeQuery("SELECT * FROM `areas` ORDER BY `name`"))
 		{
 			while(result.next())
 			{
@@ -693,9 +754,26 @@ public class Db
 
 	private static void initGroups()
 	{
-		String	path		= AreaProtection.plugin.getPath() + "/../../permissions/groups/";
-		File	groupDir	= new File(path);
-		permGroups	= groupDir.list(new FilenameFilter()
+
+		groupNames	= new HashMap<>();
+		groupIds	= new HashMap<>();
+
+		// retrieve group ID's already in DB
+		Map<String, Integer>	dbGroups	= new HashMap<>();
+		try(ResultSet result = db.executeQuery("SELECT * FROM `perm_groups`"))
+		{
+			while(result.next())
+				dbGroups.put(result.getString(2), result.getInt(1));
+		}
+		catch(SQLException e)
+		{
+			//on errors, do nothing and simply use what we got.
+		}
+
+		// retrieve permission groups from server directory
+		String		path		= AreaProtection.plugin.getPath() + "/../../permissions/groups/";
+		File		groupDir	= new File(path);
+		String[]	rwGroups	= groupDir.list(new FilenameFilter()
 			{
 				@Override
 				public boolean accept(File file, String fileName)
@@ -705,9 +783,53 @@ public class Db
 				}
 			}
 		);
-		// remove the ".permissions" extension from file names
-		for (int i = 0; i < permGroups.length; i++)
-			permGroups[i]	= permGroups[i].substring(0, permGroups[i].length()-12);
+
+		// merge group list with groups in DB
+		for (int i = 0; i < rwGroups.length; i++)
+		{
+			// remove the ".permissions" extension from file names
+			String	name	= rwGroups[i].substring(0, rwGroups[i].length()-12);
+			Integer	id		= dbGroups.get(name);
+			if (id == null)				// such a perm. group not know yet: add to DB
+			{
+				try(PreparedStatement stmt	= db.getConnection().prepareStatement(
+						"INSERT INTO `perm_groups` (name) VALUES (?)")
+				)
+				{
+					stmt.setString(1, name);
+					stmt.executeUpdate();
+					try (ResultSet idSet = stmt.getGeneratedKeys())
+					{
+						if (idSet.next())
+							id	= idSet.getInt(1);
+					}
+				} catch (SQLException e)
+				{
+					e.printStackTrace();
+				}
+			}
+			if (id != null)
+			{
+				groupNames.put(i, name);
+				groupIds.put(name, i);
+			}
+		}
+	}
+
+	private static void initPLayers()
+	{
+		playerNames	= new HashMap<>();
+		// Query world data base for known players
+		WorldDatabase	worldDb = AreaProtection.plugin.getWorldDatabase();
+		try(ResultSet result = worldDb.executeQuery("SELECT `ID`,`Name` FROM `Player` ORDER BY `Name`ASC"))
+		{
+			while(result.next())
+				playerNames.put(result.getInt(1), result.getString(2));
+		}
+		catch(SQLException e)
+		{
+			//on errors, do nothing and simply use what we got.
+		}
 	}
 
 	private static void AP3LUAImport()
@@ -720,7 +842,7 @@ public class Db
 		// IMPORT AREAS
 
 		// a map used to correlate the id each area had in the LUA db to the id it has in the new db 
-		TreeMap<Integer, Integer>	oldId2NewId	= new TreeMap<>();
+		HashMap<Integer, Integer>	oldId2NewId	= new HashMap<>();
 		// connect to the old LUA db
 		Database	oldDb	= AreaProtection.plugin.getSQLiteConnection(path + "/scriptDatabase.db");
 		// scan areas
