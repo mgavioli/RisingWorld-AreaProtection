@@ -52,43 +52,43 @@ public class AreaProtection extends Plugin
 	public static final		int			ERR_CANNOT_LEAVE	= -4;
 	public static final		int			ERR_NOTFOUND		= -5;
 	// The bits corresponding to each permission
-	public static final		int			PERM_ENTER				= 0x00000001;
-	public static final		int			PERM_LEAVE				= 0x00000002;
-	public static final		int			PERM_PLACEBLOCKS		= 0x00000004;
-	public static final		int			PERM_DESTROYBLOCKS		= 0x00000008;
-	public static final		int			PERM_PLACECONSTR		= 0x00000010;
-	public static final		int			PERM_REMOVECONSTR		= 0x00000020;
-	public static final		int			PERM_DESTROYCONSTR		= 0x00000040;
-	public static final		int			PERM_PLACEOBJECTS		= 0x00000080;
-	public static final		int			PERM_REMOVEOBJECTS		= 0x00000100;
-	public static final		int			PERM_DESTROYOBJECTS		= 0x00000200;
-	public static final		int			PERM_PLACETERRAIN		= 0x00000400;
-	public static final		int			PERM_DESTROYTERRAIN		= 0x00000800;
-	public static final		int			PERM_PLACEVEGET			= 0x00001000;
-	public static final		int			PERM_REMOVEVEGET		= 0x00002000;
-	public static final		int			PERM_DESTROYVEGET		= 0x00004000;
-	public static final		int			PERM_PLACEGRASS			= 0x00008000;
-	public static final		int			PERM_REMOVEGRASS		= 0x00010000;
-	public static final		int			PERM_PLACEWATER			= 0x00020000;
-	public static final		int			PERM_REMOVEWATER		= 0x00040000;
-	public static final		int			PERM_CREATEBLUEPR		= 0x00080000;
-	public static final		int			PERM_PLACEBLUEPRINT		= 0x00100000;
-	public static final		int			PERM_CREAT_PLACEBLOCKS	= 0x00200000;
-	public static final		int			PERM_CREAT_PLACEVEGET	= 0x00400000;
-	public static final		int			PERM_CREAT_TERRAINEDIT	= 0x00800000;
-	public static final		int			PERM_PUT2CHEST			= 0x01000000;
-	public static final		int			PERM_GETFROMCHEST		= 0x02000000;
-//	public static final		int			PERM_CHESTDROP			= 0x02000000;
-	public static final		int			PERM_DOORINTERACT		= 0x04000000;
-	public static final		int			PERM_FURNACEINTERACT	= 0x08000000;
-	public static final		int			PERM_OTHERINTERACT		= 0x10000000;
-	public static final		int			PERM_BIT29				= 0x20000000;
-	public static final		int			PERM_ADDPLAYER			= 0x40000000;
-	public static final		int			PERM_OWNER				= 0x80000000;
-	public static final		int			PERM_ALL					= 0xFFFFFFFF;
-	public static final		int			PERM_DEFAULT			= (PERM_ENTER | PERM_LEAVE);
+	public static final		long		PERM_ENTER				= 0x0000000000000001L;
+	public static final		long		PERM_LEAVE				= 0x0000000000000002L;
+	public static final		long		PERM_PLACEBLOCKS		= 0x0000000000000004L;
+	public static final		long		PERM_DESTROYBLOCKS		= 0x0000000000000008L;
+	public static final		long		PERM_PLACECONSTR		= 0x0000000000000010L;
+	public static final		long		PERM_REMOVECONSTR		= 0x0000000000000020L;
+	public static final		long		PERM_DESTROYCONSTR		= 0x0000000000000040L;
+	public static final		long		PERM_PLACEOBJECTS		= 0x0000000000000080L;
+	public static final		long		PERM_REMOVEOBJECTS		= 0x0000000000000100L;
+	public static final		long		PERM_DESTROYOBJECTS		= 0x0000000000000200L;
+	public static final		long		PERM_PLACETERRAIN		= 0x0000000000000400L;
+	public static final		long		PERM_DESTROYTERRAIN		= 0x0000000000000800L;
+	public static final		long		PERM_PLACEVEGET			= 0x0000000000001000L;
+	public static final		long		PERM_REMOVEVEGET		= 0x0000000000002000L;
+	public static final		long		PERM_DESTROYVEGET		= 0x0000000000004000L;
+	public static final		long		PERM_PLACEGRASS			= 0x0000000000008000L;
+	public static final		long		PERM_REMOVEGRASS		= 0x0000000000010000L;
+	public static final		long		PERM_PLACEWATER			= 0x0000000000020000L;
+	public static final		long		PERM_REMOVEWATER		= 0x0000000000040000L;
+	public static final		long		PERM_CREATEBLUEPR		= 0x0000000000080000L;
+	public static final		long		PERM_PLACEBLUEPRINT		= 0x0000000000100000L;
+	public static final		long		PERM_CREAT_PLACEBLOCKS	= 0x0000000000200000L;
+	public static final		long		PERM_CREAT_PLACEVEGET	= 0x0000000000400000L;
+	public static final		long		PERM_CREAT_TERRAINEDIT	= 0x0000000000800000L;
+	public static final		long		PERM_PUT2CHEST			= 0x0000000001000000L;
+	public static final		long		PERM_GETFROMCHEST		= 0x0000000002000000L;
+//	public static final		long		PERM_CHESTDROP			= 0x0000000002000000L;
+	public static final		long		PERM_DOORINTERACT		= 0x0000000004000000L;
+	public static final		long		PERM_FURNACEINTERACT	= 0x0000000008000000L;
+	public static final		long		PERM_OTHERINTERACT		= 0x0000000010000000l;
+	public static final		long		PERM_BIT29				= 0x0000000020000000l;
+	public static final		long		PERM_ADDPLAYER			= 0x4000000000000000L;
+	public static final		long		PERM_OWNER				= 0x8000000000000000L;
+	public static final		long		PERM_ALL					= 0xFFFFFFFFFFFFFFFFL;
+	public static final		long		PERM_DEFAULT			= (PERM_ENTER | PERM_LEAVE);
 	// to convert a permission index (0 - 31) into the corresponding bit flag;
-	public static final		int[]		permIdx2bit	=
+	public static final		long[]		permIdx2bit	=
 	{
 		PERM_ENTER,				PERM_LEAVE,				PERM_PLACEBLOCKS,		PERM_DESTROYBLOCKS,
 		PERM_PLACECONSTR,		PERM_REMOVECONSTR,		PERM_DESTROYCONSTR,		PERM_PLACEOBJECTS,
@@ -131,8 +131,8 @@ public class AreaProtection extends Plugin
 	protected static		int			infoYPos			= infoYPosDef;
 	protected static		Locale		locale;
 
-	public static			AreaProtection			plugin;
-	protected static		Map<String, Integer>	presets;	
+	public static			AreaProtection		plugin;
+	protected static		Map<String,Long>	presets;	
 
 	/**
 	 * Called by the API when the plug-in is enabled after being loaded.
@@ -206,9 +206,9 @@ public class AreaProtection extends Plugin
 		@return	the player permissions for the areas he is currently in or
 				all permissions, if he is currently in no area
 	*/
-	public static int getPlayerPermissions(Player player)
+	public static long getPlayerPermissions(Player player)
 	{
-		Integer		perm	= (Integer)player.getAttribute(key_areaPerms);
+		Long		perm	= (Long)player.getAttribute(key_areaPerms);
 		return (perm != null ? perm : 0xFFFFFFFF);
 	}
 
@@ -217,9 +217,9 @@ public class AreaProtection extends Plugin
 	 * @param	name	the name of preset
 	 * @return	the preset permissions or 0 if such a preset does not exists.
 	 */
-	public static int getPresetPermissionsFromName(String name)
+	public static long getPresetPermissionsFromName(String name)
 	{
-		Integer	perms	= presets.get(name);
+		Long	perms	= presets.get(name);
 		if (perms == null)
 			return 0;
 		return perms;
@@ -231,9 +231,9 @@ public class AreaProtection extends Plugin
 	 * @return	the name of the first found group matching the permissions
 	 * 			or "Custom if no group matching group is found.
 	 */
-	public static String getPresetNameFromPermissions(int perms)
+	public static String getPresetNameFromPermissions(long perms)
 	{
-		for (Entry<String,Integer> entry : presets.entrySet())
+		for (Entry<String,Long> entry : presets.entrySet())
 		{
 			if (entry.getValue() == perms)
 				return entry.getKey();
@@ -415,7 +415,7 @@ public class AreaProtection extends Plugin
 	//	"CreativePlaceBlock", "CreativePlaceVegetation", "CreativeTerrainEdit", "DoorInteraction", "FurnaceInteraction",
 	//	"OtherInteraction"
 	// Permission flags associated with each permission name
-	static private final int	permValues[]	=
+	static private final long[]	permValues	=
 	{
 			PERM_ENTER,							PERM_LEAVE,								PERM_PLACEBLOCKS,			PERM_DESTROYBLOCKS,
 			PERM_PLACECONSTR,					PERM_REMOVECONSTR,						PERM_DESTROYCONSTR,			PERM_PLACEOBJECTS,
@@ -424,23 +424,23 @@ PERM_REMOVEOBJECTS,PERM_REMOVEOBJECTS,			PERM_DESTROYOBJECTS,					PERM_PLACETERR
 			PERM_REMOVEGRASS,					PERM_PLACEWATER,						PERM_REMOVEWATER,			PERM_CREATEBLUEPR,
 			PERM_PLACEBLUEPRINT,				PERM_CREAT_PLACEBLOCKS,					PERM_CREAT_PLACEVEGET,		PERM_CREAT_TERRAINEDIT,
 PERM_PUT2CHEST,PERM_PUT2CHEST,	PERM_GETFROMCHEST,PERM_GETFROMCHEST,PERM_GETFROMCHEST,	PERM_DOORINTERACT,			PERM_FURNACEINTERACT,
-			PERM_OTHERINTERACT,					PERM_ADDPLAYER,							PERM_OWNER
+PERM_OTHERINTERACT,PERM_OTHERINTERACT,			PERM_ADDPLAYER,							PERM_OWNER
 	};
 	/**
 	 * Initialises preset/group data from preset/group definition files
 	 * @param	path	the path where to look for presets/group definitions.
 	 * @return	a Map mapping preset name to preset permissions.
 	 */
-	static Map<String, Integer> initPresets(String path)
+	static Map<String,Long> initPresets(String path)
 	{
-		TreeMap<String, Integer>	map 	= new TreeMap<>();
+		TreeMap<String,Long>	map 	= new TreeMap<>();
 		File dir = new File(path);
 		File[] directoryListing = dir.listFiles();
 		if (directoryListing != null)
 		{
 			FileInputStream	in;
 			String			name;
-			int				perms;
+			long			perms;
 			String			val;
 			for (File child : directoryListing)
 			{

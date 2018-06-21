@@ -322,7 +322,7 @@ public class ListenerPlayer implements Listener
 	public void onPlayerChangeObjectStatus(PlayerChangeObjectStatusEvent event)
 	{
 		ObjectDefinition	def	= event.getObjectDefinition();
-		int	perm	= def.isDoor() ? AreaProtection.PERM_DOORINTERACT :
+		long	perm	= def.isDoor() ? AreaProtection.PERM_DOORINTERACT :
 						(def.isFurnace() ? AreaProtection.PERM_FURNACEINTERACT : AreaProtection.PERM_OTHERINTERACT);
 		onCancellableEvent(event, event.getPlayer(), perm);
 	}
@@ -330,8 +330,11 @@ public class ListenerPlayer implements Listener
 	public void onPlayerObjectInteraction(PlayerObjectInteractionEvent event)
 	{
 		ObjectDefinition	def	= event.getObjectDefinition();
-		int	perm	= def.isDoor() ? AreaProtection.PERM_DOORINTERACT :
-						(def.isFurnace() ? AreaProtection.PERM_FURNACEINTERACT : AreaProtection.PERM_OTHERINTERACT);
+		long	perm	= def.isDoor() ? AreaProtection.PERM_DOORINTERACT :
+						(def.isFurnace() ? AreaProtection.PERM_FURNACEINTERACT : 
+						// Chests must be interactable if either chest access (to or from) is enabled
+						(def.isChest() ? AreaProtection.PERM_OTHERINTERACT | AreaProtection.PERM_PUT2CHEST | AreaProtection.PERM_GETFROMCHEST
+							: AreaProtection.PERM_OTHERINTERACT));
 		onCancellableEvent(event, event.getPlayer(), perm);
 	}
 	
@@ -340,11 +343,11 @@ public class ListenerPlayer implements Listener
 	//
 	// Matches event with actual player permissions
 	//
-	private void onCancellableEvent(Cancellable event, Player player, int permissionFlag)
+	private void onCancellableEvent(Cancellable event, Player player, long permissionFlag)
 	{
 		if (!AreaProtection.adminNoPriv && (Boolean)player.getAttribute(AreaProtection.key_isAdmin))	// any permission is enabled
 			return;
-		Integer	perms	= (Integer)player.getAttribute(AreaProtection.key_areaPerms);
+		Long	perms	= (Long)player.getAttribute(AreaProtection.key_areaPerms);
 		if (perms != null && (perms & permissionFlag) == 0)
 			event.setCancelled(true);
 	}

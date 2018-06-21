@@ -57,7 +57,7 @@ public class GuiAreaPlayerEdit extends GuiModalWindow
 	// FIELDS
 	//
 	private final	GuiCallback		callerCallback;
-	private			int				permissions;
+	private			long			permissions;
 	private final	int				permPlayerId;
 	private final	String			permPlayerName;
 	private			boolean			updated;
@@ -110,15 +110,15 @@ public class GuiAreaPlayerEdit extends GuiModalWindow
 
 		// retrieve the permissions granted to the target player for this area
 		// (used to initialise the permission panel check boxes)
-		Map<Integer,Integer>	areaPerms	=
+		Map<Integer,Long>	areaPerms	=
 				Db.getAllPlayerPermissionsForArea(area.id, type);
-		Integer	areaPerm	= areaPerms.get(permPlayerId);
+		Long	areaPerm	= areaPerms.get(permPlayerId);
 		// if this player has no special permissions for this area,
 		// default to general area permissions
 		permissions	= (areaPerm == null) ? permissions	= area.permissions : areaPerm;
 		// retrieve the permissions granted to the player doing the editing,
 		// (used to mask the permissions to which the editing player has no access)
-		int	permMask	= Db.getPlayerPermissionsForArea(editingPlayer, area.id);
+		long	permMask	= Db.getPlayerPermissionsForArea(editingPlayer, area.id);
 		// OWNERship permissions is not transferable
 		if (!(Boolean)editingPlayer.getAttribute(AreaProtection.key_isAdmin) || AreaProtection.adminNoPriv)
 		{
@@ -145,7 +145,7 @@ public class GuiAreaPlayerEdit extends GuiModalWindow
 	 * Returns the permissions set in the dialogue box.
 	 * @return the permissions as set in the dialogue box
 	 */
-	public int getPermissions()	{ return permissions;	}
+	public long getPermissions()	{ return permissions;	}
 
 	/**
 	 * Returns the name of player for whom permission are being edited.

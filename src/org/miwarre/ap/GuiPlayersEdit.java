@@ -151,8 +151,9 @@ public class GuiPlayersEdit extends GuiModalWindow
 				if (playerId != null && presetName != null /*&& presetName.length() > 0*/)
 				{
 					// add the new pair to the DB
-					Integer	permissions	= type == Db.LIST_TYPE_MANAGERS ? AreaProtection.PERM_ALL & ~(AreaProtection.PERM_OWNER):
-							AreaProtection.presets.get(presetName);
+					Long	permissions	= (type == Db.LIST_TYPE_MANAGERS ?
+							AreaProtection.PERM_ALL & ~(AreaProtection.PERM_OWNER) :
+							AreaProtection.presets.get(presetName));
 //					if (permissions != null)
 //					{
 						// OWNERship is not transferable
@@ -185,7 +186,7 @@ public class GuiPlayersEdit extends GuiModalWindow
 			// GuiAreaPlayerEdit dialogue box notifies OK_ID when its "DO" button is pressed
 			if (id == GuiDefs.OK_ID && playerEditor != null)
 			{
-				int	permissions	= playerEditor.getPermissions();
+				long	permissions	= playerEditor.getPermissions();
 				// add the edited player name / permission pair to the DB
 				// OWNERship is not transferable
 				if (!(Boolean)player.getAttribute(AreaProtection.key_isAdmin) || AreaProtection.adminNoPriv)
@@ -238,7 +239,7 @@ public class GuiPlayersEdit extends GuiModalWindow
 			addChild(playerList, null, null);
 			playerList.setBorderThickness(1, false);
 			playerList.setMargin(GuiDefs.DEFAULT_PADDING);
-			for (Entry<Integer,Integer> entry :
+			for (Entry<Integer,Long> entry :
 				(type == Db.LIST_TYPE_GROUP ? area.groups : area.players).entrySet())
 			{
 				int		playerId	= entry.getKey();

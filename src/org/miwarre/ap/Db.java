@@ -169,10 +169,10 @@ public class Db
 		// admin/manager attribute
 		player.setAttribute(AreaProtection.key_isAdmin, player.isAdmin());
 		// the map with player-specific area permissions
-		HashMap<Integer,Integer>	permAreas	= new HashMap<>();
+		HashMap<Integer,Long>	permAreas	= new HashMap<>();
 		player.setAttribute(AreaProtection.key_areas, permAreas);
 		// the map with permissions for the areas the player currently is in
-		HashMap<Integer,Integer>	inAreas	= new HashMap<>();
+		HashMap<Integer,Long>	inAreas	= new HashMap<>();
 		player.setAttribute(AreaProtection.key_inAreas, inAreas);
 		// the cumulated permissions of all areas the player is currently in
 		player.setAttribute(AreaProtection.key_areaPerms, AreaProtection.PERM_ALL);
@@ -186,7 +186,7 @@ public class Db
 				if (areaId == AreaProtection.AREAMANAGER_AREAID)
 					player.setAttribute(AreaProtection.key_isAdmin, true);
 				else
-					permAreas.put(areaId, result.getInt(2));
+					permAreas.put(areaId, result.getLong(2));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -210,22 +210,22 @@ public class Db
 
 		// retrieve the list of areas the player is in and set an initial all-permission for the player
 //		@SuppressWarnings("unchecked")
-		HashMap<Integer,Integer>	inAreas		= (HashMap<Integer, Integer>)player.getAttribute(AreaProtection.key_inAreas);
+		HashMap<Integer,Long>	inAreas		= (HashMap<Integer, Long>)player.getAttribute(AreaProtection.key_inAreas);
 		// retrieve the list of areas the player has specific permission for
 //		@SuppressWarnings("unchecked")
-		HashMap<Integer,Integer>	areaPerms	= (HashMap<Integer, Integer>)player.getAttribute(AreaProtection.key_areas);
-		int							cumulPerm	= AreaProtection.PERM_ALL;
-		int							retVal		= AreaProtection.ERR_SUCCESS;
+		HashMap<Integer,Long>	areaPerms	= (HashMap<Integer, Long>)player.getAttribute(AreaProtection.key_areas);
+		long					cumulPerm	= AreaProtection.PERM_ALL;
+		int						retVal		= AreaProtection.ERR_SUCCESS;
 		// if not admin OR no admin special privilege,
 		// retrieve the permissions for this player and this area.
-		Integer						areaPerm	= AreaProtection.PERM_ALL;
+		Long					areaPerm	= AreaProtection.PERM_ALL;
 		if (!(Boolean)player.getAttribute(AreaProtection.key_isAdmin) || AreaProtection.adminNoPriv)
 		{
 			if (areaPerms != null)
 				areaPerm	= areaPerms.get(area.id);	// the player-specific permission for this area
 			if (areaPerm == null)						// if no player-specific permissions...
 			{
-				Integer	groupPerm;						// ...get the group the player belongs to
+				Long	groupPerm;						// ...get the group the player belongs to
 				String	groupName	= player.getPermissionGroup();
 				// convert group name into group ID
 				// and look for group-specific permission for this area
@@ -267,7 +267,7 @@ public class Db
 		if (inAreas != null)
 		{
 			String	text	= "";
-			for (Map.Entry<Integer,Integer> entry : inAreas.entrySet())
+			for (Map.Entry<Integer,Long> entry : inAreas.entrySet())
 			{
 				String	name	= areas.get(entry.getKey()).getName();	// the area name
 				if (name != null)
@@ -354,16 +354,16 @@ public class Db
 		// delete RW Area
 		AreaProtection.plugin.getServer().removeArea(area);
 		// remove from player caches and for areas shown to players
-		HashMap<Integer,Integer>	inAreas;	// the areas the player is in w/ their permissions
-		HashMap<Integer,Integer>	permAreas;	// the areas for which the player has special permissions
+		HashMap<Integer,Long>	inAreas;	// the areas the player is in w/ their permissions
+		HashMap<Integer,Long>	permAreas;	// the areas for which the player has special permissions
 		for(Player player : AreaProtection.plugin.getServer().getAllPlayers())
 		{
-			if ( (inAreas = (HashMap<Integer, Integer>)player.getAttribute(AreaProtection.key_inAreas)) != null)
+			if ( (inAreas = (HashMap<Integer,Long>)player.getAttribute(AreaProtection.key_inAreas)) != null)
 			{
 				if (inAreas.remove(areaId) != null)		// if the player was inside this area,
 					onPlayerArea(player, area, false);	// norify him he left it
 			}
-			if ( (permAreas	= (HashMap<Integer, Integer>)player.getAttribute(AreaProtection.key_areas)) != null)
+			if ( (permAreas	= (HashMap<Integer,Long>)player.getAttribute(AreaProtection.key_areas)) != null)
 				permAreas.remove(areaId);
 			if ((boolean)player.getAttribute(AreaProtection.key_areasShown))
 				player.removeWorldElement(area.worldArea);
@@ -440,7 +440,7 @@ public class Db
 	 * @param	permissions	the permissions to add
 	 * @return	an AreaProtection.ERR_ error code.
 	 */
-	static int addPlayerToArea(ProtArea area, int playerId, int permissions, int type)
+	static int addPlayerToArea(ProtArea area, int playerId, long permissions, int type)
 	{
 		if (area == null || area.id == 0)
 			return AreaProtection.ERR_INVALID_ARG;
@@ -471,8 +471,8 @@ public class Db
 					{
 						// the map with player-specific area permissions
 						@SuppressWarnings("unchecked")
-						HashMap<Integer,Integer>	permAreas	=
-								(HashMap<Integer, Integer>)player.getAttribute(AreaProtection.key_areas);
+						HashMap<Integer,Long>	permAreas	=
+								(HashMap<Integer, Long>)player.getAttribute(AreaProtection.key_areas);
 						if (permAreas != null)
 							permAreas.put(area.id, permissions);
 					}
@@ -523,8 +523,8 @@ public class Db
 					{
 						// the map with player-specific area permissions
 						@SuppressWarnings("unchecked")
-						HashMap<Integer,Integer>	permAreas	=
-								(HashMap<Integer, Integer>)player.getAttribute(AreaProtection.key_areas);
+						HashMap<Integer,Long>	permAreas	=
+								(HashMap<Integer,Long>)player.getAttribute(AreaProtection.key_areas);
 						if (permAreas != null)
 							permAreas.remove(area.id);
 					}
@@ -545,9 +545,9 @@ public class Db
 	 * @param	type	either LIST_TYPE_PLAYER or LIST_TYPE_GROUP
 	 * @return			a Map with player name and player permissions for this area.
 	 */
-	static Map<Integer,Integer> getAllPlayerPermissionsForArea(int areaId, int type)
+	static Map<Integer,Long> getAllPlayerPermissionsForArea(int areaId, int type)
 	{
-		Map<Integer,Integer> areaUsers	= new HashMap<>();
+		Map<Integer,Long> areaUsers	= new HashMap<>();
 		// run the query from a separate statement, so that it can be
 		// run in parallel with other queries.
 		try (Statement	stmt	= db.getConnection().createStatement())
@@ -555,11 +555,11 @@ public class Db
 			ResultSet result	=
 					stmt.executeQuery(
 						type == LIST_TYPE_PLAYER
-						?	"SELECT user_id, u_perm FROM `users`  WHERE area_id = "+areaId
+						?	"SELECT user_id,  u_perm FROM `users`  WHERE area_id = "+areaId
 						:	"SELECT group_id, g_perm FROM `groups` WHERE area_id = "+areaId
 							);
 			while(result.next())
-				areaUsers.put(result.getInt(1), result.getInt(2));
+				areaUsers.put(result.getInt(1), result.getLong(2));
 			result.close();
 		}
 		catch(SQLException e)
@@ -579,7 +579,7 @@ public class Db
 	 * @param	areaId	the area
 	 * @return	the player permissions for the area (see details above).
 	 */
-	static int getPlayerPermissionsForArea(Player player, int areaId)
+	static long getPlayerPermissionsForArea(Player player, int areaId)
 	{
 		if (player != null)
 		{
@@ -589,12 +589,12 @@ public class Db
 				return AreaProtection.PERM_ALL;
 			// the map with player-specific area permissions
 			@SuppressWarnings("unchecked")
-			HashMap<Integer,Integer>	permAreas	=
-					(HashMap<Integer, Integer>)player.getAttribute(AreaProtection.key_areas);
+			HashMap<Integer,Long>	permAreas	=
+					(HashMap<Integer,Long>)player.getAttribute(AreaProtection.key_areas);
 			if (permAreas != null)
 			{
 				// if the map exists, look for permissions for this specific area
-				Integer	perms	= permAreas.get(areaId);
+				Long	perms	= permAreas.get(areaId);
 				// if specific permissions exists, return them
 				if (perms != null)
 					return perms;
@@ -872,8 +872,8 @@ public class Db
 		// IMPORT RIGHTS
 
 		// the permissions defined in LUA groups
-		Map<String, Integer>		LUAGroups	= AreaProtection.initPresets(path + "/Groups");
-//		WorldDatabase				worldDb		= AreaProtection.plugin.getWorldDatabase();
+		Map<String,Long>	LUAGroups	= AreaProtection.initPresets(path + "/Groups");
+//		WorldDatabase		worldDb		= AreaProtection.plugin.getWorldDatabase();
 		// scan rights
 		try(ResultSet result = oldDb.executeQuery("SELECT * FROM `rights`"))
 		{
@@ -892,7 +892,7 @@ public class Db
 				if (area == null)
 					continue;
 				// retrieve permissions corresponding to the group
-				Integer	groupPerms	= LUAGroups.get(groupName);
+				Long	groupPerms	= LUAGroups.get(groupName);
 				// retrieve player name from DB ID
 //				String	playerName	= null;
 //				try(ResultSet result2 = worldDb.executeQuery("SELECT Name FROM `Player` WHERE ID = " +

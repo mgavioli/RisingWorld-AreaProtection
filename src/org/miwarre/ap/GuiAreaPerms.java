@@ -64,7 +64,7 @@ public class GuiAreaPerms extends GuiGroupStatic
 	//
 	// FIELDS
 	//
-	private	int				permissions;
+	private	long			permissions;
 	private GuiImage[]		permOnOff;
 
 	/**
@@ -75,7 +75,7 @@ public class GuiAreaPerms extends GuiGroupStatic
 	 * @param	forArea		true if the panel is for an area generic permissions,
 	 *						false if the panel is for player-specific permissions.
 	 */
-	public GuiAreaPerms(int permissions, int permMask, boolean forArea)
+	public GuiAreaPerms(long permissions, long permMask, boolean forArea)
 	{
 		super(0);
 		setBorderThickness(GuiDefs.BORDER_THICKNESS, false);
@@ -86,12 +86,12 @@ public class GuiAreaPerms extends GuiGroupStatic
 				Msgs.gui_editPermissSpecific], null, null);
 		label.setPosition(HEADING_X, HEADING_Y, false);
 		// The individual permissions
-		permOnOff		= new GuiImage[NUM_OF_PLAYERPERMS];	// the check boxes
-		int	permId		= -1;								// the current permission id
-		int	currFlag;										// the current permission bit flag
-		int	permPerCol	= forArea ? AREAPERMS_PER_COLUMN : PLAYERPERMS_PER_COLUMN;
-		int	numOfPerms	= forArea ? NUM_OF_AREAPERMS : NUM_OF_PLAYERPERMS;
-		int			x, y;
+		permOnOff			= new GuiImage[NUM_OF_PLAYERPERMS];	// the check boxes
+		int		permId		= -1;								// the current permission id
+		long	currFlag;										// the current permission bit flag
+		int		permPerCol	= forArea ? AREAPERMS_PER_COLUMN : PLAYERPERMS_PER_COLUMN;
+		int		numOfPerms	= forArea ? NUM_OF_AREAPERMS : NUM_OF_PLAYERPERMS;
+		int		x, y;
 		x	= 0;
 		// for each column
 		for (int i = 0; i < PERMS_PER_ROW; i++)
@@ -127,11 +127,11 @@ public class GuiAreaPerms extends GuiGroupStatic
 		setSize(PANEL_WIDTH, PANEL_HEIGHT, false);
 	}
 
-	public int	getPermissions()	{ return permissions;  }
+	public long	getPermissions()	{ return permissions;  }
 
 	public boolean togglePermission(int index)
 	{
-		int	permToggle	= AreaProtection.permIdx2bit[index];
+		long	permToggle	= AreaProtection.permIdx2bit[index];
 		permissions	^= permToggle;
 		GuiDefs.setImage(permOnOff[index], (permissions & permToggle) != 0 ? 
 				GuiDefs.ICN_CHECK : GuiDefs.ICN_CROSS);

@@ -192,7 +192,7 @@ public class GuiTwoListsSelector extends GuiModalWindow
 				list2.setVisible(false);
 			}
 			else
-				for (Entry<String,Integer> entry : AreaProtection.presets.entrySet())
+				for (Entry<String,Long> entry : AreaProtection.presets.entrySet())
 				{
 					list2.addTextItem(entry.getKey(), presetId, entry.getKey());
 					presetId++;

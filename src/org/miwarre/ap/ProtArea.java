@@ -32,12 +32,12 @@ import net.risingworld.api.worldelements.WorldArea;
  */
 public class ProtArea extends Area
 {
-	int						id;			// the persistent id of the PermArea
-	Map<Integer,Integer>	groups;		// the groups with group-specific permissions for this area and their permissions
-	String					name;		// the name of the PermArea
-	int						permissions;// the default permissions (may be overridden by player-specific permissions)
-	Map<Integer,Integer>	players;	// the players with player-specific permissions for this area and their permissions
-	WorldArea				worldArea;	// the associated WorldArea (i.e. the visualisation of the area span)
+	int					id;			// the persistent id of the PermArea
+	Map<Integer,Long>	groups;		// the groups with group-specific permissions for this area and their permissions
+	String				name;		// the name of the PermArea
+	long				permissions;// the default permissions (may be overridden by player-specific permissions)
+	Map<Integer,Long>	players;	// the players with player-specific permissions for this area and their permissions
+	WorldArea			worldArea;	// the associated WorldArea (i.e. the visualisation of the area span)
 
 	public ProtArea(Vector3f fromF, Vector3f toF)
 	{
@@ -46,7 +46,7 @@ public class ProtArea extends Area
 	}
 
 	public ProtArea(int id, int fromX, int fromY, int fromZ, int toX, int toY, int toZ,
-			String name, int permissions)
+			String name, long permissions)
 	{
 		super(new Vector3f(fromX, fromY, fromZ), new Vector3f(toX, toY, toZ));
 		this.id				= id;
@@ -55,7 +55,7 @@ public class ProtArea extends Area
 		initPlayers();
 	}
 
-	public ProtArea(Vector3f fromF, Vector3f toF, String name, int permissions)
+	public ProtArea(Vector3f fromF, Vector3f toF, String name, long permissions)
 	{
 		super(fromF, toF);
 		this.name			= name;
@@ -65,10 +65,10 @@ public class ProtArea extends Area
 
 	public int		getId()							{	return id;			}
 	public String	getName()						{	return name;		}
-	public int		getPermissions()				{	return permissions;	}
+	public long		getPermissions()				{	return permissions;	}
 
 	public void setName(String newName)				{	name		= newName;			}
-	public void setPermissions(int newPermissions)	{	permissions	= newPermissions;	}
+	public void setPermissions(long newPermissions)	{	permissions	= newPermissions;	}
 
 	private void initPlayers()
 	{
