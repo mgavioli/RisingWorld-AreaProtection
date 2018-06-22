@@ -129,13 +129,13 @@ public class Db
 			"CREATE INDEX IF NOT EXISTS `group` ON `groups` (`group_id`);"
 		);
 		// the chests with specific permissions
-		db.execute(
+/*		db.execute(
 			"CREATE TABLE IF NOT EXISTS `chests` ("
 			+ "`id`       INTEGER PRIMARY KEY,"
 			+ "`chest_id` INTEGER NOT NULL DEFAULT ( 0 ) UNIQUE ON CONFLICT REPLACE,"
 			+ "`c_perm`   INTEGER NOT NULL DEFAULT ( 0 ),"
 			+ "`name`     CHAR(64) NOT NULL DEFAULT ('')"
-			+ ");");
+			+ ");");*/
 		// using LinkedHashMap ensures areas are enumerated in the same order as they are inserted;
 		// as areas are loaded from DB in name order, this makes area lists mostly in name order
 		// (exceptions are newly created areas which are at the end and will be sordet at next
@@ -426,6 +426,16 @@ public class Db
 		//	TODO : check for players included or excluded by area boundary changes
 		//
 		return AreaProtection.ERR_SUCCESS;
+	}
+
+	/**
+	 * Retrieves the area with the given id.
+	 * @param	id	the id of the area to retrieve
+	 * @return	the area with that id or null if no area has that id.
+	 */
+	static ProtArea getAreaFromId(int id)
+	{
+		return areas.get(id);
 	}
 
 	//********************

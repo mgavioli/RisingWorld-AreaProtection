@@ -41,47 +41,49 @@ public class Msgs
 	public static final int	gui_deleteArea			=  4;
 	public static final int gui_chestAccess			=  5;
 	public static final int	gui_areaManagers		=  6;
+	public static final int	gui_adminsOff			=  7;
+	public static final int	gui_adminsOn			=  8;
 	// Cardinal points
-	public static final int	gui_N					=  7;
-	public static final int	gui_E					=  8;
-	public static final int	gui_S					=  9;
-	public static final int	gui_W					= 10;
+	public static final int	gui_N					=  9;
+	public static final int	gui_E					= 10;
+	public static final int	gui_S					= 11;
+	public static final int	gui_W					= 12;
 	// New area texts
-	public static final int	gui_areaKeys			= 11;
-	public static final int	gui_areaCentreFmt		= 12;
-	public static final int	gui_areaSpanFmt			= 13;
+	public static final int	gui_areaKeys			= 13;
+	public static final int	gui_areaCentreFmt		= 14;
+	public static final int	gui_areaSpanFmt			= 15;
 	// Area properties edit
-	public static final int	gui_editTitle			= 14;
-	public static final int	gui_editName			= 15;
-	public static final int	gui_editPermissGeneral	= 16;
-	public static final int	gui_editPermissSpecific	= 17;
-	public static final int	gui_editPermFirst		= 18;
-	public static final int	gui_editPermLastArea		= 46;	// last permission applicable to an area
-	public static final int	gui_editPermLastUser	= 48;	// last permission applicable to a user
+	public static final int	gui_editTitle			= 16;
+	public static final int	gui_editName			= 17;
+	public static final int	gui_editPermissGeneral	= 18;
+	public static final int	gui_editPermissSpecific	= 19;
+	public static final int	gui_editPermFirst		= 20;
+	public static final int	gui_editPermLastArea		= 48;	// last permission applicable to an area
+	public static final int	gui_editPermLastUser	= 50;	// last permission applicable to a user
 	// Other GUI texts
-	public static final int	gui_editeditPlayers		= 49;
-	public static final int	gui_editeditGroups		= 50;
-	public static final int	gui_notImplemented		= 51;
-	public static final	int	gui_specPermPlayersTitle= 52;
-	public static final	int	gui_specPermGroupsTitle	= 53;
-	public static final	int	gui_areaPlayerPermsTitle= 54;
-	public static final	int	gui_areaName			= 55;
-	public static final	int	gui_playerName			= 56;
-	public static final int	gui_editCreate			= 57;
-	public static final int	gui_editUpdate			= 58;
-	public static final int	gui_editAdd				= 59;
-	public static final int	gui_editDelete			= 60;
-	public static final int	gui_editEdit			= 61;
-	public static final int	gui_noOwnedArea			= 62;
-	public static final int	gui_customPerms			= 63;
-	public static final	int	gui_selectPlayer		= 64;
-	public static final	int	gui_selectGroup			= 65;
-	public static final	int	gui_selectPreset		= 66;
-	public static final	int	gui_topAreaHeight		= 67;
-	public static final	int	gui_bottomAreaHeight	= 68;
-	public static final	int	gui_setToDefault		= 69;
+	public static final int	gui_editeditPlayers		= 51;
+	public static final int	gui_editeditGroups		= 52;
+	public static final int	gui_notImplemented		= 53;
+	public static final	int	gui_specPermPlayersTitle= 54;
+	public static final	int	gui_specPermGroupsTitle	= 55;
+	public static final	int	gui_areaPlayerPermsTitle= 56;
+	public static final	int	gui_areaName			= 57;
+	public static final	int	gui_playerName			= 58;
+	public static final int	gui_editCreate			= 59;
+	public static final int	gui_editUpdate			= 60;
+	public static final int	gui_editAdd				= 61;
+	public static final int	gui_editDelete			= 62;
+	public static final int	gui_editEdit			= 63;
+	public static final int	gui_noOwnedArea			= 64;
+	public static final int	gui_customPerms			= 65;
+	public static final	int	gui_selectPlayer		= 66;
+	public static final	int	gui_selectGroup			= 67;
+	public static final	int	gui_selectPreset		= 68;
+	public static final	int	gui_topAreaHeight		= 69;
+	public static final	int	gui_bottomAreaHeight	= 70;
+	public static final	int	gui_setToDefault		= 71;
 	// Other menu title
-	public static final int	gui_selectArea			= 70;
+	public static final int	gui_selectArea			= 72;
 
 	private static final int	LAST_TEXT	= gui_selectArea;
 
@@ -95,8 +97,10 @@ public class Msgs
 			"New area",
 			"Edit area",
 			"Delete area",
-			"Chest access",
+			"Chest access (NOT impl.)",
 			"Area Managers",
+			"Admin priv. OFF",
+			"Admin priv. ON",
 			// Cardinal points
 			"N",
 			"E",

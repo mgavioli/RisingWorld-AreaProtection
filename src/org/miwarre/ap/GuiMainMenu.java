@@ -20,10 +20,18 @@ this plug-in.  If not, see <https://www.gnu.org/licenses/>.
 
 package org.miwarre.ap;
 
+//import java.util.ArrayList;
+//import net.risingworld.api.callbacks.Callback;
+import java.util.Map;
+import net.risingworld.api.gui.GuiLabel;
+//import net.risingworld.api.objects.Chest;
 import org.miwarre.ap.gui.GuiDefs;
 import org.miwarre.ap.gui.GuiDefs.GuiCallback;
 import org.miwarre.ap.gui.GuiMenu;
 import net.risingworld.api.objects.Player;
+//import net.risingworld.api.utils.CollisionType;
+//import net.risingworld.api.utils.RayCastResult;
+//import net.risingworld.api.utils.Vector3f;
 
 /**
  * The plug-in main menu. It is the main UI entry point for the plug-in.
@@ -31,6 +39,9 @@ import net.risingworld.api.objects.Player;
  */
 public class GuiMainMenu extends GuiMenu
 {
+	//
+	// CONSTANTS
+	//
 	// The ID's of the menu items. Used by the MenuHandler.
 	private static final	int		MENU_SHOWAREAS_ID		= 1;
 	private static final	int		MENU_EDITAREA_ID		= 2;
@@ -38,7 +49,13 @@ public class GuiMainMenu extends GuiMenu
 	private static final	int		MENU_DELETEAREA_ID		= 4;
 	private static final	int		MENU_CHESTACCESS_ID		= 5;
 	private static final	int		MENU_AREAMANAGERS_ID	= 6;
+	private static final	int		MENU_ADMINSACCESS_ID	= 7;
 	private static final	int		AREACREAT_PRIORITY		= 3;
+
+	//
+	// FIELDS
+	//
+	private GuiLabel		adminMenuItem;
 
 	public GuiMainMenu(Player player)
 	{
@@ -57,7 +74,11 @@ public class GuiMainMenu extends GuiMenu
 			addTextItem(Msgs.msg[Msgs.gui_deleteArea],	MENU_DELETEAREA_ID,		null);
 			addTextItem(Msgs.msg[Msgs.gui_chestAccess], MENU_CHESTACCESS_ID,	null);
 			if (player.isAdmin())
+			{
 				addTextItem(Msgs.msg[Msgs.gui_areaManagers],MENU_AREAMANAGERS_ID,	null);
+				adminMenuItem	= addTextItem(Msgs.msg[AreaProtection.adminNoPriv ?
+						Msgs.gui_adminsOn : Msgs.gui_adminsOff],MENU_ADMINSACCESS_ID,	null);
+			}
 		}
 	}
 
@@ -85,20 +106,37 @@ public class GuiMainMenu extends GuiMenu
 				nac.start();
 				break;
 			case MENU_EDITAREA_ID:
-				// display a list of areas to choose the one to edit
-				push(player, new GuiAreaList(player, new EditListHandler()));
+				Map<Integer,Long> areas = (Map<Integer,Long>)player.getAttribute(AreaProtection.key_inAreas);
+				// if inside some area(s), jump to edit the first of them
+				if (areas != null && !areas.isEmpty())
+				{
+					ProtArea	area	= Db.getAreaFromId((int) areas.keySet().toArray()[0]);
+					push(player, new GuiAreaEdit(null, area, player, GuiAreaEdit.TYPE_EDIT));
+				}
+				else
+				// if not inside any area, display a list of areas to choose
+					push(player, new GuiAreaList(player, new EditListHandler()));
 				break;
 			case MENU_DELETEAREA_ID:
 				// display a list of areas to choose the one to delete
 				push(player, new GuiAreaList(player, new DeleteListHandler()));
 				break;
-			case MENU_CHESTACCESS_ID:
-				break;
+//			case MENU_CHESTACCESS_ID:
+//				player.raycast(CollisionType.OBJECTS, new RaycastHandler());
+//				break;
 			case MENU_AREAMANAGERS_ID:
 				ProtArea	area	= new ProtArea(AreaProtection.AREAMANAGER_AREAID,
 						0, 0, 0,  0, 0, 0,  Msgs.msg[Msgs.gui_areaManagers], 0);
 				//		from		to			name						permissions
 				push(player, new GuiPlayersEdit(area, Db.LIST_TYPE_MANAGERS));
+				break;
+			case MENU_ADMINSACCESS_ID:
+				// flip admin privileges
+				AreaProtection.adminNoPriv = !AreaProtection.adminNoPriv;
+				// update menu item text
+				if (adminMenuItem != null)
+					adminMenuItem.setText(Msgs.msg[AreaProtection.adminNoPriv ?
+						Msgs.gui_adminsOn : Msgs.gui_adminsOff]);
 				break;
 			}
 		}
@@ -141,4 +179,23 @@ public class GuiMainMenu extends GuiMenu
 		}
 	}
 
+	//
+	//
+	//
+/*	private class RaycastHandler implements Callback<RayCastResult>
+	{
+		@Override
+		public void onCall(RayCastResult result)
+		{
+			Vector3f	pt;
+			if (result == null || (pt=result.getCollisionPoint()) != null)
+				return;
+			ArrayList<Chest> chests = (ArrayList<Chest>)AreaProtection.plugin.getWorld().getAllChests(null);
+			for (Chest chest : chests)
+			{
+
+			}
+		}
+	}
+*/
 }
