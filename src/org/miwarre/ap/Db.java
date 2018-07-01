@@ -661,21 +661,26 @@ public class Db
 		boolean show	= !(boolean)player.getAttribute(AreaProtection.key_areasShown);
 		player.setAttribute(AreaProtection.key_areasShown, show);
 		if (show)
-		{
-			for (Map.Entry<Integer,ProtArea> entry : areas.entrySet())
-				showAreaToPlayer(player, entry.getValue());
-		}
+			showAreasToPlayer(player);
 		else
-		{
-			for (Map.Entry<Integer,ProtArea> entry : areas.entrySet())
-			{
-				ProtArea	area	= entry.getValue();
-				if (area.worldArea != null)
-					player.removeWorldElement(area.worldArea);
-			}
-		}
-
+			hideAreasToPlayer(player);
 		return show;
+	}
+
+	static void showAreasToPlayer(Player player)
+	{
+		for (Map.Entry<Integer,ProtArea> entry : areas.entrySet())
+			showAreaToPlayer(player, entry.getValue());
+	}
+
+	static void hideAreasToPlayer(Player player)
+	{
+		for (Map.Entry<Integer,ProtArea> entry : areas.entrySet())
+		{
+			ProtArea	area	= entry.getValue();
+			if (area.worldArea != null)
+				player.removeWorldElement(area.worldArea);
+		}
 	}
 
 	/**

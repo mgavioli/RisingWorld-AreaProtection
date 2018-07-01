@@ -119,8 +119,22 @@ public class ListenerPlayer implements Listener
 	@EventMethod
 	public void onPlayerCommand(PlayerCommandEvent event)
 	{
-		if (event.getCommand().split(" ")[0].equals(AreaProtection.commandPrefix) )
-			AreaProtection.plugin.mainGui(event.getPlayer());
+		String	cmd		= event.getCommand().split(" ")[0];
+		Player	player	= event.getPlayer();
+
+		switch (cmd)
+		{
+		case "/showareas":
+			Db.showAreasToPlayer(player);
+			break;
+		case "/hideareas":
+			Db.hideAreasToPlayer(player);
+			break;
+		default:
+			if (cmd.equals(AreaProtection.commandPrefix) )
+				AreaProtection.plugin.mainGui(player);
+			break;
+		}
 	}
 
 	//
