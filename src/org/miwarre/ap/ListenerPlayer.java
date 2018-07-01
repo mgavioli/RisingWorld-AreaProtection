@@ -57,10 +57,12 @@ import net.risingworld.api.events.player.world.PlayerRemoveGrassEvent;
 import net.risingworld.api.events.player.world.PlayerRemoveObjectEvent;
 import net.risingworld.api.events.player.world.PlayerRemoveVegetationEvent;
 import net.risingworld.api.events.player.world.PlayerRemoveWaterEvent;
+import net.risingworld.api.events.world.ExplosionEvent;
 import net.risingworld.api.gui.GuiLabel;
 import net.risingworld.api.gui.PivotPosition;
 import net.risingworld.api.objects.Player;
 import net.risingworld.api.utils.Definitions.ObjectDefinition;
+import net.risingworld.api.utils.Vector3f;
 
 /**
  * Manages events for the plug-in.
@@ -272,17 +274,21 @@ public class ListenerPlayer implements Listener
 	}
 
 	//
-	// CREATE / PLACE / REMOVE BLUEPRINT EVENT
+	// CREATE / PLACE BLUEPRINT EVENT
 	//
 	@EventMethod
 	public void onPlayerCreateBlueprint(PlayerCreateBlueprintEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_CREATEBLUEPR);
+		if ( (Db.getPlayerPermissionsForBounding(event.getPlayer(), event.getBoundingInformation())
+				& AreaProtection.PERM_CREATEBLUEPR) == 0)
+			event.setCancelled(true);
 	}
 	@EventMethod
 	public void onPlayerPlaceBlueprint(PlayerPlaceBlueprintEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PLACEBLUEPRINT);
+		if ( (Db.getPlayerPermissionsForBounding(event.getPlayer(), event.getBoundingInformation())
+				& AreaProtection.PERM_PLACEBLUEPRINT) == 0)
+			event.setCancelled(true);
 	}
 /*	@EventMethod
 	public void onPlayerRemoveBlueprint(PlayerRemoveBlueprintEvent event)
@@ -351,7 +357,19 @@ public class ListenerPlayer implements Listener
 							: AreaProtection.PERM_OTHERINTERACT));
 		onCancellableEvent(event, event.getPlayer(), perm);
 	}
-	
+
+	//
+	// EXPLOSION EVENT
+	//
+	@EventMethod
+	public void onExplosion(ExplosionEvent event)
+	{
+		Player	player	= event.getRelatedItem().getRelatedPlayer();
+		if (player != null &&
+				(Db.getPlayerPermissionsForPoint(player, event.getPosition()) & AreaProtection.PERM_EXPLOSION) == 0)
+			event.setCancelled(true);
+	}
+
 	//
 	// PRIVATE METHODS
 	//

@@ -31,6 +31,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -41,6 +42,7 @@ import net.risingworld.api.database.WorldDatabase;
 import net.risingworld.api.gui.GuiLabel;
 import net.risingworld.api.objects.Player;
 import net.risingworld.api.utils.Area;
+import net.risingworld.api.utils.BoundingInformation;
 import net.risingworld.api.utils.Utils.ChunkUtils;
 import net.risingworld.api.utils.Utils.GeneralUtils;
 import net.risingworld.api.utils.Vector3f;
@@ -649,6 +651,98 @@ public class Db
 			//on errors, do nothing and simply use what we got.
 		}
 		return ownedAreas;
+	}
+
+	/**
+	 * Gets the player permission for an arbitrary point.
+	 * @param	player	the player to retrieve permissions for
+	 * @param	point	the point
+	 * @return	the player permission for the point.
+	 */
+	public static long getPlayerPermissionsForPoint(Player player, Vector3f point)
+	{
+		// if admin AND admins are not demoted, return all permissions
+		if ((Boolean)player.getAttribute(AreaProtection.key_isAdmin) && !AreaProtection.adminNoPriv)
+			return AreaProtection.PERM_ALL;
+
+		// retrieve the player group and convert group name into group ID
+		String		groupName	= player.getPermissionGroup();
+		Integer		groupId	= null;
+		if (groupName != null && !groupName.isEmpty())
+				groupId	= groupIds.get(groupName);
+
+		// retrieve the list of areas the player has specific permission for
+		HashMap<Integer,Long>	playerPerms	= (HashMap<Integer, Long>)player.getAttribute(AreaProtection.key_areas);
+		long					cumulPerm	= AreaProtection.PERM_ALL;			// permissions default to everything
+
+		Long		aPerm;
+		// scan all areas to collect all areas which contain the point
+		for (ProtArea area : areas.values())
+		{
+			// if the current area contains the point...
+			if (area.isPointInArea(point))
+			{
+				// ..check the player has special permissions to the area
+				if ( (aPerm=playerPerms.get(area.id)) == null)
+					// if the player has no special permission,
+					// check the player belongs to a group
+					// and the area has special permissions for that group
+					if (groupId != null)
+						aPerm	= area.groups.get(groupId);
+				// if no group, use generic area permissions
+				if (aPerm == null)
+					aPerm	= area.permissions;
+				// mask cumulative permissions with player permissions for this area
+				cumulPerm	&= aPerm;
+			}
+		}
+		return cumulPerm;
+	}
+
+	public static long getPlayerPermissionsForBounding(Player player, BoundingInformation bi)
+	{
+		// if admin AND admins are not demoted, return all permissions
+		if ((Boolean)player.getAttribute(AreaProtection.key_isAdmin) && !AreaProtection.adminNoPriv)
+			return AreaProtection.PERM_ALL;
+
+		// convert bounding info into an area
+		Vector3f	centre		= bi.getCenter();
+		Vector3f	minBoundary	= centre.subtract(bi.getXExtent(), bi.getYExtent(), bi.getZExtent());
+		Vector3f	maxBoundary	= centre.add(bi.getXExtent(), bi.getYExtent(), bi.getZExtent());
+		Area		boundArea	= new Area(minBoundary, maxBoundary);
+
+		// retrieve the player group and convert group name into group ID
+		String		groupName	= player.getPermissionGroup();
+		Integer		groupId	= null;
+		if (groupName != null && !groupName.isEmpty())
+				groupId	= groupIds.get(groupName);
+
+		// retrieve the list of areas the player has specific permission for
+		HashMap<Integer,Long>	playerPerms	= (HashMap<Integer, Long>)player.getAttribute(AreaProtection.key_areas);
+		long					cumulPerm	= AreaProtection.PERM_ALL;			// permissions default to everything
+
+		Long		aPerm;
+		// scan all areas to collect all areas which intersect the bound area
+		for (ProtArea area : areas.values())
+		{
+			// if the current area contains the point...
+			if (area.intersects(boundArea))
+			{
+				// ..check the player has special permissions to the area
+				if ( (aPerm=playerPerms.get(area.id)) == null)
+					// if the player has no special permission,
+					// check the player belongs to a group
+					// and the area has special permissions for that group
+					if (groupId != null)
+						aPerm	= area.groups.get(groupId);
+				// if no group, use generic area permissions
+				if (aPerm == null)
+					aPerm	= area.permissions;
+				// mask cumulative permissions with player permissions for this area
+				cumulPerm	&= aPerm;
+			}
+		}
+		return cumulPerm;
 	}
 
 	/**

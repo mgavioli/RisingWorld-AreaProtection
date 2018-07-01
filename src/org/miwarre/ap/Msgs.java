@@ -58,32 +58,32 @@ public class Msgs
 	public static final int	gui_editPermissGeneral	= 18;
 	public static final int	gui_editPermissSpecific	= 19;
 	public static final int	gui_editPermFirst		= 20;
-	public static final int	gui_editPermLastArea		= 48;	// last permission applicable to an area
-	public static final int	gui_editPermLastUser	= 50;	// last permission applicable to a user
+	public static final int	gui_editPermLastArea		= 49;	// last permission applicable to an area
+	public static final int	gui_editPermLastUser	= 51;	// last permission applicable to a user
 	// Other GUI texts
-	public static final int	gui_editeditPlayers		= 51;
-	public static final int	gui_editeditGroups		= 52;
-	public static final int	gui_notImplemented		= 53;
-	public static final	int	gui_specPermPlayersTitle= 54;
-	public static final	int	gui_specPermGroupsTitle	= 55;
-	public static final	int	gui_areaPlayerPermsTitle= 56;
-	public static final	int	gui_areaName			= 57;
-	public static final	int	gui_playerName			= 58;
-	public static final int	gui_editCreate			= 59;
-	public static final int	gui_editUpdate			= 60;
-	public static final int	gui_editAdd				= 61;
-	public static final int	gui_editDelete			= 62;
-	public static final int	gui_editEdit			= 63;
-	public static final int	gui_noOwnedArea			= 64;
-	public static final int	gui_customPerms			= 65;
-	public static final	int	gui_selectPlayer		= 66;
-	public static final	int	gui_selectGroup			= 67;
-	public static final	int	gui_selectPreset		= 68;
-	public static final	int	gui_topAreaHeight		= 69;
-	public static final	int	gui_bottomAreaHeight	= 70;
-	public static final	int	gui_setToDefault		= 71;
+	public static final int	gui_editeditPlayers		= 52;
+	public static final int	gui_editeditGroups		= 53;
+	public static final int	gui_notImplemented		= 54;
+	public static final	int	gui_specPermPlayersTitle= 55;
+	public static final	int	gui_specPermGroupsTitle	= 56;
+	public static final	int	gui_areaPlayerPermsTitle= 57;
+	public static final	int	gui_areaName			= 58;
+	public static final	int	gui_playerName			= 59;
+	public static final int	gui_editCreate			= 60;
+	public static final int	gui_editUpdate			= 61;
+	public static final int	gui_editAdd				= 62;
+	public static final int	gui_editDelete			= 63;
+	public static final int	gui_editEdit			= 64;
+	public static final int	gui_noOwnedArea			= 65;
+	public static final int	gui_customPerms			= 66;
+	public static final	int	gui_selectPlayer		= 67;
+	public static final	int	gui_selectGroup			= 68;
+	public static final	int	gui_selectPreset		= 69;
+	public static final	int	gui_topAreaHeight		= 70;
+	public static final	int	gui_bottomAreaHeight	= 71;
+	public static final	int	gui_setToDefault		= 72;
 	// Other menu title
-	public static final int	gui_selectArea			= 72;
+	public static final int	gui_selectArea			= 73;
 
 	private static final int	LAST_TEXT	= gui_selectArea;
 
@@ -103,9 +103,9 @@ public class Msgs
 			"Admin priv. ON",
 			// Cardinal points
 			"N",
-			"E",
+			"E",										// 10
 			"S",
-			"W",										// 10
+			"W",
 			// New area texts
 			"RETURN to create, ESCAPE to abort",
 			"Area Centre: %.1f%s, %.1f%s, %.1fh",
@@ -116,9 +116,9 @@ public class Msgs
 			"Generic Area Permissions:",
 			"Specific Area Permissions:",
 			// Property names
-			"Enter area",
+			"Enter area",								// 20
 			"Leave area",
-			"Place blocks",								// 20
+			"Place blocks",
 			"Destroy blocks",
 			"Place constructions",
 			"Remove constructions",
@@ -126,9 +126,9 @@ public class Msgs
 			"Place objects",
 			"Remove objects",
 			"Destroy objects",
-			"Place terrain",
+			"Place terrain",							// 30
 			"Destroy terrain",
-			"Place vegetation",							// 30
+			"Place vegetation",
 			"Remove vegetation",
 			"Destroy vegetation",
 			"Place grass",
@@ -136,41 +136,42 @@ public class Msgs
 			"Place water",
 			"Remove water",
 			"Create blueprint",
-			"Place blueprint",
+			"Place blueprint",							// 40
 			"Place block (creative)",
-			"Place vegetation (creative)",				// 40
+			"Place vegetation (creative)",
 			"Edit terrain (creative)",
 			"Put into chest",
 			"Get from chest",
 			"Door interaction",
 			"Furnace interaction",
 			"Other interaction",
-			"Can add players",
+			"Explosions",
+			"Can add players",							// 50
 			"Owner",
 			// other GUI texts
 			"Edit Players",
-			"Edit Groups",								// 50
+			"Edit Groups",
 			"Coming soon!",
 			"Players with special permissions",
 			"Groups with special permissions",
 			"Player/Group Permissions for Area",
 			"Area Name:",
 			"Player/Group Name:",
-			"\n CREATE \n ",
+			"\n CREATE \n ",							// 60
 			"\n UPDATE \n ",
 			"\n ADD \n ",
-			"\n DELETE \n ",							// 60
+			"\n DELETE \n ",
 			"\n EDIT \n ",
 			"[You own no area]",
 			"Custom",
 			"Select a player:",
 			"Select a group:",
 			"Select a preset:",
-			"Top Height",
+			"Top Height",								// 70
 			"Bottom Height",
 			"Set to default",
 			// other menu titles
-			"Select an Area"							// 70
+			"Select an Area"
 	};
 
 	private static final	String		MSGS_FNAME	= "/locale/messages";

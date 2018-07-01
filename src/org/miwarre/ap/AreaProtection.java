@@ -82,7 +82,8 @@ public class AreaProtection extends Plugin
 	public static final		long		PERM_DOORINTERACT		= 0x0000000004000000L;
 	public static final		long		PERM_FURNACEINTERACT	= 0x0000000008000000L;
 	public static final		long		PERM_OTHERINTERACT		= 0x0000000010000000l;
-	public static final		long		PERM_BIT29				= 0x0000000020000000l;
+	public static final		long		PERM_EXPLOSION			= 0x0000000020000000l;
+	public static final		long		PERM_BIT30				= 0x0000000020000000l;
 	public static final		long		PERM_ADDPLAYER			= 0x4000000000000000L;
 	public static final		long		PERM_OWNER				= 0x8000000000000000L;
 	public static final		long		PERM_ALL					= 0xFFFFFFFFFFFFFFFFL;
@@ -97,7 +98,7 @@ public class AreaProtection extends Plugin
 		PERM_REMOVEGRASS,		PERM_PLACEWATER,		PERM_REMOVEWATER,		PERM_CREATEBLUEPR,
 		PERM_PLACEBLUEPRINT,	PERM_CREAT_PLACEBLOCKS,	PERM_CREAT_PLACEVEGET,	PERM_CREAT_TERRAINEDIT,
 		PERM_PUT2CHEST,			PERM_GETFROMCHEST,		PERM_DOORINTERACT,		PERM_FURNACEINTERACT,
-		PERM_OTHERINTERACT,		PERM_ADDPLAYER,			PERM_OWNER
+		PERM_OTHERINTERACT,		PERM_EXPLOSION,			PERM_ADDPLAYER,			PERM_OWNER
 	};
 	// player attribute keys
 	public static final		String		key_areas			= "com.mwr.apAreas";	// the areas the player has special permission for
@@ -406,7 +407,7 @@ public class AreaProtection extends Plugin
 		"CutGrass",								"PlaceWater",					"RemoveWater",					"CreateBlueprint",					
 		"PlaceBlueprint",						"CreativePlaceBlock",			"CreativePlaceVegetation",		"CreativeTerrainEdit",
 "InventoryToChest","PutToChest", "ChestToInventory","ChestDrop","GetFromChest",	"DoorInteraction",				"FurnaceInteraction",
-"OtherInteraction","ChangeObjectStatus",		"CanAddPlayer",					"Owner"
+"OtherInteraction","ChangeObjectStatus",		"Explosion",					"CanAddPlayer",					"Owner"
 	};
 	// old permissions, currently not implemented
 	//	"ObjectsPlaceFilter", "ObjectsRemoveDestroyFilter", "ConstructionsFilter", "BlockFilter"
@@ -424,7 +425,7 @@ PERM_REMOVEOBJECTS,PERM_REMOVEOBJECTS,			PERM_DESTROYOBJECTS,					PERM_PLACETERR
 			PERM_REMOVEGRASS,					PERM_PLACEWATER,						PERM_REMOVEWATER,			PERM_CREATEBLUEPR,
 			PERM_PLACEBLUEPRINT,				PERM_CREAT_PLACEBLOCKS,					PERM_CREAT_PLACEVEGET,		PERM_CREAT_TERRAINEDIT,
 PERM_PUT2CHEST,PERM_PUT2CHEST,	PERM_GETFROMCHEST,PERM_GETFROMCHEST,PERM_GETFROMCHEST,	PERM_DOORINTERACT,			PERM_FURNACEINTERACT,
-PERM_OTHERINTERACT,PERM_OTHERINTERACT,			PERM_ADDPLAYER,							PERM_OWNER
+PERM_OTHERINTERACT,PERM_OTHERINTERACT,			PERM_EXPLOSION,							PERM_ADDPLAYER,							PERM_OWNER
 	};
 	/**
 	 * Initialises preset/group data from preset/group definition files
