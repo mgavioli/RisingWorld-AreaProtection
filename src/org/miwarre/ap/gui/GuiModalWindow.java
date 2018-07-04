@@ -413,6 +413,20 @@ public class GuiModalWindow extends GuiPanel implements Listener
 	}
 
 	/**
+	 * Returns the child GuiLabel attached to the text item of the given id or null if none.
+	 * 
+	 * <p>If the list has more items than can be displayed, only the displayed
+	 * items are actually attached to a GuiLabel, looking for the id's of the
+	 * other returns null.  
+	 * @param	id	the id to look for.
+	 * @return	the child GuiLabel attached to the text item with the given id or null if none is found.
+	 */
+	public GuiElement getChildFromId(int id)
+	{
+		return _panel.getChildFromId(id);
+	}
+
+	/**
 	 * Releases the resources used by the window. After this method has
 	 * been called, the window cannot be used or displayed any longer.
 	 * 

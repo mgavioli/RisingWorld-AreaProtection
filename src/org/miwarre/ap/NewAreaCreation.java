@@ -201,7 +201,8 @@ public class NewAreaCreation extends Thread implements Listener
 			//if result is null, player did not select an area
 			if(result != null)
 			{
-				AreaProtection.rearrangeArea(result);
+//				AreaProtection.rearrangeArea(result);
+				result.rearrange();
 				// update the texts in dataWindow
 				ArrayList<String>	texts	= new ArrayList<>();
 				texts.add(Msgs.msg[Msgs.gui_areaKeys]);

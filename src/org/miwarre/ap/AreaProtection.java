@@ -32,7 +32,6 @@ import net.risingworld.api.Plugin;
 import net.risingworld.api.objects.Player;
 import net.risingworld.api.utils.Area;
 import net.risingworld.api.utils.Vector3f;
-import net.risingworld.api.utils.Vector3i;
 import net.risingworld.api.utils.Utils.ChunkUtils;
 
 /**
@@ -41,55 +40,56 @@ import net.risingworld.api.utils.Utils.ChunkUtils;
 public class AreaProtection extends Plugin
 {
 	// Constants
-	public static final		String		version				= "0.10.0";
-	public static final		String		publicName			= "Area Protection";
-	public static final		int			AREAMANAGER_AREAID	= -1;
+	public static final	String	version				= "0.11.0";
+	public static final int		VERSION_INT			= 001100;
+	public static final	String	publicName			= "Area Protection";
+	public static final	int		AREAMANAGER_AREAID	= -1;
 	// Some common return codes
-	public static final		int			ERR_SUCCESS			= 0;
-	public static final		int			ERR_INVALID_ARG		= -1;
-	public static final		int			ERR_DB				= -2;
-	public static final		int			ERR_CANNOT_ENTER	= -3;
-	public static final		int			ERR_CANNOT_LEAVE	= -4;
-	public static final		int			ERR_NOTFOUND		= -5;
+	public static final	int		ERR_SUCCESS			= 0;
+	public static final	int		ERR_INVALID_ARG		= -1;
+	public static final	int		ERR_DB				= -2;
+	public static final	int		ERR_CANNOT_ENTER	= -3;
+	public static final	int		ERR_CANNOT_LEAVE	= -4;
+	public static final	int		ERR_NOTFOUND		= -5;
 	// The bits corresponding to each permission
-	public static final		long		PERM_ENTER				= 0x0000000000000001L;
-	public static final		long		PERM_LEAVE				= 0x0000000000000002L;
-	public static final		long		PERM_PLACEBLOCKS		= 0x0000000000000004L;
-	public static final		long		PERM_DESTROYBLOCKS		= 0x0000000000000008L;
-	public static final		long		PERM_PLACECONSTR		= 0x0000000000000010L;
-	public static final		long		PERM_REMOVECONSTR		= 0x0000000000000020L;
-	public static final		long		PERM_DESTROYCONSTR		= 0x0000000000000040L;
-	public static final		long		PERM_PLACEOBJECTS		= 0x0000000000000080L;
-	public static final		long		PERM_REMOVEOBJECTS		= 0x0000000000000100L;
-	public static final		long		PERM_DESTROYOBJECTS		= 0x0000000000000200L;
-	public static final		long		PERM_PLACETERRAIN		= 0x0000000000000400L;
-	public static final		long		PERM_DESTROYTERRAIN		= 0x0000000000000800L;
-	public static final		long		PERM_PLACEVEGET			= 0x0000000000001000L;
-	public static final		long		PERM_REMOVEVEGET		= 0x0000000000002000L;
-	public static final		long		PERM_DESTROYVEGET		= 0x0000000000004000L;
-	public static final		long		PERM_PLACEGRASS			= 0x0000000000008000L;
-	public static final		long		PERM_REMOVEGRASS		= 0x0000000000010000L;
-	public static final		long		PERM_PLACEWATER			= 0x0000000000020000L;
-	public static final		long		PERM_REMOVEWATER		= 0x0000000000040000L;
-	public static final		long		PERM_CREATEBLUEPR		= 0x0000000000080000L;
-	public static final		long		PERM_PLACEBLUEPRINT		= 0x0000000000100000L;
-	public static final		long		PERM_CREAT_PLACEBLOCKS	= 0x0000000000200000L;
-	public static final		long		PERM_CREAT_PLACEVEGET	= 0x0000000000400000L;
-	public static final		long		PERM_CREAT_TERRAINEDIT	= 0x0000000000800000L;
-	public static final		long		PERM_PUT2CHEST			= 0x0000000001000000L;
-	public static final		long		PERM_GETFROMCHEST		= 0x0000000002000000L;
-//	public static final		long		PERM_CHESTDROP			= 0x0000000002000000L;
-	public static final		long		PERM_DOORINTERACT		= 0x0000000004000000L;
-	public static final		long		PERM_FURNACEINTERACT	= 0x0000000008000000L;
-	public static final		long		PERM_OTHERINTERACT		= 0x0000000010000000l;
-	public static final		long		PERM_EXPLOSION			= 0x0000000020000000l;
-	public static final		long		PERM_BIT30				= 0x0000000020000000l;
-	public static final		long		PERM_ADDPLAYER			= 0x4000000000000000L;
-	public static final		long		PERM_OWNER				= 0x8000000000000000L;
-	public static final		long		PERM_ALL					= 0xFFFFFFFFFFFFFFFFL;
-	public static final		long		PERM_DEFAULT			= (PERM_ENTER | PERM_LEAVE);
+	public static final	long	PERM_ENTER				= 0x0000000000000001L;
+	public static final	long	PERM_LEAVE				= 0x0000000000000002L;
+	public static final	long	PERM_PLACEBLOCKS		= 0x0000000000000004L;
+	public static final	long	PERM_DESTROYBLOCKS		= 0x0000000000000008L;
+	public static final	long	PERM_PLACECONSTR		= 0x0000000000000010L;
+	public static final	long	PERM_REMOVECONSTR		= 0x0000000000000020L;
+	public static final	long	PERM_DESTROYCONSTR		= 0x0000000000000040L;
+	public static final	long	PERM_PLACEOBJECTS		= 0x0000000000000080L;
+	public static final	long	PERM_REMOVEOBJECTS		= 0x0000000000000100L;
+	public static final	long	PERM_DESTROYOBJECTS		= 0x0000000000000200L;
+	public static final	long	PERM_PLACETERRAIN		= 0x0000000000000400L;
+	public static final	long	PERM_DESTROYTERRAIN		= 0x0000000000000800L;
+	public static final	long	PERM_PLACEVEGET			= 0x0000000000001000L;
+	public static final	long	PERM_REMOVEVEGET		= 0x0000000000002000L;
+	public static final	long	PERM_DESTROYVEGET		= 0x0000000000004000L;
+	public static final	long	PERM_PLACEGRASS			= 0x0000000000008000L;
+	public static final	long	PERM_REMOVEGRASS		= 0x0000000000010000L;
+	public static final	long	PERM_PLACEWATER			= 0x0000000000020000L;
+	public static final	long	PERM_REMOVEWATER		= 0x0000000000040000L;
+	public static final	long	PERM_CREATEBLUEPR		= 0x0000000000080000L;
+	public static final	long	PERM_PLACEBLUEPRINT		= 0x0000000000100000L;
+	public static final	long	PERM_CREAT_PLACEBLOCKS	= 0x0000000000200000L;
+	public static final	long	PERM_CREAT_PLACEVEGET	= 0x0000000000400000L;
+	public static final	long	PERM_CREAT_TERRAINEDIT	= 0x0000000000800000L;
+	public static final	long	PERM_PUT2CHEST			= 0x0000000001000000L;
+	public static final	long	PERM_GETFROMCHEST		= 0x0000000002000000L;
+//	public static final	long	PERM_CHESTDROP			= 0x0000000002000000L;
+	public static final	long	PERM_DOORINTERACT		= 0x0000000004000000L;
+	public static final	long	PERM_FURNACEINTERACT	= 0x0000000008000000L;
+	public static final	long	PERM_OTHERINTERACT		= 0x0000000010000000l;
+	public static final	long	PERM_EXPLOSION			= 0x0000000020000000l;
+	public static final	long	PERM_BIT30				= 0x0000000020000000l;
+	public static final	long	PERM_ADDPLAYER			= 0x4000000000000000L;
+	public static final	long	PERM_OWNER				= 0x8000000000000000L;
+	public static final	long	PERM_ALL					= 0xFFFFFFFFFFFFFFFFL;
+	public static final	long	PERM_DEFAULT			= (PERM_ENTER | PERM_LEAVE);
 	// to convert a permission index (0 - 31) into the corresponding bit flag;
-	public static final		long[]		permIdx2bit	=
+	public static final	long[]		permIdx2bit	=
 	{
 		PERM_ENTER,				PERM_LEAVE,				PERM_PLACEBLOCKS,		PERM_DESTROYBLOCKS,
 		PERM_PLACECONSTR,		PERM_REMOVECONSTR,		PERM_DESTROYCONSTR,		PERM_PLACEOBJECTS,
@@ -101,12 +101,12 @@ public class AreaProtection extends Plugin
 		PERM_OTHERINTERACT,		PERM_EXPLOSION,			PERM_ADDPLAYER,			PERM_OWNER
 	};
 	// player attribute keys
-	public static final		String		key_areas			= "com.mwr.apAreas";	// the areas the player has special permission for
-	public static final		String		key_areaPerms		= "com.mwr.apPerms";	// the cumulated permissions the player has at the moment
-	public static final		String		key_areasShown		= "com.mwr.apShown";	// whether areas are shown or not for the player
-	public static final		String		key_areasText		= "com.mwr.apText";		// the names of the areas the player is in
-	public static final		String		key_inAreas			= "com.mwr.apInAreas";	// the areas the player is in at the moment
-	public static final		String		key_isAdmin			= "com.mwr.apIsAdmin";	// whether the player is admin or manager
+	public static final	String	key_areas			= "com.mwr.apAreas";	// the areas the player has special permission for
+	public static final	String	key_areaPerms		= "com.mwr.apPerms";	// the cumulated permissions the player has at the moment
+	public static final	String	key_areasShown		= "com.mwr.apShown";	// whether areas are shown or not for the player
+	public static final	String	key_areasText		= "com.mwr.apText";		// the names of the areas the player is in
+	public static final	String	key_inAreas			= "com.mwr.apInAreas";	// the areas the player is in at the moment
+	public static final	String	key_isAdmin			= "com.mwr.apIsAdmin";	// whether the player is admin or manager
 
 	// The default values for the settings
 	private static final	boolean		adminNoPrivDef		= false;
@@ -187,6 +187,15 @@ public class AreaProtection extends Plugin
 		mainMenu.show(player);
 	}
 
+	/**
+	 * Returns the version for this plug-in (conforms to the PluginCentral 2 interface).
+	 * @return the plug-in version as an int.
+	 */
+	public int version()
+	{
+		return VERSION_INT;
+	}
+
 	//********************
 	// PUBLIC METHODS
 	//********************
@@ -247,11 +256,11 @@ public class AreaProtection extends Plugin
 	 * is in the area point with min x,y,z coordinates and the ending point in the area
 	 * point with max x,y,z coordinates.
 	 * <p>The area span is not changed in any way, but the starting and ending point may be moved.
-	 * <p>Needed to circumvent a bug in Area.rearrange().
+	 * <p>Originally needed to circumvent a bug in Area.rearrange(), which seems now fixed.
 	 * @param	area	the area to rearrange.
 	 * @return	true if coordinates have been rearranged | false if not.
 	 */
-	public static boolean rearrangeArea(Area area)
+/*	public static boolean rearrangeArea(Area area)
 	{
 		boolean		arrange	= false;
 		Vector3f	from	= new Vector3f();
@@ -295,7 +304,31 @@ public class AreaProtection extends Plugin
 		}
 
 		return arrange;
-	}
+	}*/
+
+	/**
+	 * Returns true if areaA and areaB intersect or false otherwise.
+	 * <p>Needed to circumvent a bug in Area.intersect(Area).
+	 * @param	areaA	one area
+	 * @param	areaB	another area
+	 * @return	true if areaA and areaB intersect, false if they do not.
+	 */
+	public static boolean areaIntersects(final Area areaA, final Area areaB)
+	{
+// areas are already rearranged on creation
+//		areaA.rearrange();
+//		areaB.rearrange();
+		Vector3f	startA	= ChunkUtils.getGlobalPosition(areaA.getStartChunkPosition(), areaA.getStartBlockPosition());
+		Vector3f	endA	= ChunkUtils.getGlobalPosition(areaA.getEndChunkPosition(),   areaA.getEndBlockPosition());
+		Vector3f	startB	= ChunkUtils.getGlobalPosition(areaB.getStartChunkPosition(), areaB.getStartBlockPosition());
+		Vector3f	endB	= ChunkUtils.getGlobalPosition(areaB.getEndChunkPosition(),   areaB.getEndBlockPosition());
+		return (((startA.x >= startB.x && startA.x <= endB.x) || (endA.x >= startB.x && endA.x <= endB.x) ||
+						(startB.x >= startA.x && startB.x <= endA.x) || (endB.x >= startA.x && endB.x <= endA.x)) &&
+				((startA.y >= startB.y && startA.y <= endB.y) || (endA.y >= startB.y && endA.y <= endB.y) ||
+						(startB.y >= startA.y && startB.y <= endA.y) || (endB.y >= startA.y && endB.y <= endA.y)) &&
+				((startA.z >= startB.z && startA.z <= endB.z) || (endA.z >= startB.z && endA.z <= endB.z) ||
+						(startB.z >= startA.z && startB.z <= endA.z) || (endB.z >= startA.z && endB.z <= endA.z)));
+    }
 
 	/**
 	 * Returns the 3D coordinates of the centre of an RW area as a String.

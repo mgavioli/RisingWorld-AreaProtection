@@ -36,54 +36,55 @@ public class Msgs
 	// Main menu texts
 	public static final int	gui_title				=  0;
 	public static final int	gui_showAreas			=  1;
-	public static final int	gui_newArea				=  2;
-	public static final int	gui_editArea				=  3;
-	public static final int	gui_deleteArea			=  4;
-	public static final int gui_chestAccess			=  5;
-	public static final int	gui_areaManagers		=  6;
-	public static final int	gui_adminsOff			=  7;
-	public static final int	gui_adminsOn			=  8;
+	public static final int	gui_hideAreas			=  2;
+	public static final int	gui_newArea				=  3;
+	public static final int	gui_editArea				=  4;
+	public static final int	gui_deleteArea			=  5;
+	public static final int gui_chestAccess			=  6;
+	public static final int	gui_areaManagers		=  7;
+	public static final int	gui_adminsOff			=  8;
+	public static final int	gui_adminsOn			=  9;
 	// Cardinal points
-	public static final int	gui_N					=  9;
-	public static final int	gui_E					= 10;
-	public static final int	gui_S					= 11;
-	public static final int	gui_W					= 12;
+	public static final int	gui_N					= 10;
+	public static final int	gui_E					= 11;
+	public static final int	gui_S					= 12;
+	public static final int	gui_W					= 13;
 	// New area texts
-	public static final int	gui_areaKeys			= 13;
-	public static final int	gui_areaCentreFmt		= 14;
-	public static final int	gui_areaSpanFmt			= 15;
+	public static final int	gui_areaKeys			= 14;
+	public static final int	gui_areaCentreFmt		= 15;
+	public static final int	gui_areaSpanFmt			= 16;
 	// Area properties edit
-	public static final int	gui_editTitle			= 16;
-	public static final int	gui_editName			= 17;
-	public static final int	gui_editPermissGeneral	= 18;
-	public static final int	gui_editPermissSpecific	= 19;
-	public static final int	gui_editPermFirst		= 20;
-	public static final int	gui_editPermLastArea		= 49;	// last permission applicable to an area
-	public static final int	gui_editPermLastUser	= 51;	// last permission applicable to a user
+	public static final int	gui_editTitle			= 17;
+	public static final int	gui_editName			= 18;
+	public static final int	gui_editPermissGeneral	= 19;
+	public static final int	gui_editPermissSpecific	= 20;
+	public static final int	gui_editPermFirst		= 21;
+	public static final int	gui_editPermLastArea		= 50;	// last permission applicable to an area
+	public static final int	gui_editPermLastUser	= 52;	// last permission applicable to a user
 	// Other GUI texts
-	public static final int	gui_editeditPlayers		= 52;
-	public static final int	gui_editeditGroups		= 53;
-	public static final int	gui_notImplemented		= 54;
-	public static final	int	gui_specPermPlayersTitle= 55;
-	public static final	int	gui_specPermGroupsTitle	= 56;
-	public static final	int	gui_areaPlayerPermsTitle= 57;
-	public static final	int	gui_areaName			= 58;
-	public static final	int	gui_playerName			= 59;
-	public static final int	gui_editCreate			= 60;
-	public static final int	gui_editUpdate			= 61;
-	public static final int	gui_editAdd				= 62;
-	public static final int	gui_editDelete			= 63;
-	public static final int	gui_editEdit			= 64;
-	public static final int	gui_noOwnedArea			= 65;
-	public static final int	gui_customPerms			= 66;
-	public static final	int	gui_selectPlayer		= 67;
-	public static final	int	gui_selectGroup			= 68;
-	public static final	int	gui_selectPreset		= 69;
-	public static final	int	gui_topAreaHeight		= 70;
-	public static final	int	gui_bottomAreaHeight	= 71;
-	public static final	int	gui_setToDefault		= 72;
+	public static final int	gui_editeditPlayers		= 53;
+	public static final int	gui_editeditGroups		= 54;
+	public static final int	gui_notImplemented		= 55;
+	public static final	int	gui_specPermPlayersTitle= 56;
+	public static final	int	gui_specPermGroupsTitle	= 57;
+	public static final	int	gui_areaPlayerPermsTitle= 58;
+	public static final	int	gui_areaName			= 59;
+	public static final	int	gui_playerName			= 60;
+	public static final int	gui_editCreate			= 61;
+	public static final int	gui_editUpdate			= 62;
+	public static final int	gui_editAdd				= 63;
+	public static final int	gui_editDelete			= 64;
+	public static final int	gui_editEdit			= 65;
+	public static final int	gui_noOwnedArea			= 66;
+	public static final int	gui_customPerms			= 67;
+	public static final	int	gui_selectPlayer		= 68;
+	public static final	int	gui_selectGroup			= 69;
+	public static final	int	gui_selectPreset		= 70;
+	public static final	int	gui_topAreaHeight		= 71;
+	public static final	int	gui_bottomAreaHeight	= 72;
+	public static final	int	gui_setToDefault		= 73;
 	// Other menu title
-	public static final int	gui_selectArea			= 73;
+	public static final int	gui_selectArea			= 74;
 
 	private static final int	LAST_TEXT	= gui_selectArea;
 
@@ -93,7 +94,8 @@ public class Msgs
 	public static String[]		msg = {
 			// Main menu texts
 			"Area Protection",							// 0
-			"Show/Hide areas",
+			"Show areas",
+			"Hide areas",
 			"New area",
 			"Edit area",
 			"Delete area",
@@ -102,8 +104,8 @@ public class Msgs
 			"Admin priv. OFF",
 			"Admin priv. ON",
 			// Cardinal points
-			"N",
-			"E",										// 10
+			"N",										// 10
+			"E",
 			"S",
 			"W",
 			// New area texts
@@ -114,9 +116,9 @@ public class Msgs
 			"Area Properties",
 			"Name:",
 			"Generic Area Permissions:",
-			"Specific Area Permissions:",
+			"Specific Area Permissions:",				// 20
 			// Property names
-			"Enter area",								// 20
+			"Enter area",
 			"Leave area",
 			"Place blocks",
 			"Destroy blocks",
@@ -125,8 +127,8 @@ public class Msgs
 			"Destroy constructions",
 			"Place objects",
 			"Remove objects",
-			"Destroy objects",
-			"Place terrain",							// 30
+			"Destroy objects",							// 30
+			"Place terrain",
 			"Destroy terrain",
 			"Place vegetation",
 			"Remove vegetation",
@@ -135,8 +137,8 @@ public class Msgs
 			"Remove grass",
 			"Place water",
 			"Remove water",
-			"Create blueprint",
-			"Place blueprint",							// 40
+			"Create blueprint",							// 40
+			"Place blueprint",
 			"Place block (creative)",
 			"Place vegetation (creative)",
 			"Edit terrain (creative)",
@@ -145,8 +147,8 @@ public class Msgs
 			"Door interaction",
 			"Furnace interaction",
 			"Other interaction",
-			"Explosions",
-			"Can add players",							// 50
+			"Explosions",								// 50
+			"Can add players",
 			"Owner",
 			// other GUI texts
 			"Edit Players",
@@ -156,8 +158,8 @@ public class Msgs
 			"Groups with special permissions",
 			"Player/Group Permissions for Area",
 			"Area Name:",
-			"Player/Group Name:",
-			"\n CREATE \n ",							// 60
+			"Player/Group Name:",						// 60
+			"\n CREATE \n ",
 			"\n UPDATE \n ",
 			"\n ADD \n ",
 			"\n DELETE \n ",
@@ -166,8 +168,8 @@ public class Msgs
 			"Custom",
 			"Select a player:",
 			"Select a group:",
-			"Select a preset:",
-			"Top Height",								// 70
+			"Select a preset:",							// 70
+			"Top Height",
 			"Bottom Height",
 			"Set to default",
 			// other menu titles

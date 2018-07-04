@@ -726,7 +726,8 @@ public class Db
 		for (ProtArea area : areas.values())
 		{
 			// if the current area contains the point...
-			if (area.intersects(boundArea))
+//			if (area.intersects(boundArea))
+			if (AreaProtection.areaIntersects(area, boundArea))
 			{
 				// ..check the player has special permissions to the area
 				if ( (aPerm=playerPerms.get(area.id)) == null)

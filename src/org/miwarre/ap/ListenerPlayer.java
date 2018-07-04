@@ -61,6 +61,7 @@ import net.risingworld.api.events.world.ExplosionEvent;
 import net.risingworld.api.gui.GuiLabel;
 import net.risingworld.api.gui.PivotPosition;
 import net.risingworld.api.objects.Player;
+import net.risingworld.api.objects.WorldItem;
 import net.risingworld.api.utils.Definitions.ObjectDefinition;
 import net.risingworld.api.utils.Vector3f;
 
@@ -364,7 +365,10 @@ public class ListenerPlayer implements Listener
 	@EventMethod
 	public void onExplosion(ExplosionEvent event)
 	{
-		Player	player	= event.getRelatedItem().getRelatedPlayer();
+		Player		player	= null;
+		WorldItem	item	= event.getRelatedItem();
+		if (item != null)
+			player			= item.getRelatedPlayer();
 		if (player != null &&
 				(Db.getPlayerPermissionsForPoint(player, event.getPosition()) & AreaProtection.PERM_EXPLOSION) == 0)
 			event.setCancelled(true);

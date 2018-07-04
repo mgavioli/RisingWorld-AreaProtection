@@ -55,7 +55,8 @@ public class GuiMainMenu extends GuiMenu
 	//
 	// FIELDS
 	//
-	private GuiLabel		adminMenuItem;
+//	private final	GuiLabel	hideShowMenuItem;
+//	private			GuiLabel	adminMenuItem;
 
 	public GuiMainMenu(Player player)
 	{
@@ -65,7 +66,8 @@ public class GuiMainMenu extends GuiMenu
 		// create and set the callback
 		setCallback(new MenuHandler());
 		// add the common menu items
-		addTextItem(Msgs.msg[Msgs.gui_showAreas],	MENU_SHOWAREAS_ID, null);
+		addTextItem(Msgs.msg[(boolean)player.getAttribute(AreaProtection.key_areasShown) ?
+				Msgs.gui_hideAreas : Msgs.gui_showAreas], MENU_SHOWAREAS_ID, null);
 		addTextItem(Msgs.msg[Msgs.gui_editArea],	MENU_EDITAREA_ID, null);
 		// add the admin-specific menu items, if required
 		if ( (Boolean)player.getAttribute(AreaProtection.key_isAdmin) || !AreaProtection.adminOnly)
@@ -76,7 +78,7 @@ public class GuiMainMenu extends GuiMenu
 			if (player.isAdmin())
 			{
 				addTextItem(Msgs.msg[Msgs.gui_areaManagers],MENU_AREAMANAGERS_ID,	null);
-				adminMenuItem	= addTextItem(Msgs.msg[AreaProtection.adminNoPriv ?
+				addTextItem(Msgs.msg[AreaProtection.adminNoPriv ?
 						Msgs.gui_adminsOn : Msgs.gui_adminsOff],MENU_ADMINSACCESS_ID,	null);
 			}
 		}
@@ -97,7 +99,10 @@ public class GuiMainMenu extends GuiMenu
 			switch (id)
 			{
 			case MENU_SHOWAREAS_ID:
-				AreaProtection.togglePlayerAreas(player);
+				boolean	show	= AreaProtection.togglePlayerAreas(player);
+				GuiLabel	menuItem	= (GuiLabel)getChildFromId(MENU_SHOWAREAS_ID);
+				if (menuItem != null)
+					menuItem.setText(Msgs.msg[show ? Msgs.gui_hideAreas : Msgs.gui_showAreas]);
 				break;
 			case MENU_NEWAREA_ID:
 				pop(player);		// dismiss the menu; the other choices keep it for further commands
@@ -134,9 +139,9 @@ public class GuiMainMenu extends GuiMenu
 				// flip admin privileges
 				AreaProtection.adminNoPriv = !AreaProtection.adminNoPriv;
 				// update menu item text
-				if (adminMenuItem != null)
-					adminMenuItem.setText(Msgs.msg[AreaProtection.adminNoPriv ?
-						Msgs.gui_adminsOn : Msgs.gui_adminsOff]);
+				menuItem	= (GuiLabel)getChildFromId(MENU_ADMINSACCESS_ID);
+				if (menuItem != null)
+					menuItem.setText(Msgs.msg[AreaProtection.adminNoPriv ? Msgs.gui_adminsOn : Msgs.gui_adminsOff]);
 				break;
 			}
 		}
