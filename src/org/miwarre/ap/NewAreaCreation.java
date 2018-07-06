@@ -36,7 +36,7 @@ import net.risingworld.api.utils.Vector3f;
 import net.risingworld.api.utils.Utils.ChunkUtils;
 import org.miwarre.ap.gui.*;
 
-public class NewAreaCreation extends Thread implements Listener
+class NewAreaCreation extends Thread implements Listener
 {
 	// CONSTANTS
 	private static final	int		AREASELECT_ID		= 1;

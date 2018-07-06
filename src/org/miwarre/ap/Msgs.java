@@ -28,70 +28,70 @@ import java.util.Properties;
 /**
  * The localisable texts for the plug-in.
  */
-public class Msgs
+class Msgs
 {
 	//
 	// The ID's of the texts
 	//
 	// Main menu texts
-	public static final int	gui_title				=  0;
-	public static final int	gui_showAreas			=  1;
-	public static final int	gui_hideAreas			=  2;
-	public static final int	gui_newArea				=  3;
-	public static final int	gui_editArea				=  4;
-	public static final int	gui_deleteArea			=  5;
-	public static final int gui_chestAccess			=  6;
-	public static final int	gui_areaManagers		=  7;
-	public static final int	gui_adminsOff			=  8;
-	public static final int	gui_adminsOn			=  9;
+	static final int	gui_title				=  0;
+	static final int	gui_showAreas			=  1;
+	static final int	gui_hideAreas			=  2;
+	static final int	gui_newArea				=  3;
+	static final int	gui_editArea				=  4;
+	static final int	gui_deleteArea			=  5;
+	static final int gui_chestAccess			=  6;
+	static final int	gui_areaManagers		=  7;
+	static final int	gui_adminsOff			=  8;
+	static final int	gui_adminsOn			=  9;
 	// Cardinal points
-	public static final int	gui_N					= 10;
-	public static final int	gui_E					= 11;
-	public static final int	gui_S					= 12;
-	public static final int	gui_W					= 13;
+	static final int	gui_N					= 10;
+	static final int	gui_E					= 11;
+	static final int	gui_S					= 12;
+	static final int	gui_W					= 13;
 	// New area texts
-	public static final int	gui_areaKeys			= 14;
-	public static final int	gui_areaCentreFmt		= 15;
-	public static final int	gui_areaSpanFmt			= 16;
+	static final int	gui_areaKeys			= 14;
+	static final int	gui_areaCentreFmt		= 15;
+	static final int	gui_areaSpanFmt			= 16;
 	// Area properties edit
-	public static final int	gui_editTitle			= 17;
-	public static final int	gui_editName			= 18;
-	public static final int	gui_editPermissGeneral	= 19;
-	public static final int	gui_editPermissSpecific	= 20;
-	public static final int	gui_editPermFirst		= 21;
-	public static final int	gui_editPermLastArea		= 50;	// last permission applicable to an area
-	public static final int	gui_editPermLastUser	= 52;	// last permission applicable to a user
+	static final int	gui_editTitle			= 17;
+	static final int	gui_editName			= 18;
+	static final int	gui_editPermissGeneral	= 19;
+	static final int	gui_editPermissSpecific	= 20;
+	static final int	gui_editPermFirst		= 21;
+	static final int	gui_editPermLastArea		= 50;	// last permission applicable to an area
+	static final int	gui_editPermLastUser	= 52;	// last permission applicable to a user
 	// Other GUI texts
-	public static final int	gui_editeditPlayers		= 53;
-	public static final int	gui_editeditGroups		= 54;
-	public static final int	gui_notImplemented		= 55;
-	public static final	int	gui_specPermPlayersTitle= 56;
-	public static final	int	gui_specPermGroupsTitle	= 57;
-	public static final	int	gui_areaPlayerPermsTitle= 58;
-	public static final	int	gui_areaName			= 59;
-	public static final	int	gui_playerName			= 60;
-	public static final int	gui_editCreate			= 61;
-	public static final int	gui_editUpdate			= 62;
-	public static final int	gui_editAdd				= 63;
-	public static final int	gui_editDelete			= 64;
-	public static final int	gui_editEdit			= 65;
-	public static final int	gui_noOwnedArea			= 66;
-	public static final int	gui_customPerms			= 67;
-	public static final	int	gui_selectPlayer		= 68;
-	public static final	int	gui_selectGroup			= 69;
-	public static final	int	gui_selectPreset		= 70;
-	public static final	int	gui_topAreaHeight		= 71;
-	public static final	int	gui_bottomAreaHeight	= 72;
-	public static final	int	gui_setToDefault		= 73;
+	static final int	gui_editeditPlayers		= 53;
+	static final int	gui_editeditGroups		= 54;
+	static final int	gui_notImplemented		= 55;
+	static final	int	gui_specPermPlayersTitle= 56;
+	static final	int	gui_specPermGroupsTitle	= 57;
+	static final	int	gui_areaPlayerPermsTitle= 58;
+	static final	int	gui_areaName			= 59;
+	static final	int	gui_playerName			= 60;
+	static final int	gui_editCreate			= 61;
+	static final int	gui_editUpdate			= 62;
+	static final int	gui_editAdd				= 63;
+	static final int	gui_editDelete			= 64;
+	static final int	gui_editEdit			= 65;
+	static final int	gui_noOwnedArea			= 66;
+	static final int	gui_customPerms			= 67;
+	static final	int	gui_selectPlayer		= 68;
+	static final	int	gui_selectGroup			= 69;
+	static final	int	gui_selectPreset		= 70;
+	static final	int	gui_topAreaHeight		= 71;
+	static final	int	gui_bottomAreaHeight	= 72;
+	static final	int	gui_setToDefault		= 73;
 	// Other menu title
-	public static final int	gui_selectArea			= 74;
+	static final int	gui_selectArea			= 74;
 
 	private static final int	LAST_TEXT	= gui_selectArea;
 
 	//
 	// The default built-in texts, used as fall-back if no message file is found.
 	//
-	public static String[]		msg = {
+	static String[]		msg = {
 			// Main menu texts
 			"Area Protection",							// 0
 			"Show areas",
@@ -185,7 +185,7 @@ public class Msgs
 	 * @param locale	the locale to load texts for.
 	 * @return			true: success | false: failure (built-in texts are used)
 	 */
-	public static boolean init(String path, Locale locale)
+	static boolean init(String path, Locale locale)
 	{
 		if (locale == null)
 			return false;

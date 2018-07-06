@@ -26,7 +26,7 @@ import org.miwarre.ap.gui.GuiDefs;
 import org.miwarre.ap.gui.GuiMenu;
 import net.risingworld.api.objects.Player;
 
-public class GuiAreaList extends GuiMenu
+class GuiAreaList extends GuiMenu
 {
 	private static final	int			MAX_NUM_OF_MENULINES	= 25;
 	private final	GuiDefs.GuiCallback	callback;

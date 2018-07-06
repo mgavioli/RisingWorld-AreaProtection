@@ -31,13 +31,13 @@ import net.risingworld.api.gui.GuiLabel;
  * <p>It is intended to be used as part of a large GuiModalwindow.
  * <p>Permissions can be masked out to restrict editing to some permissions only.
  */
-public class GuiAreaPerms extends GuiGroupStatic
+class GuiAreaPerms extends GuiGroupStatic
 {
 	// Constants
 	private static final	int		PERMS_PER_ROW			= 2;
-	public static final		int		NUM_OF_AREAPERMS		= (Msgs.gui_editPermLastArea - Msgs.gui_editPermFirst + 1);
+	        static final	int		NUM_OF_AREAPERMS		= (Msgs.gui_editPermLastArea - Msgs.gui_editPermFirst + 1);
 	private static final	int		AREAPERMS_PER_COLUMN	= ( (NUM_OF_AREAPERMS + 1) / PERMS_PER_ROW);
-	public static final		int		NUM_OF_PLAYERPERMS		= (Msgs.gui_editPermLastUser - Msgs.gui_editPermFirst + 1);
+	        static final	int		NUM_OF_PLAYERPERMS		= (Msgs.gui_editPermLastUser - Msgs.gui_editPermFirst + 1);
 	private static final	int		PLAYERPERMS_PER_COLUMN	= ( (NUM_OF_PLAYERPERMS + 1) / PERMS_PER_ROW);
 	
 	
@@ -49,10 +49,10 @@ public class GuiAreaPerms extends GuiGroupStatic
 	private static final	int		NAME_WIDTH		= 200;
 	private static final	int		COLUMN_WIDTH	= NAME_X + NAME_WIDTH + GuiDefs.DEFAULT_PADDING;
 	// Control positions X: the total panel width
-	public static final		int		PANEL_WIDTH		= COLUMN_WIDTH * PERMS_PER_ROW;
+	        static final	int		PANEL_WIDTH		= COLUMN_WIDTH * PERMS_PER_ROW;
 
 	// Control positions Y: the total panel height (always allow for the max number of permissions)
-	public static final		int		PANEL_HEIGHT	=
+	        static final	int		PANEL_HEIGHT	=
 			GuiDefs.ITEM_SIZE + GuiDefs.DEFAULT_PADDING +							// heading height w/ its padding below
 			PLAYERPERMS_PER_COLUMN * (GuiDefs.ITEM_SIZE + GuiDefs.DEFAULT_PADDING);	// num. rows * row hgt
 
@@ -127,9 +127,9 @@ public class GuiAreaPerms extends GuiGroupStatic
 		setSize(PANEL_WIDTH, PANEL_HEIGHT, false);
 	}
 
-	public long	getPermissions()	{ return permissions;  }
+	long	getPermissions()	{ return permissions;  }
 
-	public boolean togglePermission(int index)
+	boolean togglePermission(int index)
 	{
 		long	permToggle	= AreaProtection.permIdx2bit[index];
 		permissions	^= permToggle;

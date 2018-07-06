@@ -34,7 +34,7 @@ import net.risingworld.api.objects.Player;
  * A Dialogue Box to manage the players or groups associated to an area.
  * <p>Relies on GuiDefs.GuiModalWindow.
  */
-public class GuiPlayersEdit extends GuiModalWindow
+class GuiPlayersEdit extends GuiModalWindow
 {
 	//
 	// CONSTANTS

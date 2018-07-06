@@ -116,7 +116,7 @@ public class GuiDefs
 			return ERR_INVALID_PARAMETER;
 		if (stockIcons[iconId] == null)
 		{
-			stockIcons[iconId]	= new ImageInformation(AreaProtection.plugin.getPath() + stockIconPaths[iconId]);
+			stockIcons[iconId]	= new ImageInformation(AreaProtection.getPluginPath() + stockIconPaths[iconId]);
 		}
 		image.setImage(stockIcons[iconId]);
 		return ERR_SUCCESS;

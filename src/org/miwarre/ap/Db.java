@@ -62,9 +62,9 @@ public class Db
 	//
 	// Constants
 	//
-	public static final	int	LIST_TYPE_PLAYER	= 1;
-	public static final	int	LIST_TYPE_GROUP		= 2;
-	public static final	int	LIST_TYPE_MANAGERS	= 3;
+	static final	int	LIST_TYPE_PLAYER	= 1;
+	static final	int	LIST_TYPE_GROUP		= 2;
+	static final	int	LIST_TYPE_MANAGERS	= 3;
 	// Globals
 	private	static	Map<Integer,ProtArea>	areas		= null;
 			static	Map<Integer,String>		groupNames	= null;
@@ -654,7 +654,7 @@ public class Db
 	}
 
 	/**
-	 * Gets the player permission for an arbitrary point.
+	 * Gets the player permissions for an arbitrary point.
 	 * @param	player	the player to retrieve permissions for
 	 * @param	point	the point
 	 * @return	the player permission for the point.
@@ -699,6 +699,17 @@ public class Db
 		return cumulPerm;
 	}
 
+	/**
+	 * Gets the player permissions for an arbitrary 3D extent.
+	 * The returned value is the bitwise AND of the player permissions for all the areas
+	 * which intersect the 3D extent. In other words, it is the strictest set of permissions
+	 * available to the player everywhere in the extent; in some point of it, player
+	 * permissions can be wider, but they are never stricter.
+	 * @param	player	the player to retrieve permissions for
+	 * @param	bi		the 3D extent as a BoundingInformation (for instance, as returned
+	 *					by PlayerCreateBlueprintEvent.getBoundingInformation())
+	 * @return	the player permission for the extent.
+	 */
 	public static long getPlayerPermissionsForBounding(Player player, BoundingInformation bi)
 	{
 		// if admin AND admins are not demoted, return all permissions
@@ -754,7 +765,6 @@ public class Db
 	static boolean togglePlayerAreas(Player player)
 	{
 		boolean show	= !(boolean)player.getAttribute(AreaProtection.key_areasShown);
-		player.setAttribute(AreaProtection.key_areasShown, show);
 		if (show)
 			showAreasToPlayer(player);
 		else
@@ -764,12 +774,14 @@ public class Db
 
 	static void showAreasToPlayer(Player player)
 	{
+		player.setAttribute(AreaProtection.key_areasShown, true);
 		for (Map.Entry<Integer,ProtArea> entry : areas.entrySet())
 			showAreaToPlayer(player, entry.getValue());
 	}
 
 	static void hideAreasToPlayer(Player player)
 	{
+		player.setAttribute(AreaProtection.key_areasShown, false);
 		for (Map.Entry<Integer,ProtArea> entry : areas.entrySet())
 		{
 			ProtArea	area	= entry.getValue();
@@ -894,34 +906,37 @@ public class Db
 			}
 		);
 
-		// merge group list with groups in DB
-		for (int i = 0; i < rwGroups.length; i++)
-		{
-			// remove the ".permissions" extension from file names
-			String	name	= rwGroups[i].substring(0, rwGroups[i].length()-12);
-			Integer	id		= dbGroups.get(name);
-			if (id == null)				// such a perm. group not know yet: add to DB
+		if (rwGroups != null)						// may be null if the plug-in is run on the Single Player
+		{											// which has no "permissions/groups" folder
+			// merge group list with groups in DB
+			for (int i = 0; i < rwGroups.length; i++)
 			{
-				try(PreparedStatement stmt	= db.getConnection().prepareStatement(
-						"INSERT INTO `perm_groups` (name) VALUES (?)")
-				)
+				// remove the ".permissions" extension from file names
+				String	name	= rwGroups[i].substring(0, rwGroups[i].length()-12);
+				Integer	id		= dbGroups.get(name);
+				if (id == null)				// such a perm. group not know yet: add to DB
 				{
-					stmt.setString(1, name);
-					stmt.executeUpdate();
-					try (ResultSet idSet = stmt.getGeneratedKeys())
+					try(PreparedStatement stmt	= db.getConnection().prepareStatement(
+							"INSERT INTO `perm_groups` (name) VALUES (?)")
+					)
 					{
-						if (idSet.next())
-							id	= idSet.getInt(1);
+						stmt.setString(1, name);
+						stmt.executeUpdate();
+						try (ResultSet idSet = stmt.getGeneratedKeys())
+						{
+							if (idSet.next())
+								id	= idSet.getInt(1);
+						}
+					} catch (SQLException e)
+					{
+						e.printStackTrace();
 					}
-				} catch (SQLException e)
-				{
-					e.printStackTrace();
 				}
-			}
-			if (id != null)
-			{
-				groupNames.put(i, name);
-				groupIds.put(name, i);
+				if (id != null)
+				{
+					groupNames.put(i, name);
+					groupIds.put(name, i);
+				}
 			}
 		}
 	}

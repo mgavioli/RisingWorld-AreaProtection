@@ -31,7 +31,7 @@ import net.risingworld.api.utils.Utils;
 import net.risingworld.api.utils.Vector3f;
 import net.risingworld.api.utils.Vector3i;
 
-public class GuiAreaEdit extends GuiModalWindow
+class GuiAreaEdit extends GuiModalWindow
 {
 	// some general dimensions
 	private static final	int		NAME_TXT_WIDTH	= 300;

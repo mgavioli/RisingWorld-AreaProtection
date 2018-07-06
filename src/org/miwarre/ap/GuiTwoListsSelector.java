@@ -32,7 +32,7 @@ import net.risingworld.api.gui.GuiLabel;
 import net.risingworld.api.gui.PivotPosition;
 import net.risingworld.api.objects.Player;
 
-public class GuiTwoListsSelector extends GuiModalWindow
+class GuiTwoListsSelector extends GuiModalWindow
 {
 	//
 	// CONSTANTS
@@ -68,7 +68,7 @@ public class GuiTwoListsSelector extends GuiModalWindow
 	// PUBLIC METHODS
 	//********************
 
-	public String getSelectedItemText(boolean list1)
+	String getSelectedItemText(boolean list1)
 	{
 		String	selected	= (list1 ? selText1 : selText2);
 		if (selected != null && selected.length() > 0)
@@ -77,7 +77,7 @@ public class GuiTwoListsSelector extends GuiModalWindow
 			return null;
 	}
 
-	public Integer getSelectedItemId(boolean list1)
+	Integer getSelectedItemId(boolean list1)
 	{
 		Integer	selected	= (list1 ? selId1 : selId2);
 		return selected;

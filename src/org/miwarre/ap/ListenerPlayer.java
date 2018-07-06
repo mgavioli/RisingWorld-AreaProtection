@@ -68,7 +68,7 @@ import net.risingworld.api.utils.Vector3f;
 /**
  * Manages events for the plug-in.
  */
-public class ListenerPlayer implements Listener
+class ListenerPlayer implements Listener
 {
 	// Constants
 	public static final		int			INFO_FONT_SIZE	= 16;
@@ -85,9 +85,7 @@ public class ListenerPlayer implements Listener
 
 	public static ListenerPlayer getInstance()		{	return ourInstance;	}
 
-	private ListenerPlayer()
-	{
-	}
+	private ListenerPlayer()						{	}
 
 	//********************
 	// EVENTS

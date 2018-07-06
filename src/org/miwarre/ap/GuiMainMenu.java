@@ -37,7 +37,7 @@ import net.risingworld.api.objects.Player;
  * The plug-in main menu. It is the main UI entry point for the plug-in.
  * <p>Relies on gui/GuiMenu.
  */
-public class GuiMainMenu extends GuiMenu
+class GuiMainMenu extends GuiMenu
 {
 	//
 	// CONSTANTS

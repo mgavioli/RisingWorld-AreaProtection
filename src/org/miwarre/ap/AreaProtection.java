@@ -40,10 +40,10 @@ import net.risingworld.api.utils.Utils.ChunkUtils;
 public class AreaProtection extends Plugin
 {
 	// Constants
-	public static final	String	version				= "0.11.0";
-	public static final int		VERSION_INT			= 001100;
-	public static final	String	publicName			= "Area Protection";
-	public static final	int		AREAMANAGER_AREAID	= -1;
+	static final	String	version				= "0.11.0";
+	static final int		VERSION_INT			= 001100;
+	static final	String	publicName			= "Area Protection";
+	static final	int		AREAMANAGER_AREAID	= -1;
 	// Some common return codes
 	public static final	int		ERR_SUCCESS			= 0;
 	public static final	int		ERR_INVALID_ARG		= -1;
@@ -89,7 +89,7 @@ public class AreaProtection extends Plugin
 	public static final	long	PERM_ALL					= 0xFFFFFFFFFFFFFFFFL;
 	public static final	long	PERM_DEFAULT			= (PERM_ENTER | PERM_LEAVE);
 	// to convert a permission index (0 - 31) into the corresponding bit flag;
-	public static final	long[]		permIdx2bit	=
+	static final	long[]		permIdx2bit	=
 	{
 		PERM_ENTER,				PERM_LEAVE,				PERM_PLACEBLOCKS,		PERM_DESTROYBLOCKS,
 		PERM_PLACECONSTR,		PERM_REMOVECONSTR,		PERM_DESTROYCONSTR,		PERM_PLACEOBJECTS,
@@ -101,39 +101,39 @@ public class AreaProtection extends Plugin
 		PERM_OTHERINTERACT,		PERM_EXPLOSION,			PERM_ADDPLAYER,			PERM_OWNER
 	};
 	// player attribute keys
-	public static final	String	key_areas			= "com.mwr.apAreas";	// the areas the player has special permission for
-	public static final	String	key_areaPerms		= "com.mwr.apPerms";	// the cumulated permissions the player has at the moment
-	public static final	String	key_areasShown		= "com.mwr.apShown";	// whether areas are shown or not for the player
-	public static final	String	key_areasText		= "com.mwr.apText";		// the names of the areas the player is in
-	public static final	String	key_inAreas			= "com.mwr.apInAreas";	// the areas the player is in at the moment
-	public static final	String	key_isAdmin			= "com.mwr.apIsAdmin";	// whether the player is admin or manager
+	static final	String	key_areas			= "com.mwr.apAreas";	// the areas the player has special permission for
+	static final	String	key_areaPerms		= "com.mwr.apPerms";	// the cumulated permissions the player has at the moment
+	static final	String	key_areasShown		= "com.mwr.apShown";	// whether areas are shown or not for the player
+	static final	String	key_areasText		= "com.mwr.apText";		// the names of the areas the player is in
+	static final	String	key_inAreas			= "com.mwr.apInAreas";	// the areas the player is in at the moment
+	static final	String	key_isAdmin			= "com.mwr.apIsAdmin";	// whether the player is admin or manager
 
 	// The default values for the settings
-	private static final	boolean		adminNoPrivDef		= false;
-	private static final	boolean		adminOnlyDef		= true;
-	private static final	int			heightTopDef		= 400;
-	private static final	int			heightBottomDef		= -600;
-	private static final	int			infoBkgColourDef	= 0xE0E0A0E0;
-	private static final	int			infoFontColourDef	= 0x000000FF;
-	private static final	int			infoXPosDef			= 20;
-	private static final	int			infoYPosDef			= 70;
-	private static final	String		localeLanguageDef	= "en";
+	static final	boolean		adminNoPrivDef		= false;
+	static final	boolean		adminOnlyDef		= true;
+	static final	int			heightTopDef		= 400;
+	static final	int			heightBottomDef		= -600;
+	static final	int			infoBkgColourDef	= 0xE0E0A0E0;
+	static final	int			infoFontColourDef	= 0x000000FF;
+	static final	int			infoXPosDef			= 20;
+	static final	int			infoYPosDef			= 70;
+	static final	String		localeLanguageDef	= "en";
 
 	// FIELDS
 	//
-	protected static		boolean		adminNoPriv			= adminNoPrivDef;
-	protected static		boolean		adminOnly			= adminOnlyDef;
-	protected static		String		commandPrefix		= "/ap";
-	protected static		int			heightTop			= heightTopDef;
-	protected static		int			heightBottom		= heightBottomDef;
-	protected static		int			infoBkgColour		= infoBkgColourDef;
-	protected static		int			infoFontColour		= infoFontColourDef;
-	protected static		int			infoXPos			= infoXPosDef;
-	protected static		int			infoYPos			= infoYPosDef;
-	protected static		Locale		locale;
+	static	boolean		adminNoPriv			= adminNoPrivDef;
+	static	boolean		adminOnly			= adminOnlyDef;
+	static	String		commandPrefix		= "/ap";
+	static	int			heightTop			= heightTopDef;
+	static	int			heightBottom		= heightBottomDef;
+	static	int			infoBkgColour		= infoBkgColourDef;
+	static	int			infoFontColour		= infoFontColourDef;
+	static	int			infoXPos			= infoXPosDef;
+	static	int			infoYPos			= infoYPosDef;
+	static	Locale		locale;
 
-	public static			AreaProtection		plugin;
-	protected static		Map<String,Long>	presets;	
+	static	AreaProtection		plugin;
+	static	Map<String,Long>	presets;	
 
 	/**
 	 * Called by the API when the plug-in is enabled after being loaded.
@@ -166,8 +166,7 @@ public class AreaProtection extends Plugin
 	//*****************************
 
 	/**
-	 * Returns the human-readable name of this plug-in.
-	 * <p>Conform to the PluginCentral interface.
+	 * Returns the human-readable name of this plug-in (conforms to the PluginCentral interface).
 	 * @return	the plug-in human-readable name as a String.
 	 */
 	public String getPublicName()
@@ -176,9 +175,7 @@ public class AreaProtection extends Plugin
 	}
 
 	/**
-	 * Displays the main user interaction entry point for this plug-in
-	 * (GUI or not!).
-	 * <p>Conforms to the PluginCentral interface.
+	 * Displays the main user interaction entry point for this plug-in (GUI or not!) (conforms to the PluginCentral interface).
 	 * @param player	the player for whom to display the plug-in GUI.
 	 */
 	public void mainGui(Player player)
@@ -199,6 +196,11 @@ public class AreaProtection extends Plugin
 	//********************
 	// PUBLIC METHODS
 	//********************
+
+	public static String getPluginPath()
+	{
+		return plugin.getPath();
+	}
 
 	/**
 		Toggles on/off the area visibility for the player
@@ -512,7 +514,7 @@ PERM_OTHERINTERACT,PERM_OTHERINTERACT,			PERM_EXPLOSION,							PERM_ADDPLAYER,		
 							represents an int
 		@return	the equivalent int or defaultVal if txt cannot represent an integer.
 	*/
-	static protected int propertyToInt(Properties settings, String txt, int defaultVal)
+	static int propertyToInt(Properties settings, String txt, int defaultVal)
 	{
 		String	txtVal	= settings.getProperty(txt);
 		if (txtVal == null)

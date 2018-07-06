@@ -32,7 +32,7 @@ import net.risingworld.api.objects.Player;
 /**
  * A dialogue box to edit the permission given to a player for an area
  */
-public class GuiAreaPlayerEdit extends GuiModalWindow
+class GuiAreaPlayerEdit extends GuiModalWindow
 {
 	// Control positions: X
 	private static final	int		NAME_LBL_X		= 150;
