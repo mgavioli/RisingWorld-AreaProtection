@@ -23,6 +23,7 @@ package org.miwarre.ap;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import net.risingworld.api.Server;
 import net.risingworld.api.events.Cancellable;
 import net.risingworld.api.events.EventMethod;
 import net.risingworld.api.events.Listener;
@@ -31,6 +32,7 @@ import net.risingworld.api.events.player.PlayerConnectEvent;
 import net.risingworld.api.events.player.PlayerEnterAreaEvent;
 import net.risingworld.api.events.player.PlayerLeaveAreaEvent;
 import net.risingworld.api.events.player.PlayerObjectInteractionEvent;
+import net.risingworld.api.events.player.PlayerSpawnEvent;
 import net.risingworld.api.events.player.inventory.PlayerChestDropEvent;
 import net.risingworld.api.events.player.inventory.PlayerChestToInventoryEvent;
 import net.risingworld.api.events.player.inventory.PlayerInventoryToChestEvent;
@@ -98,20 +100,31 @@ class ListenerPlayer implements Listener
 	@EventMethod
 	public void onPlayerConnect(PlayerConnectEvent event)
 	{
-		Player	player	= event.getPlayer();
+//		System.out.println("Area Protection: PLAYER "+event.getPlayer().getName()+" CONNECTED!");
 		if (event.isNewPlayer())
 			Db.resetPlayers();
-		player.setAttribute(AreaProtection.key_areasShown, false);
-		// The label with the names of the areas
-		GuiLabel	info	= new GuiLabel("", AreaProtection.infoXPos, AreaProtection.infoYPos, false);
-		info.setColor(AreaProtection.infoBkgColour);
-		info.setFontColor(AreaProtection.infoFontColour);
-		info.setFontSize(INFO_FONT_SIZE);
-		info.setPivot(PivotPosition.BottomLeft);
-		player.addGuiElement(info);
-		player.setAttribute(AreaProtection.key_areasText, info);
-		Db.loadPlayer(player);
+		if (AreaProtection.plugin.getServer().getType() == Server.Type.DedicatedServer)
+		{
+			initPlayer(event.getPlayer());
+		}
 	}
+
+	/** Called by Rising World when the player spawns into a world after connecting.
+		Currently necessary, because PlayerConnectEvent's are not generated in Single
+		Play mode and area data of players would remain uninitialised.
+
+		@param	event	the spawn event
+	*/
+	@EventMethod
+	public void onPlayerSpawn(PlayerSpawnEvent event)
+	{
+//		System.out.println("Area Protection: PLAYER "+event.getPlayer().getName()+" SPAWNED!");
+		if (AreaProtection.plugin.getServer().getType() != Server.Type.DedicatedServer)
+		{
+			initPlayer(event.getPlayer());
+		}
+	}
+
 
 	/**	Called when the player issues a command ("/...") in the chat window
 	
@@ -144,6 +157,7 @@ class ListenerPlayer implements Listener
 	@EventMethod
 	public void onPlayerEnterArea(PlayerEnterAreaEvent event)
 	{
+//		System.out.println("Area Protection: PLAYER "+event.getPlayer().getName()+" ENTERED AN AREA!");
 		int	retVal	= Db.onPlayerArea(event.getPlayer(), event.getArea(), true);
 		if (retVal == AreaProtection.ERR_CANNOT_ENTER)
 			event.setCancelled(true);
@@ -384,5 +398,19 @@ class ListenerPlayer implements Listener
 		Long	perms	= (Long)player.getAttribute(AreaProtection.key_areaPerms);
 		if (perms != null && (perms & permissionFlag) == 0)
 			event.setCancelled(true);
+	}
+
+	private void initPlayer(Player player)
+	{
+		player.setAttribute(AreaProtection.key_areasShown, false);
+		// The label with the names of the areas
+		GuiLabel	info	= new GuiLabel("", AreaProtection.infoXPos, AreaProtection.infoYPos, false);
+		info.setColor(AreaProtection.infoBkgColour);
+		info.setFontColor(AreaProtection.infoFontColour);
+		info.setFontSize(INFO_FONT_SIZE);
+		info.setPivot(PivotPosition.BottomLeft);
+		player.addGuiElement(info);
+		player.setAttribute(AreaProtection.key_areasText, info);
+		Db.loadPlayer(player);
 	}
 }

@@ -31,7 +31,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -143,7 +142,7 @@ public class Db
 		// (exceptions are newly created areas which are at the end and will be sordet at next
 		// server and plug-in restart).
 		areas	= new LinkedHashMap<>();
-		initAreas();
+		initAreas(false);
 		initGroups();
 		AP3LUAImport();
 	}
@@ -321,9 +320,10 @@ public class Db
 				{
 					int	newId	= idSet.getInt(1);
 					area.id		= newId;
-					areas.put(newId, area);
+//					areas.put(newId, area);
 					AreaProtection.plugin.getServer().addArea(area);
 				}
+				initAreas(true);		// do not reinit server areas
 			}
 		} catch (SQLException e)
 		{
@@ -798,14 +798,14 @@ public class Db
 	static String getPlayerNameFromId(int playerId)
 	{
 		if (playerNames == null)
-			initPLayers();
+			initPlayers();
 		return playerNames.get(playerId);
 	}
 
 	static Set<Integer> getPlayerIdSet()
 	{
 		if (playerNames == null)
-			initPLayers();
+			initPlayers();
 		return playerNames.keySet();
 	}
 
@@ -829,10 +829,11 @@ public class Db
 	/**
 		Retrieves all the areas currently defined, add them to the server and caches them.
 	*/
-	private static void initAreas()
+	private static void initAreas(boolean reinit)
 	{
 		Server	server	= AreaProtection.plugin.getServer();
-		try(ResultSet result = db.executeQuery("SELECT * FROM `areas` ORDER BY `name`"))
+		areas.clear();
+		try(ResultSet result = db.executeQuery("SELECT * FROM `areas` ORDER BY `name` COLLATE NOCASE"))
 		{
 			while(result.next())
 			{
@@ -847,7 +848,8 @@ public class Db
 				String	name	= result.getString(9);
 				ProtArea	area	= new ProtArea(id, fromX, fromY, fromZ, toX, toY, toZ, name, perm);
 				areas.put(id, area);
-				server.addArea(area);
+				if (!reinit)
+					server.addArea(area);
 			}
 			result.close();
 		}
@@ -941,12 +943,12 @@ public class Db
 		}
 	}
 
-	private static void initPLayers()
+	private static void initPlayers()
 	{
-		playerNames	= new HashMap<>();
+		playerNames	= new LinkedHashMap<>();
 		// Query world data base for known players
 		WorldDatabase	worldDb = AreaProtection.plugin.getWorldDatabase();
-		try(ResultSet result = worldDb.executeQuery("SELECT `ID`,`Name` FROM `Player` ORDER BY `Name`ASC"))
+		try(ResultSet result = worldDb.executeQuery("SELECT `ID`,`Name` FROM `Player` ORDER BY `Name` COLLATE NOCASE"))
 		{
 			while(result.next())
 				playerNames.put(result.getInt(1), result.getString(2));

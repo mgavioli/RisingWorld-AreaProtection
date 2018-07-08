@@ -75,18 +75,20 @@ class Msgs
 	static final int	gui_editAdd				= 63;
 	static final int	gui_editDelete			= 64;
 	static final int	gui_editEdit			= 65;
-	static final int	gui_noOwnedArea			= 66;
-	static final int	gui_customPerms			= 67;
-	static final	int	gui_selectPlayer		= 68;
-	static final	int	gui_selectGroup			= 69;
-	static final	int	gui_selectPreset		= 70;
-	static final	int	gui_topAreaHeight		= 71;
-	static final	int	gui_bottomAreaHeight	= 72;
-	static final	int	gui_setToDefault		= 73;
+	static final int	gui_editKeep			= 66;
+	static final int	gui_noOwnedArea			= 67;
+	static final int	gui_customPerms			= 68;
+	static final	int	gui_selectPlayer		= 69;
+	static final	int	gui_selectGroup			= 70;
+	static final	int	gui_selectPreset		= 71;
+	static final	int	gui_topAreaHeight		= 72;
+	static final	int	gui_bottomAreaHeight	= 73;
+	static final	int	gui_setToDefault		= 74;
 	// Other menu title
-	static final int	gui_selectArea			= 74;
+	static final int	gui_selectArea			= 75;
+	static final int	gui_confirmAreaDelete	= 76;
 
-	private static final int	LAST_TEXT	= gui_selectArea;
+	private static final int	LAST_TEXT	= gui_confirmAreaDelete;
 
 	//
 	// The default built-in texts, used as fall-back if no message file is found.
@@ -164,16 +166,18 @@ class Msgs
 			"\n ADD \n ",
 			"\n DELETE \n ",
 			"\n EDIT \n ",
+			"\n KEEP \n",
 			"[You own no area]",
 			"Custom",
 			"Select a player:",
-			"Select a group:",
-			"Select a preset:",							// 70
+			"Select a group:",							// 70
+			"Select a preset:",
 			"Top Height",
 			"Bottom Height",
 			"Set to default",
 			// other menu titles
-			"Select an Area"
+			"Select an Area",
+			"Are you sure you want to delete the area:"
 	};
 
 	private static final	String		MSGS_FNAME	= "/locale/messages";
@@ -216,6 +220,7 @@ class Msgs
 		msg[gui_editAdd]		= "\n " + msg[gui_editAdd]    + " \n ";
 		msg[gui_editDelete]		= "\n " + msg[gui_editDelete] + " \n ";
 		msg[gui_editEdit]		= "\n " + msg[gui_editEdit]   + " \n ";
+		msg[gui_editKeep]		= "\n " + msg[gui_editKeep]   + " \n ";
 		return true;
 	}
 

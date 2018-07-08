@@ -29,6 +29,7 @@ import org.miwarre.ap.gui.GuiDefs;
 import org.miwarre.ap.gui.GuiDefs.GuiCallback;
 import org.miwarre.ap.gui.GuiMenu;
 import net.risingworld.api.objects.Player;
+import org.miwarre.ap.gui.GuiMessageBox;
 //import net.risingworld.api.utils.CollisionType;
 //import net.risingworld.api.utils.RayCastResult;
 //import net.risingworld.api.utils.Vector3f;
@@ -99,7 +100,7 @@ class GuiMainMenu extends GuiMenu
 			switch (id)
 			{
 			case MENU_SHOWAREAS_ID:
-				boolean	show	= AreaProtection.togglePlayerAreas(player);
+				boolean		show		= AreaProtection.togglePlayerAreas(player);
 				GuiLabel	menuItem	= (GuiLabel)getChildFromId(MENU_SHOWAREAS_ID);
 				if (menuItem != null)
 					menuItem.setText(Msgs.msg[show ? Msgs.gui_hideAreas : Msgs.gui_showAreas]);
@@ -179,12 +180,26 @@ class GuiMainMenu extends GuiMenu
 		@Override
 		public void onCall(Player player, int id, Object obj)
 		{
-			if (id != GuiDefs.ABORT_ID)
-				Db.deleteArea((ProtArea)obj);
+			push(player, new GuiMessageBox(AreaProtection.plugin, Msgs.msg[Msgs.gui_deleteArea],
+					new String[] {Msgs.msg[Msgs.gui_confirmAreaDelete], ((ProtArea)obj).getName()},
+					new String[] {Msgs.msg[Msgs.gui_editDelete], Msgs.msg[Msgs.gui_editKeep]},
+					obj,
+					new DeleteConfirmHandler()));
 		}
 	}
 
 	//
+	// Handles the call-backs from the delete confirmation message box
+	//
+	private class DeleteConfirmHandler implements GuiCallback
+	{
+		@Override
+		public void onCall(Player player, int id, Object obj)
+		{
+			if (id == GuiDefs.OK_ID)
+				Db.deleteArea((ProtArea)obj);
+		}
+	}
 	//
 	//
 /*	private class RaycastHandler implements Callback<RayCastResult>
