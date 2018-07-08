@@ -1034,19 +1034,6 @@ public class Db
 					continue;
 				// retrieve permissions corresponding to the group
 				Long	groupPerms	= LUAGroups.get(groupName);
-				// retrieve player name from DB ID
-//				String	playerName	= null;
-//				try(ResultSet result2 = worldDb.executeQuery("SELECT Name FROM `Player` WHERE ID = " +
-//						playerId))
-//				{
-//					if(result2.next())
-//						playerName	= result2.getString(1);
-//				}
-//				catch(SQLException e)
-//				{
-//					playerName	= null;
-//				}
-
 				if (groupPerms != null)
 					addPlayerToArea(area, playerId, groupPerms, LIST_TYPE_PLAYER);
 			}

@@ -40,8 +40,8 @@ import net.risingworld.api.utils.Utils.ChunkUtils;
 public class AreaProtection extends Plugin
 {
 	// Constants
-	static final	String	version				= "0.11.0";
-	static final int		VERSION_INT			= 001100;
+	static final	String	version				= "1.0.0";
+	static final int		VERSION_INT			= 010000;
 	static final	String	publicName			= "Area Protection";
 	static final	int		AREAMANAGER_AREAID	= -1;
 	// Some common return codes
@@ -220,7 +220,7 @@ public class AreaProtection extends Plugin
 	*/
 	public static long getPlayerPermissions(Player player)
 	{
-		Long		perm	= (Long)player.getAttribute(key_areaPerms);
+		Long	perm	= (Long)player.getAttribute(key_areaPerms);
 		return (perm != null ? perm : 0xFFFFFFFF);
 	}
 

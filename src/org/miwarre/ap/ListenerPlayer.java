@@ -65,7 +65,6 @@ import net.risingworld.api.gui.PivotPosition;
 import net.risingworld.api.objects.Player;
 import net.risingworld.api.objects.WorldItem;
 import net.risingworld.api.utils.Definitions.ObjectDefinition;
-import net.risingworld.api.utils.Vector3f;
 
 /**
  * Manages events for the plug-in.
@@ -303,12 +302,7 @@ class ListenerPlayer implements Listener
 				& AreaProtection.PERM_PLACEBLUEPRINT) == 0)
 			event.setCancelled(true);
 	}
-/*	@EventMethod
-	public void onPlayerRemoveBlueprint(PlayerRemoveBlueprintEvent event)
-	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_REMOVEBLUEPR);
-	}
-*/
+
 	//
 	// EVENTS IN CREATIVE MODE (F5 / F6)
 	//

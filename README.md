@@ -40,4 +40,4 @@ To import the existing areas of the old LUA area protection script, **please rea
 
 ## License
 
-Released under the GNU General Public License ver. 3 (or later when available).
+Released under the GNU General Public License ver. 3 (or later when available): see `COPYING` file for details.

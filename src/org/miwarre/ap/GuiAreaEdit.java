@@ -186,12 +186,6 @@ class GuiAreaEdit extends GuiModalWindow
 					addPlayers ? GROUPSBUTT_ID : null, null);
 			groupsButton.setColor(addPlayers ? GuiDefs.ACTIVE_COLOUR : GuiDefs.INACTIVE_COLOUR);
 			groupsButton.setPosition(GROUPS_BUTT_X, GROUPS_BUTT_Y, false);
-			// only show PLAYERS and GROPS buttons while editing, not while creating
-//			if (type == TYPE_CREATE)
-//			{
-//				playersButton.setVisible(false);
-//				groupsButton.setVisible(false);
-//			}
 		}
 
 		// The CREATE button

@@ -20,20 +20,13 @@ this plug-in.  If not, see <https://www.gnu.org/licenses/>.
 
 package org.miwarre.ap;
 
-//import java.util.ArrayList;
-//import net.risingworld.api.callbacks.Callback;
 import java.util.Map;
 import net.risingworld.api.gui.GuiLabel;
-//import net.risingworld.api.objects.Chest;
 import org.miwarre.ap.gui.GuiDefs;
 import org.miwarre.ap.gui.GuiDefs.GuiCallback;
 import org.miwarre.ap.gui.GuiMenu;
 import net.risingworld.api.objects.Player;
-import net.risingworld.api.utils.Area;
 import org.miwarre.ap.gui.GuiMessageBox;
-//import net.risingworld.api.utils.CollisionType;
-//import net.risingworld.api.utils.RayCastResult;
-//import net.risingworld.api.utils.Vector3f;
 
 /**
  * The plug-in main menu. It is the main UI entry point for the plug-in.
@@ -58,8 +51,6 @@ class GuiMainMenu extends GuiMenu
 	//
 	// FIELDS
 	//
-//	private final	GuiLabel	hideShowMenuItem;
-//	private			GuiLabel	adminMenuItem;
 
 	public GuiMainMenu(Player player)
 	{

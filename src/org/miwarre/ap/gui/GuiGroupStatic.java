@@ -129,7 +129,7 @@ public class GuiGroupStatic extends GuiGroup
 	 * Adds a textual item as a child of the group.
 	 * 
 	 * <p>The returned GuiLabel may be null, if the GuiGroup manages texts and
-	 * Guielement's separately, as for instance the GuiScrollList does.
+	 * GuiElement's separately, as for instance the GuiScrollList does.
 	 * 
 	 * @param	text	the text to display
 	 * @param	id		the id associated with the element; may be null for
