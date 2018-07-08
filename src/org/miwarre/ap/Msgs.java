@@ -114,7 +114,8 @@ class Msgs
 			"W",
 			// New area texts
 			"RETURN to create, ESCAPE to abort",
-			"Area Centre: %.1f%s, %.1f%s, %.1fh",
+//			"Area Centre: %.1f%s, %.1f%s, %.1fh",
+			"Area Centre: %.1f (%s), %.1f (h), %.1f (%s)",
 			"N/S: %d blk | E/W: %d blk | H: %d blk",
 			// Area properties edit
 			"Area Properties",

@@ -352,15 +352,18 @@ public class AreaProtection extends Plugin
 		String		eSign	= Msgs.msg[Msgs.gui_W];
 		if (centreN < 0)
 		{
-			centreN = -centreN;
+//			centreN = -centreN;
 			nSign	= Msgs.msg[Msgs.gui_S];
 		}
 		if (centreE < 0)
 		{
-			centreE = -centreE;
+//			centreE = -centreE;
 			eSign	= Msgs.msg[Msgs.gui_E];
 		}
-		return String.format(Msgs.msg[Msgs.gui_areaCentreFmt], centreN, nSign, centreE, eSign, centreH);
+// "map-style" coordinates
+//		return String.format(Msgs.msg[Msgs.gui_areaCentreFmt], centreN, nSign, centreE, eSign, centreH);
+// "programming-style" coordinates
+		return String.format(Msgs.msg[Msgs.gui_areaCentreFmt], centreE, eSign, centreH, centreN, nSign);
 	}
 	/**
 	 * Returns the 3D span of an RW area as a String.
