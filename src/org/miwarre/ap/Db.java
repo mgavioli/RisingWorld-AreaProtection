@@ -758,6 +758,20 @@ public class Db
 	}
 
 	/**
+	 * Tele-transports the player to the centre point of an area
+	 * @param	player	the player to transport
+	 * @param	rwArea	the destination area
+	 */
+	public static void movePlayerToArea(Player player, Area rwArea)
+	{
+		Vector3f	from	= ChunkUtils.getGlobalPosition(rwArea.getStartChunkPosition(), rwArea.getStartBlockPosition());
+		Vector3f	to		= ChunkUtils.getGlobalPosition(rwArea.getEndChunkPosition(), rwArea.getEndBlockPosition());
+		Vector3f	centre	= new Vector3f((from.x + to.x) / 2, player.getPosition().y, (from.z + to.z) / 2);
+		player.setFlying(true);
+		player.setPosition(centre);
+	}
+
+	/**
 	 * Toggles on/off the display of areas for a given player.
 	 * @param player	the player
 	 * @return			the new value of the area display status.

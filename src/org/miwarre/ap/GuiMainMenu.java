@@ -29,6 +29,7 @@ import org.miwarre.ap.gui.GuiDefs;
 import org.miwarre.ap.gui.GuiDefs.GuiCallback;
 import org.miwarre.ap.gui.GuiMenu;
 import net.risingworld.api.objects.Player;
+import net.risingworld.api.utils.Area;
 import org.miwarre.ap.gui.GuiMessageBox;
 //import net.risingworld.api.utils.CollisionType;
 //import net.risingworld.api.utils.RayCastResult;
@@ -47,10 +48,11 @@ class GuiMainMenu extends GuiMenu
 	private static final	int		MENU_SHOWAREAS_ID		= 1;
 	private static final	int		MENU_EDITAREA_ID		= 2;
 	private static final	int		MENU_NEWAREA_ID			= 3;
-	private static final	int		MENU_DELETEAREA_ID		= 4;
-	private static final	int		MENU_CHESTACCESS_ID		= 5;
-	private static final	int		MENU_AREAMANAGERS_ID	= 6;
-	private static final	int		MENU_ADMINSACCESS_ID	= 7;
+	private static final	int		MENU_GOTOAREA_ID		= 4;
+	private static final	int		MENU_DELETEAREA_ID		= 5;
+	private static final	int		MENU_CHESTACCESS_ID		= 6;
+	private static final	int		MENU_AREAMANAGERS_ID	= 7;
+	private static final	int		MENU_ADMINSACCESS_ID	= 8;
 	private static final	int		AREACREAT_PRIORITY		= 3;
 
 	//
@@ -74,6 +76,7 @@ class GuiMainMenu extends GuiMenu
 		if ( (Boolean)player.getAttribute(AreaProtection.key_isAdmin) || !AreaProtection.adminOnly)
 		{
 			addTextItem(Msgs.msg[Msgs.gui_newArea],		MENU_NEWAREA_ID,		null);
+			addTextItem(Msgs.msg[Msgs.gui_gotoArea],		MENU_GOTOAREA_ID,		null);
 			addTextItem(Msgs.msg[Msgs.gui_deleteArea],	MENU_DELETEAREA_ID,		null);
 			addTextItem(Msgs.msg[Msgs.gui_chestAccess], MENU_CHESTACCESS_ID,	null);
 			if (player.isAdmin())
@@ -110,6 +113,10 @@ class GuiMainMenu extends GuiMenu
 				NewAreaCreation nac	= new NewAreaCreation(player);
 				nac.setPriority(AREACREAT_PRIORITY);
 				nac.start();
+				break;
+			case MENU_GOTOAREA_ID:
+				// display a list of areas to choose the one to go to
+				push(player, new GuiAreaList(player, new GotoListHandler()));
 				break;
 			case MENU_EDITAREA_ID:
 				Map<Integer,Long> areas = (Map<Integer,Long>)player.getAttribute(AreaProtection.key_inAreas);
@@ -200,6 +207,27 @@ class GuiMainMenu extends GuiMenu
 				Db.deleteArea((ProtArea)obj);
 		}
 	}
+
+	//
+	// Handles the call-backs from the list of areas for editing.
+	//
+	private class GotoListHandler implements GuiCallback
+	{
+		/**
+		 * @param	player	the player interacting with the area list
+		 * @param	id		the id of the selected area
+		 * @param	obj		the selected area
+		 */
+		@Override
+		public void onCall(Player player, int id, Object obj)
+		{
+			if (id != GuiDefs.ABORT_ID)
+			{
+				Db.movePlayerToArea(player, (ProtArea)obj);
+			}
+		}
+	}
+
 	//
 	//
 /*	private class RaycastHandler implements Callback<RayCastResult>

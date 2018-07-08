@@ -38,55 +38,56 @@ class Msgs
 	static final int	gui_showAreas			=  1;
 	static final int	gui_hideAreas			=  2;
 	static final int	gui_newArea				=  3;
-	static final int	gui_editArea				=  4;
-	static final int	gui_deleteArea			=  5;
-	static final int gui_chestAccess			=  6;
-	static final int	gui_areaManagers		=  7;
-	static final int	gui_adminsOff			=  8;
-	static final int	gui_adminsOn			=  9;
+	static final int	gui_gotoArea				=  4;
+	static final int	gui_editArea				=  5;
+	static final int	gui_deleteArea			=  6;
+	static final int	gui_chestAccess			=  7;
+	static final int	gui_areaManagers		=  8;
+	static final int	gui_adminsOff			=  9;
+	static final int	gui_adminsOn			= 10;
 	// Cardinal points
-	static final int	gui_N					= 10;
-	static final int	gui_E					= 11;
-	static final int	gui_S					= 12;
-	static final int	gui_W					= 13;
+	static final int	gui_N					= 11;
+	static final int	gui_E					= 12;
+	static final int	gui_S					= 13;
+	static final int	gui_W					= 14;
 	// New area texts
-	static final int	gui_areaKeys			= 14;
-	static final int	gui_areaCentreFmt		= 15;
-	static final int	gui_areaSpanFmt			= 16;
+	static final int	gui_areaKeys			= 15;
+	static final int	gui_areaCentreFmt		= 16;
+	static final int	gui_areaSpanFmt			= 17;
 	// Area properties edit
-	static final int	gui_editTitle			= 17;
-	static final int	gui_editName			= 18;
-	static final int	gui_editPermissGeneral	= 19;
-	static final int	gui_editPermissSpecific	= 20;
-	static final int	gui_editPermFirst		= 21;
-	static final int	gui_editPermLastArea		= 50;	// last permission applicable to an area
-	static final int	gui_editPermLastUser	= 52;	// last permission applicable to a user
+	static final int	gui_editTitle			= 18;
+	static final int	gui_editName			= 19;
+	static final int	gui_editPermissGeneral	= 20;
+	static final int	gui_editPermissSpecific	= 21;
+	static final int	gui_editPermFirst		= 22;
+	static final int	gui_editPermLastArea		= 51;	// last permission applicable to an area
+	static final int	gui_editPermLastUser	= 53;	// last permission applicable to a user
 	// Other GUI texts
-	static final int	gui_editeditPlayers		= 53;
-	static final int	gui_editeditGroups		= 54;
-	static final int	gui_notImplemented		= 55;
-	static final	int	gui_specPermPlayersTitle= 56;
-	static final	int	gui_specPermGroupsTitle	= 57;
-	static final	int	gui_areaPlayerPermsTitle= 58;
-	static final	int	gui_areaName			= 59;
-	static final	int	gui_playerName			= 60;
-	static final int	gui_editCreate			= 61;
-	static final int	gui_editUpdate			= 62;
-	static final int	gui_editAdd				= 63;
-	static final int	gui_editDelete			= 64;
-	static final int	gui_editEdit			= 65;
-	static final int	gui_editKeep			= 66;
-	static final int	gui_noOwnedArea			= 67;
-	static final int	gui_customPerms			= 68;
-	static final	int	gui_selectPlayer		= 69;
-	static final	int	gui_selectGroup			= 70;
-	static final	int	gui_selectPreset		= 71;
-	static final	int	gui_topAreaHeight		= 72;
-	static final	int	gui_bottomAreaHeight	= 73;
-	static final	int	gui_setToDefault		= 74;
+	static final int	gui_editeditPlayers		= 54;
+	static final int	gui_editeditGroups		= 55;
+	static final int	gui_notImplemented		= 56;
+	static final int	gui_specPermPlayersTitle= 57;
+	static final int	gui_specPermGroupsTitle	= 58;
+	static final int	gui_areaPlayerPermsTitle= 59;
+	static final int	gui_areaName			= 60;
+	static final int	gui_playerName			= 61;
+	static final int	gui_editCreate			= 62;
+	static final int	gui_editUpdate			= 63;
+	static final int	gui_editAdd				= 64;
+	static final int	gui_editDelete			= 65;
+	static final int	gui_editEdit			= 66;
+	static final int	gui_editKeep			= 67;
+	static final int	gui_noOwnedArea			= 68;
+	static final int	gui_customPerms			= 69;
+	static final int	gui_selectPlayer		= 70;
+	static final int	gui_selectGroup			= 71;
+	static final int	gui_selectPreset		= 72;
+	static final int	gui_topAreaHeight		= 73;
+	static final int	gui_bottomAreaHeight	= 74;
+	static final int	gui_setToDefault		= 75;
 	// Other menu title
-	static final int	gui_selectArea			= 75;
-	static final int	gui_confirmAreaDelete	= 76;
+	static final int	gui_selectArea			= 76;
+	static final int	gui_confirmAreaDelete	= 77;
 
 	private static final int	LAST_TEXT	= gui_confirmAreaDelete;
 
@@ -99,14 +100,15 @@ class Msgs
 			"Show areas",
 			"Hide areas",
 			"New area",
+			"Go to area",
 			"Edit area",
 			"Delete area",
 			"Chest access (NOT impl.)",
 			"Area Managers",
 			"Admin priv. OFF",
-			"Admin priv. ON",
+			"Admin priv. ON",							// 10
 			// Cardinal points
-			"N",										// 10
+			"N",
 			"E",
 			"S",
 			"W",
@@ -117,8 +119,8 @@ class Msgs
 			// Area properties edit
 			"Area Properties",
 			"Name:",
-			"Generic Area Permissions:",
-			"Specific Area Permissions:",				// 20
+			"Generic Area Permissions:",				// 20
+			"Specific Area Permissions:",
 			// Property names
 			"Enter area",
 			"Leave area",
@@ -128,8 +130,8 @@ class Msgs
 			"Remove constructions",
 			"Destroy constructions",
 			"Place objects",
-			"Remove objects",
-			"Destroy objects",							// 30
+			"Remove objects",							// 30
+			"Destroy objects",
 			"Place terrain",
 			"Destroy terrain",
 			"Place vegetation",
@@ -138,8 +140,8 @@ class Msgs
 			"Place grass",
 			"Remove grass",
 			"Place water",
-			"Remove water",
-			"Create blueprint",							// 40
+			"Remove water",								// 40
+			"Create blueprint",
 			"Place blueprint",
 			"Place block (creative)",
 			"Place vegetation (creative)",
@@ -148,8 +150,8 @@ class Msgs
 			"Get from chest",
 			"Door interaction",
 			"Furnace interaction",
-			"Other interaction",
-			"Explosions",								// 50
+			"Other interaction",						// 50
+			"Explosions",
 			"Can add players",
 			"Owner",
 			// other GUI texts
@@ -159,8 +161,8 @@ class Msgs
 			"Players with special permissions",
 			"Groups with special permissions",
 			"Player/Group Permissions for Area",
-			"Area Name:",
-			"Player/Group Name:",						// 60
+			"Area Name:",								// 60
+			"Player/Group Name:",
 			"\n CREATE \n ",
 			"\n UPDATE \n ",
 			"\n ADD \n ",
@@ -169,8 +171,8 @@ class Msgs
 			"\n KEEP \n",
 			"[You own no area]",
 			"Custom",
-			"Select a player:",
-			"Select a group:",							// 70
+			"Select a player:",							// 70
+			"Select a group:",
 			"Select a preset:",
 			"Top Height",
 			"Bottom Height",
