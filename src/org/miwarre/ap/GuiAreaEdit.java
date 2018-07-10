@@ -280,8 +280,8 @@ class GuiAreaEdit extends GuiModalWindow
 					Vector3i	fromBlock	= area.getStartBlockPosition();
 					Vector3i	toChunk		= area.getEndChunkPosition();
 					Vector3i	toBlock		= area.getEndBlockPosition();
-					if (heightTopChunk != fromChunk.y || heightTopBlock != fromBlock.y ||
-							heightBtmChunk != toChunk.y || heightBtmBlock != toBlock.y)
+					if (heightTopChunk != toChunk.y || heightTopBlock != toBlock.y ||
+							heightBtmChunk != fromChunk.y || heightBtmBlock != fromBlock.y)
 					{
 						// create a new area (as area boudaries cannot be changed once created)
 						fromChunk.y	= heightBtmChunk;

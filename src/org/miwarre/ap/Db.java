@@ -142,7 +142,7 @@ public class Db
 		// (exceptions are newly created areas which are at the end and will be sordet at next
 		// server and plug-in restart).
 		areas	= new LinkedHashMap<>();
-		initAreas(false);
+		initAreas();
 		initGroups();
 		AP3LUAImport();
 	}
@@ -321,9 +321,9 @@ public class Db
 					int	newId	= idSet.getInt(1);
 					area.id		= newId;
 //					areas.put(newId, area);
+					insertNewArea(area);
 					AreaProtection.plugin.getServer().addArea(area);
 				}
-				initAreas(true);		// do not reinit server areas
 			}
 		} catch (SQLException e)
 		{
@@ -843,7 +843,7 @@ public class Db
 	/**
 		Retrieves all the areas currently defined, add them to the server and caches them.
 	*/
-	private static void initAreas(boolean reinit)
+	private static void initAreas()
 	{
 		Server	server	= AreaProtection.plugin.getServer();
 		areas.clear();
@@ -862,8 +862,7 @@ public class Db
 				String	name	= result.getString(9);
 				ProtArea	area	= new ProtArea(id, fromX, fromY, fromZ, toX, toY, toZ, name, perm);
 				areas.put(id, area);
-				if (!reinit)
-					server.addArea(area);
+				server.addArea(area);
 			}
 			result.close();
 		}
@@ -888,6 +887,31 @@ public class Db
 				return area;
 		}
 		return null;
+	}
+
+	/**
+	 * Inserts a new area in the areas Map, sorting it alphabetically according to its name.
+	 * @param	area	the area to insert
+	 */
+	private static void insertNewArea(ProtArea area)
+	{
+		if (area == null || area.id < 1)
+			return;
+		LinkedHashMap<Integer,ProtArea>		newAreaMap	= new LinkedHashMap<>();
+		for (Map.Entry<Integer,ProtArea> entry : areas.entrySet())
+		{
+			if (area != null && entry.getValue().name.compareToIgnoreCase(area.name) > 0)
+			{
+				newAreaMap.put(area.id, area);
+				area = null;
+			}
+			newAreaMap.put(entry.getKey(), entry.getValue());
+		}
+		// if area still defined, it doesn't go before any existing area
+		// (or no area exists!): just add it
+		if (area != null)
+			newAreaMap.put(area.id, area);
+		areas	= newAreaMap;
 	}
 
 	private static void initGroups()
