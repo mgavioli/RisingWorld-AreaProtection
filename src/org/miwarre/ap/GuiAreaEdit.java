@@ -130,12 +130,12 @@ class GuiAreaEdit extends GuiModalWindow
 		nameText.setText(name);
 		addChild(nameText, NAMETEXT_ID, null);
 
-		// if creating a new area and player is admin, he has access to all permissions
-		long	permMask	= (type == TYPE_CREATE && (Boolean)player.getAttribute(AreaProtection.key_isAdmin)) ? AreaProtection.PERM_ALL
+		// if player is admin, he has access to all permissions
+		long	permMask	= (Boolean)player.getAttribute(AreaProtection.key_isAdmin) ? AreaProtection.PERM_ALL
 				// otherwise, use standard permission mask
 				: Db.getPlayerPermissionsForArea(player, area.id);
 		// if editing and player is neither admin or owner, he can only manage players
-		if (type == TYPE_EDIT && (!(Boolean)player.getAttribute(AreaProtection.key_isAdmin) || AreaProtection.adminNoPriv)
+		if (type == TYPE_EDIT && !(Boolean)player.getAttribute(AreaProtection.key_isAdmin)
 					&& (permMask & AreaProtection.PERM_OWNER) == 0)
 			permMask	&= AreaProtection.PERM_ADDPLAYER;
 

@@ -629,8 +629,8 @@ public class Db
 	 */
 	static Map<Integer,ProtArea> getOwnedAreas(Player player)
 	{
-		// if player is an admin AND admin priviledges are not blocked, return the list of all known areas.
-		if ((Boolean)player.getAttribute(AreaProtection.key_isAdmin) && !AreaProtection.adminNoPriv)
+		// if player is an admin, return the list of all known areas.
+		if ((Boolean)player.getAttribute(AreaProtection.key_isAdmin))
 			return areas;
 
 		Map<Integer,ProtArea> ownedAreas	= new HashMap<>();
