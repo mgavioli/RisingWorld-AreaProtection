@@ -120,7 +120,7 @@ class GuiAreaPlayerEdit extends GuiModalWindow
 		// (used to mask the permissions to which the editing player has no access)
 		long	permMask	= Db.getPlayerPermissionsForArea(editingPlayer, area.id);
 		// OWNERship permissions is not transferable
-		if (!(Boolean)editingPlayer.getAttribute(AreaProtection.key_isAdmin) || AreaProtection.adminNoPriv)
+		if (!(Boolean)editingPlayer.getAttribute(AreaProtection.key_isAdmin))
 		{
 			permissions	&= ~AreaProtection.PERM_OWNER;
 			permMask	&= ~AreaProtection.PERM_OWNER;

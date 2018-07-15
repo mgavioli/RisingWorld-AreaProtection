@@ -629,7 +629,7 @@ public class Db
 
 	/**
 	 * Retrieves the areas owned by a player.
-	 * <p>Any admin implicitly owns all areas unless blocked by "adminNoPriv" setting.
+	 * <p>Any admin implicitly owns all areas.
 	 * @param player	the player to retrieve areas for.
 	 * @return			a Map with area id and area data for areas owned by the player.
 	 */

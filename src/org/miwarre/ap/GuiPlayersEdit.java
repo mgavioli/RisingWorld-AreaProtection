@@ -157,7 +157,7 @@ class GuiPlayersEdit extends GuiModalWindow
 //					if (permissions != null)
 //					{
 						// OWNERship is not transferable
-						if (!(Boolean)player.getAttribute(AreaProtection.key_isAdmin) || AreaProtection.adminNoPriv)
+						if (!(Boolean)player.getAttribute(AreaProtection.key_isAdmin))
 							permissions	&= ~(AreaProtection.PERM_OWNER);
 						Db.addPlayerToArea(area, playerId, permissions, type);
 //					}
@@ -189,7 +189,7 @@ class GuiPlayersEdit extends GuiModalWindow
 				long	permissions	= playerEditor.getPermissions();
 				// add the edited player name / permission pair to the DB
 				// OWNERship is not transferable
-				if (!(Boolean)player.getAttribute(AreaProtection.key_isAdmin) || AreaProtection.adminNoPriv)
+				if (!(Boolean)player.getAttribute(AreaProtection.key_isAdmin))
 					permissions	&= ~(AreaProtection.PERM_OWNER);
 				Db.addPlayerToArea(area, (Integer)permPlayerId, permissions, type);
 				String	txt	= playerEditor.getPlayerName() +
