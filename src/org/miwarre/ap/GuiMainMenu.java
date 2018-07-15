@@ -106,8 +106,8 @@ class GuiMainMenu extends GuiMenu
 				nac.start();
 				break;
 			case MENU_GOTOAREA_ID:
-				// display a list of areas to choose the one to go to
-				push(player, new GuiAreaList(player, new GotoListHandler()));
+				// display a list of areas to choose the one to go to (list all areas, not only oned ones)
+				push(player, new GuiAreaList(player, false, new GotoListHandler()));
 				break;
 			case MENU_EDITAREA_ID:
 				Map<Integer,Long> areas = (Map<Integer,Long>)player.getAttribute(AreaProtection.key_inAreas);
@@ -118,12 +118,12 @@ class GuiMainMenu extends GuiMenu
 					push(player, new GuiAreaEdit(null, area, player, GuiAreaEdit.TYPE_EDIT));
 				}
 				else
-				// if not inside any area, display a list of areas to choose
-					push(player, new GuiAreaList(player, new EditListHandler()));
+				// if not inside any area, display a list of areas to choose (list owned areas only)
+					push(player, new GuiAreaList(player, true, new EditListHandler()));
 				break;
 			case MENU_DELETEAREA_ID:
-				// display a list of areas to choose the one to delete
-				push(player, new GuiAreaList(player, new DeleteListHandler()));
+				// display a list of areas to choose the one to delete (list owned areas only)
+				push(player, new GuiAreaList(player, true, new DeleteListHandler()));
 				break;
 //			case MENU_CHESTACCESS_ID:
 //				player.raycast(CollisionType.OBJECTS, new RaycastHandler());

@@ -293,6 +293,12 @@ public class Db
 	//********************
 
 	/**
+	 * Returns a Map with all the defined areas, hopefully in alphabetic order by name.
+	 * @return a Map with all the defined areas.
+	 */
+	static Map<Integer,ProtArea> getAreas()		{ return areas; }
+
+	/**
 		Adds the area to the DB and to the local cache.
 
 		@param	area	the area to add

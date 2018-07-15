@@ -32,13 +32,13 @@ class GuiAreaList extends GuiMenu
 	private final	GuiDefs.GuiCallback	callback;
 	private			boolean				hasItems;
 
-	public GuiAreaList(Player player, GuiDefs.GuiCallback callback)
+	public GuiAreaList(Player player, boolean ownedOnly, GuiDefs.GuiCallback callback)
 	{
 		super(AreaProtection.plugin, Msgs.msg[Msgs.gui_selectArea], null, MAX_NUM_OF_MENULINES);
 		setCallback(new MenuHandler());
 		this.callback	= callback;
 		hasItems		= false;
-		Map<Integer,ProtArea>	areas	= Db.getOwnedAreas(player);
+		Map<Integer,ProtArea>	areas	= ownedOnly ? Db.getAreas() : Db.getOwnedAreas(player);
 		for (Entry<Integer,ProtArea> entry : areas.entrySet())
 		{
 			ProtArea	area	= entry.getValue();
@@ -46,7 +46,7 @@ class GuiAreaList extends GuiMenu
 			hasItems	= true;
 		}
 		if (!hasItems)
-			addTextItem(Msgs.msg[Msgs.gui_noOwnedArea], 1, null);
+			addTextItem(Msgs.msg[ownedOnly ? Msgs.gui_noDefinedArea : Msgs.gui_noOwnedArea], 1, null);
 	}
 
 	//********************

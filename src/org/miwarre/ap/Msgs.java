@@ -77,17 +77,18 @@ class Msgs
 	static final int	gui_editDelete			= 65;
 	static final int	gui_editEdit			= 66;
 	static final int	gui_editKeep			= 67;
-	static final int	gui_noOwnedArea			= 68;
-	static final int	gui_customPerms			= 69;
-	static final int	gui_selectPlayer		= 70;
-	static final int	gui_selectGroup			= 71;
-	static final int	gui_selectPreset		= 72;
-	static final int	gui_topAreaHeight		= 73;
-	static final int	gui_bottomAreaHeight	= 74;
-	static final int	gui_setToDefault		= 75;
+	static final int	gui_noDefinedArea		= 68;
+	static final int	gui_noOwnedArea			= 69;
+	static final int	gui_customPerms			= 70;
+	static final int	gui_selectPlayer		= 71;
+	static final int	gui_selectGroup			= 72;
+	static final int	gui_selectPreset		= 73;
+	static final int	gui_topAreaHeight		= 74;
+	static final int	gui_bottomAreaHeight	= 75;
+	static final int	gui_setToDefault		= 76;
 	// Other menu title
-	static final int	gui_selectArea			= 76;
-	static final int	gui_confirmAreaDelete	= 77;
+	static final int	gui_selectArea			= 77;
+	static final int	gui_confirmAreaDelete	= 78;
 
 	private static final int	LAST_TEXT	= gui_confirmAreaDelete;
 
@@ -170,9 +171,10 @@ class Msgs
 			"\n DELETE \n ",
 			"\n EDIT \n ",
 			"\n KEEP \n",
+			"[No area defined]",
 			"[You own no area]",
-			"Custom",
-			"Select a player:",							// 70
+			"Custom",									// 70
+			"Select a player:",
 			"Select a group:",
 			"Select a preset:",
 			"Top Height",
