@@ -480,7 +480,7 @@ public class Db
 				area.players.put(playerId, permissions);
 				// if the player is connected right now, add the details to the player
 				// list of areas for which he has special permissions
-				Player	player	= AreaProtection.plugin.getServer().getPlayer(playerId);
+				Player	player	= connectedPlayerFromDBID(playerId);
 				if (player != null)
 				{
 					if (area.id == AreaProtection.AREAMANAGER_AREAID)
@@ -532,7 +532,7 @@ public class Db
 				area.players.remove(playerId);
 				// if the player is connected right now, remove the details from the player
 				// list of areas for which he has special permissions
-				Player	player	= AreaProtection.plugin.getServer().getPlayer(playerId);
+				Player	player	= connectedPlayerFromDBID(playerId);
 				if (player != null)
 				{
 					if (area.id == AreaProtection.AREAMANAGER_AREAID)
@@ -1089,5 +1089,46 @@ public class Db
 			// we did what we could...
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * The player with the given DBID, if such a player exists and is connected;
+	 * null otherwise.
+	 * @param	dbId	the DB ID of the player to look for.
+	 * @return	the player with the given DB ID, if it exists and is connected;
+	 *			null if there is no such player or it is not connected now.
+	 */
+	private static Player connectedPlayerFromDBID(int dbId)
+	{
+		Player	player		= null;
+		Long	playerUID	= playerDBIDtoUID(dbId);
+		// if the player is connected right now, add the details to the player
+		// list of areas for which he has special permissions
+		if (playerUID != null)
+			player	= AreaProtection.plugin.getServer().getPlayer(playerUID);
+		return player;
+	}
+
+	/**
+	 * Returns the UID of a player from the player DBID.
+	 * @param	dbId	the player DBID to look upon.
+	 * @return	the UID of the player identified by the playerDBID or null if there
+	 *			there is no such player..
+	 */
+	private static Long playerDBIDtoUID(final int dbId)
+	{
+		Long	playerUID	= null;
+		// Query world data base for this player
+		WorldDatabase	worldDb = AreaProtection.plugin.getWorldDatabase();
+		try(ResultSet result = worldDb.executeQuery("SELECT `UID` FROM `Player` WHERE `ID` = " + dbId))
+		{
+			if(result.next())
+				playerUID	= result.getLong(1);
+		}
+		catch(SQLException e)
+		{
+			//on errors, do nothing and simply return null
+		}
+		return playerUID;
 	}
 }
