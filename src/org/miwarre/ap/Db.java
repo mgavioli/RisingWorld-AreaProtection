@@ -192,6 +192,19 @@ public class Db
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		// Due to a bug in RW, if player is flying AND within an area initially,
+		// RW will not trigger the initial PlayerEnterAreaEvent; scan defined
+		// areas and check the player is within any of them
+		if (player.isFlying())
+		{
+			Vector3f	pos	= player.getPosition();
+			for (Map.Entry<Integer,ProtArea> entry : areas.entrySet())
+			{
+				ProtArea	area	= entry.getValue();
+				if (area.isPointInArea(pos) )
+					onPlayerArea(player, area, true);
+			}
+		}
 	}
 
 	/**
