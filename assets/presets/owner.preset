@@ -35,3 +35,4 @@ CreativePlaceVegetation=true
 CreativeTerrainEdit=true
 DoorInteraction=true
 FurnaceInteraction=true
+Explosion=true

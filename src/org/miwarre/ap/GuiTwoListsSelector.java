@@ -172,7 +172,7 @@ class GuiTwoListsSelector extends GuiModalWindow
 				{
 					if (!area.players.containsKey(id))
 					{
-						String	name	= Db.getPlayerNameFromId(id);
+						String	name	= Db.getPlayerNameFromId(id, type);
 						list1.addTextItem(name, id, name);
 					}
 				}

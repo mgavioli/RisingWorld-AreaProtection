@@ -824,15 +824,19 @@ public class Db
 	}
 
 	/**
-	 * Returns the name of a player from the DB id. The player needs not to be connected.
+	 * Returns the name of a player or group from the DB id. The player needs not to be connected.
 	 * @param	playerId	the DB id of the player
-	 * @return	the player name or null if no such a player id.
+	 * @param	type		either LIST_TYPE_GROUP or LIST_TYPE_PLAYER
+	 * @return	the player/group name or null if no such a player/group id.
 	 */
-	static String getPlayerNameFromId(int playerId)
+	static String getPlayerNameFromId(int playerId, int type)
 	{
-		if (playerNames == null)
+		Map<Integer,String>	players = playerNames;
+		if (type == LIST_TYPE_GROUP)
+			players	= groupNames;
+		else if (playerNames == null)
 			initPlayers();
-		return playerNames.get(playerId);
+		return players.get(playerId);
 	}
 
 	static Set<Integer> getPlayerIdSet()
@@ -968,16 +972,16 @@ public class Db
 		if (rwGroups != null)						// may be null if the plug-in is run on the Single Player
 		{											// which has no "permissions/groups" folder
 			// merge group list with groups in DB
-			for (int i = 0; i < rwGroups.length; i++)
+			for (String rwGroup : rwGroups)
 			{
 				// remove the ".permissions" extension from file names
-				String	name	= rwGroups[i].substring(0, rwGroups[i].length()-12);
+				String	name	= rwGroup.substring(0, rwGroup.length() - 12);
 				Integer	id		= dbGroups.get(name);
 				if (id == null)				// such a perm. group not know yet: add to DB
 				{
 					try(PreparedStatement stmt	= db.getConnection().prepareStatement(
-							"INSERT INTO `perm_groups` (name) VALUES (?)")
-					)
+						"INSERT INTO `perm_groups` (name) VALUES (?)")
+						)
 					{
 						stmt.setString(1, name);
 						stmt.executeUpdate();
@@ -993,8 +997,8 @@ public class Db
 				}
 				if (id != null)
 				{
-					groupNames.put(i, name);
-					groupIds.put(name, i);
+					groupNames.put(id, name);
+					groupIds.put(name, id);
 				}
 			}
 		}

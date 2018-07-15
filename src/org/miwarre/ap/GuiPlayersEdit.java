@@ -243,7 +243,7 @@ class GuiPlayersEdit extends GuiModalWindow
 				(type == Db.LIST_TYPE_GROUP ? area.groups : area.players).entrySet())
 			{
 				int		playerId	= entry.getKey();
-				String	playerName	= Db.getPlayerNameFromId(playerId);
+				String	playerName	= Db.getPlayerNameFromId(playerId, type);
 				String	txt	= playerName;
 				if (type != Db.LIST_TYPE_MANAGERS)
 					txt	+= " (" + AreaProtection.getPresetNameFromPermissions(entry.getValue()) + ")";
