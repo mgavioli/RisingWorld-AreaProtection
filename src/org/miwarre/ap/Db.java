@@ -506,6 +506,9 @@ public class Db
 								(HashMap<Integer, Long>)player.getAttribute(AreaProtection.key_areas);
 						if (permAreas != null)
 							permAreas.put(area.id, permissions);
+						// if player within that area, recompute cumulative permissions
+						if (area.isPointInArea(player.getPosition()))
+							onPlayerArea(player, area, true);
 					}
 				}
 			}
@@ -558,6 +561,9 @@ public class Db
 								(HashMap<Integer,Long>)player.getAttribute(AreaProtection.key_areas);
 						if (permAreas != null)
 							permAreas.remove(area.id);
+						// if player within that area, recompute cumulative permissions
+						if (area.isPointInArea(player.getPosition()))
+							onPlayerArea(player, area, true);
 					}
 				}
 			}
@@ -831,11 +837,13 @@ public class Db
 	 */
 	static String getPlayerNameFromId(int playerId, int type)
 	{
-		Map<Integer,String>	players = playerNames;
-		if (type == LIST_TYPE_GROUP)
-			players	= groupNames;
-		else if (playerNames == null)
-			initPlayers();
+		Map<Integer,String>	players = groupNames;
+		if (type == LIST_TYPE_PLAYER)
+		{
+			if (playerNames == null)
+				initPlayers();
+			players	= playerNames;
+		}
 		return players.get(playerId);
 	}
 
