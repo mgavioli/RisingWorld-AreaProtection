@@ -878,7 +878,7 @@ public class Db
 	{
 		Server	server	= AreaProtection.plugin.getServer();
 		areas.clear();
-		try(ResultSet result = db.executeQuery("SELECT * FROM `areas` ORDER BY `name` COLLATE NOCASE"))
+		try(ResultSet result = db.executeQuery("SELECT * FROM `areas` ORDER BY LOWER(`name`)"))
 		{
 			while(result.next())
 			{
@@ -1017,7 +1017,7 @@ public class Db
 		playerNames	= new LinkedHashMap<>();
 		// Query world data base for known players
 		WorldDatabase	worldDb = AreaProtection.plugin.getWorldDatabase();
-		try(ResultSet result = worldDb.executeQuery("SELECT `ID`,`Name` FROM `Player` ORDER BY `Name` COLLATE NOCASE"))
+		try(ResultSet result = worldDb.executeQuery("SELECT `ID`,`Name` FROM `Player` ORDER BY LOWER(`Name`)"))
 		{
 			while(result.next())
 				playerNames.put(result.getInt(1), result.getString(2));
