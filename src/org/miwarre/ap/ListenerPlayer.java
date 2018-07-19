@@ -65,6 +65,9 @@ import net.risingworld.api.gui.PivotPosition;
 import net.risingworld.api.objects.Player;
 import net.risingworld.api.objects.WorldItem;
 import net.risingworld.api.utils.Definitions.ObjectDefinition;
+import net.risingworld.api.utils.Utils.ChunkUtils;
+import net.risingworld.api.utils.Vector3f;
+import net.risingworld.api.utils.Vector3i;
 
 /**
  * Manages events for the plug-in.
@@ -175,12 +178,18 @@ class ListenerPlayer implements Listener
 	@EventMethod
 	public void onPlayerPlaceBlock(PlayerPlaceBlockEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PLACEBLOCKS);
+		Vector3f	eventPos	= ChunkUtils.getGlobalPosition(
+				new Vector3i(event.getChunkPositionX(), event.getChunkPositionY(), event.getChunkPositionZ()),
+				new Vector3i(event.getBlockPositionX(), event.getBlockPositionY(), event.getBlockPositionZ()));
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PLACEBLOCKS, eventPos);
 	}
 	@EventMethod
 	public void onPlayerDestroyBlock(PlayerDestroyBlockEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYBLOCKS);
+		Vector3f	eventPos	= ChunkUtils.getGlobalPosition(
+				new Vector3i(event.getChunkPositionX(), event.getChunkPositionY(), event.getChunkPositionZ()),
+				new Vector3i(event.getBlockPositionX(), event.getBlockPositionY(), event.getBlockPositionZ()));
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYBLOCKS, eventPos);
 	}
 
 	//
@@ -189,17 +198,17 @@ class ListenerPlayer implements Listener
 	@EventMethod
 	public void onPlayerPlaceConstruction(PlayerPlaceConstructionEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PLACECONSTR);
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PLACECONSTR, event.getConstructionPosition());
 	}
 	@EventMethod
 	public void onPlayerRemoveConstruction(PlayerRemoveConstructionEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_REMOVECONSTR);
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_REMOVECONSTR, event.getConstructionPosition());
 	}
 	@EventMethod
 	public void onPlayerDestroyConstruction(PlayerDestroyConstructionEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYCONSTR);
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYCONSTR, event.getConstructionPosition());
 	}
 
 	//
@@ -208,17 +217,17 @@ class ListenerPlayer implements Listener
 	@EventMethod
 	public void onPlayerPlaceObject(PlayerPlaceObjectEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PLACEOBJECTS);
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PLACEOBJECTS, event.getObjectPosition());
 	}
 	@EventMethod
 	public void onPlayerRemoveObject(PlayerRemoveObjectEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_REMOVEOBJECTS);
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_REMOVEOBJECTS, event.getObjectPosition());
 	}
 	@EventMethod
 	public void onPlayerDestroyObject(PlayerDestroyObjectEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYOBJECTS);
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYOBJECTS, event.getObjectPosition());
 	}
 
 	//
@@ -227,12 +236,18 @@ class ListenerPlayer implements Listener
 	@EventMethod
 	public void onPlayerPlaceTerrain(PlayerPlaceTerrainEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PLACETERRAIN);
+		Vector3f	eventPos	= ChunkUtils.getGlobalPosition(
+				new Vector3i(event.getChunkPositionX(), event.getChunkPositionY(), event.getChunkPositionZ()),
+				new Vector3i(event.getBlockPositionX(), event.getBlockPositionY(), event.getBlockPositionZ()));
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PLACETERRAIN, eventPos);
 	}
 	@EventMethod
 	public void onPlayerDestroyTerrain(PlayerDestroyTerrainEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYTERRAIN);
+		Vector3f	eventPos	= ChunkUtils.getGlobalPosition(
+				new Vector3i(event.getChunkPositionX(), event.getChunkPositionY(), event.getChunkPositionZ()),
+				new Vector3i(event.getBlockPositionX(), event.getBlockPositionY(), event.getBlockPositionZ()));
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYTERRAIN, eventPos);
 	}
 
 	//
@@ -241,7 +256,7 @@ class ListenerPlayer implements Listener
 	@EventMethod
 	public void onPlayerPlaceVegetation(PlayerPlaceVegetationEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PLACEVEGET);
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PLACEVEGET, event.getPlantPosition());
 	}
 	@EventMethod
 	public void onPlayerRemoveVegetation(PlayerRemoveVegetationEvent event)
@@ -249,12 +264,12 @@ class ListenerPlayer implements Listener
 		// if picking up some kind fruit while leaving the plant => PERM_REMOVEVEGET
 		// if picking up the plant with the fruit => PERM_DESTROYVEGET
 		onCancellableEvent(event, event.getPlayer(), (pickables.contains(Integer.valueOf(event.getPlantTypeID())) ?
-				AreaProtection.PERM_REMOVEVEGET : AreaProtection.PERM_DESTROYVEGET));
+				AreaProtection.PERM_REMOVEVEGET : AreaProtection.PERM_DESTROYVEGET), event.getPlantPosition());
 	}
 	@EventMethod
 	public void onPlayerDestroyVegetation(PlayerDestroyVegetationEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYVEGET);
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_DESTROYVEGET, event.getPlantPosition());
 	}
 
 	//
@@ -263,12 +278,18 @@ class ListenerPlayer implements Listener
 	@EventMethod
 	public void onPlayerPlaceGrass(PlayerPlaceGrassEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PLACEGRASS);
+		Vector3f	eventPos	= ChunkUtils.getGlobalPosition(
+				new Vector3i(event.getChunkPositionX(), event.getChunkPositionY(), event.getChunkPositionZ()),
+				new Vector3i(event.getBlockPositionX(), event.getBlockPositionY(), event.getBlockPositionZ()));
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PLACEGRASS, eventPos);
 	}
 	@EventMethod
 	public void onPlayerRemoveGrass(PlayerRemoveGrassEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_REMOVEGRASS);
+		Vector3f	eventPos	= ChunkUtils.getGlobalPosition(
+				new Vector3i(event.getChunkPositionX(), event.getChunkPositionY(), event.getChunkPositionZ()),
+				new Vector3i(event.getBlockPositionX(), event.getBlockPositionY(), event.getBlockPositionZ()));
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_REMOVEGRASS, eventPos);
 	}
 
 	//
@@ -277,12 +298,18 @@ class ListenerPlayer implements Listener
 	@EventMethod
 	public void onPlayerRemoveWater(PlayerRemoveWaterEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_REMOVEWATER);
+		Vector3f	eventPos	= ChunkUtils.getGlobalPosition(
+				new Vector3i(event.getChunkPositionX(), event.getChunkPositionY(), event.getChunkPositionZ()),
+				new Vector3i(event.getBlockPositionX(), event.getBlockPositionY(), event.getBlockPositionZ()));
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_REMOVEWATER, eventPos);
 	}
 	@EventMethod
 	public void onPlayerPlaceWater(PlayerPlaceWaterEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PLACEWATER);
+		Vector3f	eventPos	= ChunkUtils.getGlobalPosition(
+				new Vector3i(event.getChunkPositionX(), event.getChunkPositionY(), event.getChunkPositionZ()),
+				new Vector3i(event.getBlockPositionX(), event.getBlockPositionY(), event.getBlockPositionZ()));
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PLACEWATER, eventPos);
 	}
 
 	//
@@ -309,17 +336,23 @@ class ListenerPlayer implements Listener
 	@EventMethod
 	public void onPlayerCreativePlaceBlock(PlayerCreativePlaceBlockEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_CREAT_PLACEBLOCKS);
+		Vector3f	eventPos	= ChunkUtils.getGlobalPosition(
+				new Vector3i(event.getChunkPositionX(), event.getChunkPositionY(), event.getChunkPositionZ()),
+				new Vector3i(event.getBlockPositionX(), event.getBlockPositionY(), event.getBlockPositionZ()));
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_CREAT_PLACEBLOCKS, eventPos);
 	}
 	@EventMethod
 	public void onPlayerCreativePlaceVegetation(PlayerCreativePlaceVegetationEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_CREAT_PLACEVEGET);
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_CREAT_PLACEVEGET, event.getPlantPosition());
 	}
 	@EventMethod
 	public void onPlayerCreativeTerrainEdit(PlayerCreativeTerrainEditEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_CREAT_TERRAINEDIT);
+		Vector3f	eventPos	= ChunkUtils.getGlobalPosition(
+				new Vector3i(event.getChunkPositionX(), event.getChunkPositionY(), event.getChunkPositionZ()),
+				new Vector3i(event.getBlockPositionX(), event.getBlockPositionY(), event.getBlockPositionZ()));
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_CREAT_TERRAINEDIT, eventPos);
 	}
 
 	//
@@ -328,18 +361,18 @@ class ListenerPlayer implements Listener
 	@EventMethod
 	public void onPlayerInventoryToChest(PlayerInventoryToChestEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PUT2CHEST);
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_PUT2CHEST, null);
 	}
 	// CHEST-TO-INVENTORY and CHEST-DROP are both taking from chests
 	@EventMethod
 	public void onPlayerChestToInventory(PlayerChestToInventoryEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_GETFROMCHEST);
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_GETFROMCHEST, null);
 	}
 	@EventMethod
 	public void onPlayerChestDrop(PlayerChestDropEvent event)
 	{
-		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_GETFROMCHEST);
+		onCancellableEvent(event, event.getPlayer(), AreaProtection.PERM_GETFROMCHEST, null);
 	}
 
 	//
@@ -351,7 +384,7 @@ class ListenerPlayer implements Listener
 		ObjectDefinition	def	= event.getObjectDefinition();
 		long	perm	= def.isDoor() ? AreaProtection.PERM_DOORINTERACT :
 						(def.isFurnace() ? AreaProtection.PERM_FURNACEINTERACT : AreaProtection.PERM_OTHERINTERACT);
-		onCancellableEvent(event, event.getPlayer(), perm);
+		onCancellableEvent(event, event.getPlayer(), perm, event.getObjectPosition());
 	}
 	@EventMethod
 	public void onPlayerObjectInteraction(PlayerObjectInteractionEvent event)
@@ -362,7 +395,7 @@ class ListenerPlayer implements Listener
 						// Chests must be interactable if either chest access (to or from) is enabled
 						(def.isChest() ? AreaProtection.PERM_OTHERINTERACT | AreaProtection.PERM_PUT2CHEST | AreaProtection.PERM_GETFROMCHEST
 							: AreaProtection.PERM_OTHERINTERACT));
-		onCancellableEvent(event, event.getPlayer(), perm);
+		onCancellableEvent(event, event.getPlayer(), perm, event.getObjectPosition());
 	}
 
 	//
@@ -385,11 +418,12 @@ class ListenerPlayer implements Listener
 	//
 	// Matches event with actual player permissions
 	//
-	private void onCancellableEvent(Cancellable event, Player player, long permissionFlag)
+	private void onCancellableEvent(Cancellable event, Player player, long permissionFlag, Vector3f eventPos)
 	{
 		if (!AreaProtection.adminNoPriv && (Boolean)player.getAttribute(AreaProtection.key_isAdmin))	// any permission is enabled
 			return;
-		Long	perms	= (Long)player.getAttribute(AreaProtection.key_areaPerms);
+		Long	perms = AreaProtection.eventPos && eventPos != null ? Db.getPlayerPermissionsForPoint(player, eventPos)
+						: (Long)player.getAttribute(AreaProtection.key_areaPerms);
 		if (perms != null && (perms & permissionFlag) == 0)
 			event.setCancelled(true);
 	}

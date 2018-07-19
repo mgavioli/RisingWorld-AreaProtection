@@ -111,6 +111,7 @@ public class AreaProtection extends Plugin
 	// The default values for the settings
 	static final	boolean		adminNoPrivDef		= false;
 	static final	boolean		adminOnlyDef		= true;
+	static final	boolean		eventPosDef			= true;
 	static final	int			heightTopDef		= 400;
 	static final	int			heightBottomDef		= -600;
 	static final	int			infoBkgColourDef	= 0xE0E0A0E0;
@@ -124,6 +125,7 @@ public class AreaProtection extends Plugin
 	static	boolean		adminNoPriv			= adminNoPrivDef;
 	static	boolean		adminOnly			= adminOnlyDef;
 	static	String		commandPrefix		= "/ap";
+	static	boolean		eventPos			= eventPosDef;
 	static	int			heightTop			= heightTopDef;
 	static	int			heightBottom		= heightBottomDef;
 	static	int			infoBkgColour		= infoBkgColourDef;
@@ -404,6 +406,7 @@ public class AreaProtection extends Plugin
 
 			adminNoPriv		= propertyToInt(settings, "adminNoPriv",	adminNoPrivDef ? 1 : 0) != 0;
 			adminOnly		= propertyToInt(settings, "adminOnly",		adminOnlyDef ? 1 : 0) != 0;
+			eventPos		= propertyToInt(settings, "evenPosition",	eventPosDef ? 1 : 0) != 0;
 			heightTop		= propertyToInt(settings, "heightTop",		heightTopDef);
 			heightBottom	= propertyToInt(settings, "heightBottom",	heightBottomDef);
 			infoBkgColour	= propertyToInt(settings, "infoBkgColour",	infoBkgColourDef);
