@@ -40,8 +40,8 @@ import net.risingworld.api.utils.Utils.ChunkUtils;
 public class AreaProtection extends Plugin
 {
 	// Constants
-	static final	String	version				= "1.0.2";
-	static final int		VERSION_INT			= 010002;
+	static final	String	version				= "1.0.4";
+	static final int		VERSION_INT			= 010004;
 	static final	String	publicName			= "Area Protection";
 	static final	int		AREAMANAGER_AREAID	= -1;
 	// Some common return codes
