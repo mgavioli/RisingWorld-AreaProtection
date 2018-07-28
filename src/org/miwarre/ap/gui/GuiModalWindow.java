@@ -70,6 +70,7 @@ public class GuiModalWindow extends GuiPanel implements Listener
 {
 	GuiCallback		_callback;
 	GuiGroup		_panel;
+	boolean			inText;
 	int				listenerRef;
 	GuiModalWindow	prevWindow;
 	Plugin			plugin;
@@ -99,6 +100,7 @@ public class GuiModalWindow extends GuiPanel implements Listener
 		setColor(GuiDefs.PANEL_COLOUR);
 		this._callback	= callback;
 		this.plugin		= plugin;
+		inText			= false;
 		switch (groupType)
 		{
 		case GuiDefs.GROUPTYPE_STATIC:
@@ -152,7 +154,21 @@ public class GuiModalWindow extends GuiPanel implements Listener
 			int	id	= data.getL();
 			// if any non-internal id, forward id to callback
 			if(id >= GuiDefs.ABORT_ID)
-				_callback.onCall(player, id, (element instanceof GuiTextField) ? null : data.getR());
+			{
+				Object	obj;
+				if (element instanceof GuiTextField)		// if clicked on a GuiTextField
+				{
+					inText	= true;							// set inText
+					obj		= null;							// and call callback without any data objecy
+				}
+				else										// if clocked on something else...
+				{
+					if (inText)								// ...and we were in a GuiTextfield...
+						return;								// ...ignore the event
+					obj		= data.getR();					// call callback with the element text
+				}
+				_callback.onCall(player, id, obj);
+			}
 		}
 	}
 
@@ -164,6 +180,7 @@ public class GuiModalWindow extends GuiPanel implements Listener
 		Integer	id;
 		if ( (id=_panel.getItemId(event.getGuiElement())) != null)
 		{
+			inText	= false;
 			_callback.onCall(event.getPlayer(), id, event.getInput());
 		}
 	}
