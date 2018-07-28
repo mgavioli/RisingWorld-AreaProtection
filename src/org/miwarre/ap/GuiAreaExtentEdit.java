@@ -335,8 +335,8 @@ public class GuiAreaExtentEdit extends GuiModalWindow
 		if (extentLbl != null)
 		{
 			extentLbl.setText(String.format(Msgs.msg[Msgs.gui_areaSpanFmt],
-				(extent.getMaxZ() - extent.getMinZ())+1, (extent.getMaxX() - extent.getMinX())+1,
-				(extent.getMaxY() - extent.getMinY())+1));
+				(extent.getMaxX() - extent.getMinX())+1, (extent.getMaxY() - extent.getMinY())+1,
+				(extent.getMaxZ() - extent.getMinZ())+1));
 		}
 	}
 }

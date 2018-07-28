@@ -381,7 +381,7 @@ public class AreaProtection extends Plugin
 		to		= ChunkUtils.getGlobalPosition(rwArea.getEndChunkPosition(),
 				rwArea.getEndBlockPosition());
 		return String.format(Msgs.msg[Msgs.gui_areaSpanFmt],
-				(int)(to.z - from.z)+1, (int)(to.x - from.x)+1, (int)(to.y - from.y)+1);
+				(int)(to.x - from.x)+1, (int)(to.y - from.y)+1, (int)(to.z - from.z)+1);
 	}
 
 	//********************
