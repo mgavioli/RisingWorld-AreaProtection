@@ -129,6 +129,7 @@ class GuiMainMenu extends GuiMenu
 //				player.raycast(CollisionType.OBJECTS, new RaycastHandler());
 //				break;
 			case MENU_AREAMANAGERS_ID:
+				// create a dummy area to attach managers to (so we can re-use the area players editing)
 				ProtArea	area	= new ProtArea(AreaProtection.AREAMANAGER_AREAID,
 						0, 0, 0,  0, 0, 0,  Msgs.msg[Msgs.gui_areaManagers], 0);
 				//		from		to			name						permissions

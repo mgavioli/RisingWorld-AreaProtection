@@ -853,7 +853,7 @@ public class Db
 	static String getPlayerNameFromId(int playerId, int type)
 	{
 		Map<Integer,String>	players = groupNames;
-		if (type == LIST_TYPE_PLAYER)
+		if (type == LIST_TYPE_PLAYER || type == LIST_TYPE_MANAGERS)
 		{
 			if (playerNames == null)
 				initPlayers();

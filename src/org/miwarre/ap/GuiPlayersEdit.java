@@ -244,6 +244,8 @@ class GuiPlayersEdit extends GuiModalWindow
 			{
 				int		playerId	= entry.getKey();
 				String	playerName	= Db.getPlayerNameFromId(playerId, type);
+				if (playerName == null)
+					continue;
 				String	txt	= playerName;
 				if (type != Db.LIST_TYPE_MANAGERS)
 					txt	+= " (" + AreaProtection.getPresetNameFromPermissions(entry.getValue()) + ")";
