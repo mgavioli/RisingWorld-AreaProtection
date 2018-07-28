@@ -23,7 +23,9 @@ package org.miwarre.ap;
 import java.util.Map;
 import java.util.TreeMap;
 import net.risingworld.api.utils.Area;
+import net.risingworld.api.utils.Utils.ChunkUtils;
 import net.risingworld.api.utils.Vector3f;
+import net.risingworld.api.utils.Vector3i;
 import net.risingworld.api.worldelements.WorldArea;
 
 /**
@@ -63,9 +65,10 @@ public class ProtArea extends Area
 		initPlayers();
 	}
 
-	public int		getId()							{	return id;			}
-	public String	getName()						{	return name;		}
-	public long		getPermissions()				{	return permissions;	}
+	public Extent	getExtent()						{	return new Extent(this);		}
+	public int		getId()							{	return id;						}
+	public String	getName()						{	return name;					}
+	public long		getPermissions()				{	return permissions;				}
 
 	public void setName(String newName)				{	name		= newName;			}
 	public void setPermissions(long newPermissions)	{	permissions	= newPermissions;	}
@@ -84,4 +87,75 @@ public class ProtArea extends Area
 		}
 	}
 
+	public class Extent
+	{
+		//
+		// FIELDS
+		//
+		int		minX, maxX, minY, maxY, minZ, maxZ;
+
+		public Extent(int minX, int maxX, int minY, int maxY, int minZ, int maxZ)
+		{
+			this.minX	= minX;
+			this.maxX	= maxX;
+			this.minZ	= minZ;
+			this.maxZ	= maxZ;
+			this.minY	= minY;
+			this.maxY	= maxY;
+			rearrange();
+		}
+
+		public Extent(Area area)
+		{
+			area.rearrange();
+			Vector3f	from	= ChunkUtils.getGlobalPosition(area.getStartChunkPosition(), area.getStartBlockPosition());
+			Vector3f	to		= ChunkUtils.getGlobalPosition(area.getEndChunkPosition(), area.getEndBlockPosition());
+			minX	= (int)from.x;
+			maxX	= (int)to.x;
+			minY	= (int)from.y;
+			maxY	= (int)to.y;
+			minZ	= (int)from.z;
+			maxZ	= (int)to.z;
+			rearrange();
+		}
+
+		public Vector3f getFrom()	{	return new Vector3f(minX, minY, minZ);	}
+		public Vector3f getTo()		{	return new Vector3f(maxX, maxY, maxZ);	}
+		public int		getMinX()	{	return minX;							}
+		public int		getMaxX()	{	return maxX;							}
+		public int		getMinY()	{	return minY;							}
+		public int		getMaxY()	{	return maxY;							}
+		public int		getMinZ()	{	return minZ;							}
+		public int		getMaxZ()	{	return maxZ;							}
+
+		public void		setMinX(int val)	{	minX = val; rearrange();		}
+		public void		setMaxX(int val)	{	maxX = val; rearrange();		}
+		public void		setMinY(int val)	{	minY = val; rearrange();		}
+		public void		setMaxY(int val)	{	maxY = val; rearrange();		}
+		public void		setMinZ(int val)	{	minZ = val; rearrange();		}
+		public void		setMaxZ(int val)	{	maxZ = val; rearrange();		}
+
+		private void rearrange()
+		{
+			int		temp;
+			if (minX > maxX)
+			{
+				temp	= minX;
+				minX	= maxX;
+				maxX	= temp;
+			}
+			if (minY > maxY)
+			{
+				temp	= minY;
+				minY	= maxY;
+				maxY	= temp;
+			}
+			if (minZ > maxZ)
+			{
+				temp	= minZ;
+				minZ	= maxZ;
+				maxZ	= temp;
+			}
+		}
+	}
 }

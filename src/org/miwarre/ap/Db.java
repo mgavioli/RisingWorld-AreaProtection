@@ -353,7 +353,7 @@ public class Db
 		for(Player player : AreaProtection.plugin.getServer().getAllPlayers())
 		{
 			if (area.isPointInArea(player.getPosition()))	// if player happens to be inside the area,
-				onPlayerArea(player, area, true);			// notifyhim he just entered it
+				onPlayerArea(player, area, true);			// notify him he just entered it
 			if ((boolean)player.getAttribute(AreaProtection.key_areasShown))
 				showAreaToPlayer(player, area);
 		}
@@ -382,7 +382,7 @@ public class Db
 			if ( (inAreas = (HashMap<Integer,Long>)player.getAttribute(AreaProtection.key_inAreas)) != null)
 			{
 				if (inAreas.remove(areaId) != null)		// if the player was inside this area,
-					onPlayerArea(player, area, false);	// norify him he left it
+					onPlayerArea(player, area, false);	// notify him he left it
 			}
 			if ( (permAreas	= (HashMap<Integer,Long>)player.getAttribute(AreaProtection.key_areas)) != null)
 				permAreas.remove(areaId);
@@ -442,10 +442,23 @@ public class Db
 			// update PermArea in cache, unless it is the same object as the area it would replace
 			if (area != oldArea)
 				areas.put(area.id, area);
+			// check any player changed within/without status and show to him updated area if required
+			for(Player player : AreaProtection.plugin.getServer().getAllPlayers())
+			{
+				Vector3f	playerPos	= player.getPosition();
+				boolean		nowWithin;
+				// if player within/without area status changed
+				if ( (nowWithin=area.isPointInArea(playerPos)) != oldArea.isPointInArea(playerPos))	// if player happens to be inside the area,
+					onPlayerArea(player, area, nowWithin);		// notify him he just entered or leaved the area
+				// if areas are shown to player, hide old area and show new area
+				if ((boolean)player.getAttribute(AreaProtection.key_areasShown))
+				{
+					if (oldArea.worldArea != null)
+						player.removeWorldElement(oldArea.worldArea);
+					showAreaToPlayer(player, area);
+				}
+			}
 		}
-		//
-		//	TODO : check for players included or excluded by area boundary changes
-		//
 		return AreaProtection.ERR_SUCCESS;
 	}
 

@@ -29,7 +29,6 @@ import net.risingworld.api.gui.PivotPosition;
 import net.risingworld.api.objects.Player;
 import net.risingworld.api.utils.Utils;
 import net.risingworld.api.utils.Vector3f;
-import net.risingworld.api.utils.Vector3i;
 
 class GuiAreaEdit extends GuiModalWindow
 {
@@ -45,17 +44,19 @@ class GuiAreaEdit extends GuiModalWindow
 	private static final	int		DEFAULT_BUTT_X	= HEIGHT_BOT_TXT_X + 75;
 	private static final	int		PERMISS_X		= GuiDefs.DEFAULT_PADDING;
 	private static final	int		PLAYERS_BUTT_X	= GuiDefs.DEFAULT_PADDING;
-	private static final	int		GROUPS_BUTT_X	= NAME_TXT_X;
+	private static final	int		GROUPS_BUTT_X	= PLAYERS_BUTT_X + 100;
+	private static final	int		EXTENT_BUTT_X	= GROUPS_BUTT_X +100;
 	// Control positions: Y
 	private static final	int		PANEL_HEIGHT	=
 			GuiDefs.TEXTENTRY_HEIGHT + GuiAreaPerms.PANEL_HEIGHT + GuiDefs.ITEM_SIZE * 4 + GuiDefs.DEFAULT_PADDING * 5;
 //			the area name row			the permission group	1 row of 1-line button & 1 row of 3-line button + and 5 paddings between the rows
-	private static final	int		WINDOW_HEIGHT	= GuiTitleBar.TITLEBAR_HEIGHT + PANEL_HEIGHT; 
+	private static final	int		WINDOW_HEIGHT	= GuiTitleBar.TITLEBAR_HEIGHT + PANEL_HEIGHT;
 	private static final	int		NAME_LBL_Y		= PANEL_HEIGHT - GuiDefs.DEFAULT_PADDING;
 	private static final	int		NAME_TXT_Y		= NAME_LBL_Y + 4;
 	private static final	int		PERMISS_Y		= NAME_TXT_Y - GuiDefs.TEXTENTRY_HEIGHT - GuiDefs.DEFAULT_PADDING;
 	private static final	int		PLAYERS_BUTT_Y	= PERMISS_Y - GuiAreaPerms.PANEL_HEIGHT - GuiDefs.DEFAULT_PADDING;
 	private static final	int		GROUPS_BUTT_Y	= PLAYERS_BUTT_Y;
+	private static final	int		EXTENT_BUTT_Y	= PLAYERS_BUTT_Y;
 	private static final	int		HEIGHT_LBL_Y	= PLAYERS_BUTT_Y;
 	private static final	int		HEIGHT_TXT_Y	= HEIGHT_LBL_Y + 4;
 	private static final	int		DO_BUTT_Y		= GROUPS_BUTT_Y - GuiDefs.DEFAULT_PADDING - (GuiDefs.ITEM_SIZE * 5) / 2;
@@ -65,7 +66,8 @@ class GuiAreaEdit extends GuiModalWindow
 	private static final	int		NAMETEXT_ID		= GuiAreaPerms.NUM_OF_AREAPERMS + 2;
 	private static final	int		PLAYERSBUTT_ID	= NAMETEXT_ID + 1;
 	private static final	int		GROUPSBUTT_ID	= PLAYERSBUTT_ID + 1;
-	private static final	int		HEIGHTTOPTEXT_ID= GROUPSBUTT_ID + 1;
+	private static final	int		EXTENTBUTT_ID	= GROUPSBUTT_ID + 1;
+	private static final	int		HEIGHTTOPTEXT_ID= EXTENTBUTT_ID + 1;
 	private static final	int		HEIGHTBOTTEXT_ID= HEIGHTTOPTEXT_ID + 1;
 	private static final	int		DEFAULTBUTT_ID	= HEIGHTBOTTEXT_ID + 1;
 	private static final	int		DOBUTT_ID		= DEFAULTBUTT_ID + 1;
@@ -77,7 +79,8 @@ class GuiAreaEdit extends GuiModalWindow
 	// FIELDS
 	//
 	private			ProtArea		area;
-	private			int				heightTop, heightBottom;
+//	private			int				heightTop, heightBottom;
+	private			ProtArea.Extent	extent;
 	private			String			name;
 	private final	NewAreaCreation	nac;
 	private final	int				type;
@@ -86,8 +89,6 @@ class GuiAreaEdit extends GuiModalWindow
 	private			GuiTextField	heightTopText, heightBotText;
 	private final	GuiTextField	nameText;
 	private final	GuiAreaPerms	permissGroup;
-	private			GuiLabel		playersButton;
-	private			GuiLabel		groupsButton;
 	private final	GuiLabel		doButton;
 
 	/**
@@ -144,51 +145,27 @@ class GuiAreaEdit extends GuiModalWindow
 		addChild(permissGroup, null, null);
 		permissGroup.setPosition(PERMISS_X, PERMISS_Y, false);
 
-		if (type == TYPE_CREATE)
-		{
-/*			TODO */
-			// the height range of the area
-			Vector3f	from, to;
-			from		= Utils.ChunkUtils.getGlobalPosition(area.getStartChunkPosition(), area.getStartBlockPosition());
-			to			= Utils.ChunkUtils.getGlobalPosition(area.getEndChunkPosition(), area.getEndBlockPosition());
-			heightTop	= (int)to.y;
-			heightBottom= (int)from.y;
-
-			label		= addTextItem(Msgs.msg[Msgs.gui_topAreaHeight], null, null);
-			label.setPivot(PivotPosition.TopLeft);
-			label.setPosition(HEIGHT_TOP_X, HEIGHT_LBL_Y, false);
-			heightTopText	= new GuiTextField(HEIGHT_TOP_TXT_X, HEIGHT_TXT_Y, false, 50, GuiDefs.TEXTENTRY_HEIGHT, false);
-			heightTopText.setText(Integer.toString(heightTop));
-			addChild(heightTopText, HEIGHTTOPTEXT_ID, null);
-
-			label	= addTextItem(Msgs.msg[Msgs.gui_bottomAreaHeight], null, null);
-			label.setPivot(PivotPosition.TopLeft);
-			label.setPosition(HEIGHT_BOT_X, HEIGHT_LBL_Y, false);
-			heightBotText	= new GuiTextField(HEIGHT_BOT_TXT_X, HEIGHT_TXT_Y, false, 50, GuiDefs.TEXTENTRY_HEIGHT, false);
-			heightBotText.setText(Integer.toString(heightBottom));
-			addChild(heightBotText, HEIGHTBOTTEXT_ID, null);
-			label	= addTextItem(Msgs.msg[Msgs.gui_setToDefault], DEFAULTBUTT_ID, null);
-			label.setPivot(PivotPosition.TopLeft);
-			label.setPosition(DEFAULT_BUTT_X, HEIGHT_LBL_Y, false);
-			label.setColor(GuiDefs.ACTIVE_COLOUR);
-			label.setClickable(true);
-		}
-		else
+		extent	= area.getExtent();
+		GuiLabel	button;
+		if (type != TYPE_CREATE)
 		{
 			// The EDIT PLAYERS / GROUPS buttons
 			boolean	addPlayers	= (permMask & AreaProtection.PERM_ADDPLAYER) != 0;
-			playersButton	= addTextItem(Msgs.msg[Msgs.gui_editeditPlayers],
+			button	= addTextItem(Msgs.msg[Msgs.gui_editeditPlayers],
 					addPlayers ? PLAYERSBUTT_ID : null, null);
-			playersButton.setPosition(PLAYERS_BUTT_X, PLAYERS_BUTT_Y, false);
-			playersButton.setColor(addPlayers ? GuiDefs.ACTIVE_COLOUR : GuiDefs.INACTIVE_COLOUR);
-			// group management button is currently de-activated
-			groupsButton	= addTextItem(Msgs.msg[Msgs.gui_editeditGroups],
+			button.setPosition(PLAYERS_BUTT_X, PLAYERS_BUTT_Y, false);
+			button.setColor(addPlayers ? GuiDefs.ACTIVE_COLOUR : GuiDefs.INACTIVE_COLOUR);
+			button	= addTextItem(Msgs.msg[Msgs.gui_editeditGroups],
 					addPlayers ? GROUPSBUTT_ID : null, null);
-			groupsButton.setColor(addPlayers ? GuiDefs.ACTIVE_COLOUR : GuiDefs.INACTIVE_COLOUR);
-			groupsButton.setPosition(GROUPS_BUTT_X, GROUPS_BUTT_Y, false);
+			button.setColor(addPlayers ? GuiDefs.ACTIVE_COLOUR : GuiDefs.INACTIVE_COLOUR);
+			button.setPosition(GROUPS_BUTT_X, GROUPS_BUTT_Y, false);
 		}
+		// The EDIT EXTENT button
+		button	= addTextItem(Msgs.msg[Msgs.gui_editeditExtent], EXTENTBUTT_ID, null);
+		button.setColor(GuiDefs.ACTIVE_COLOUR);
+		button.setPosition(EXTENT_BUTT_X, EXTENT_BUTT_Y, false);
 
-		// The CREATE button
+		// The CREATE/UPDATE button
 		doButton	= addTextItem(type == TYPE_CREATE ? Msgs.msg[Msgs.gui_editCreate] :
 			Msgs.msg[Msgs.gui_editUpdate], DOBUTT_ID, null);
 		doButton.setPivot(PivotPosition.Center);
@@ -234,22 +211,22 @@ class GuiAreaEdit extends GuiModalWindow
 				int	value;
 				try	{	value	= Integer.valueOf((String)data);	}
 				catch (NumberFormatException e)
-				{		value = heightTop;	}
-				heightTop	= value;
+				{		value = extent.getMaxY();	}
+				extent.setMaxY(value);
 				break;
 			case HEIGHTBOTTEXT_ID:
 				if (data == null)
 					return;
 				try	{	value	= Integer.valueOf((String)data);	}
 				catch (NumberFormatException e)
-				{		value = heightBottom;	}
-				heightBottom	= value;
+				{		value = extent.getMinY();	}
+				extent.setMinY(value);
 				break;
 			case DEFAULTBUTT_ID:
-				heightTop	= AreaProtection.heightTop;
-				heightBottom= AreaProtection.heightBottom;
-				heightTopText.setText(Integer.toString(heightTop));
-				heightBotText.setText(Integer.toString(heightBottom));
+				extent.setMaxY(AreaProtection.heightTop);
+				extent.setMinY(AreaProtection.heightBottom);
+				heightTopText.setText(Integer.toString(AreaProtection.heightTop));
+				heightBotText.setText(Integer.toString(AreaProtection.heightBottom));
 				break;
 			case PLAYERSBUTT_ID:		// the player management button
 				// open a dialogue box to manage the player with special permissions for this area
@@ -263,11 +240,14 @@ class GuiAreaEdit extends GuiModalWindow
 				updated	= true;
 				updateDoButton();
 				break;
+			case EXTENTBUTT_ID:
+				push(player, new GuiAreaExtentEdit(area.getExtent(), area.getName(), player, new ExtentHandler()));
+				break;
 			case DOBUTT_ID:				// the DO button (CREATE / UPDATE)
 				// store new/updated name & permissions in the area
 				area.name			= name;
 				area.permissions	= permissGroup.getPermissions();
-				// height range
+/*				// height range
 				if (type == TYPE_CREATE)
 				{
 					// TODO : retrieve updated height boundaries
@@ -292,7 +272,8 @@ class GuiAreaEdit extends GuiModalWindow
 								Utils.ChunkUtils.getGlobalPosition(toChunk, toBlock), area.name, area.permissions);
 						area	= newArea;
 					}
-				}
+				}*/
+				checkAreaExtent(extent);
 				// if creating a new area, stop the NewAreaCreation procedure
 				if (type == TYPE_CREATE && nac != null)
 				{
@@ -304,6 +285,20 @@ class GuiAreaEdit extends GuiModalWindow
 					Db.updateArea(area);
 				pop(player);
 				break;
+			}
+		}
+	}
+
+	private class ExtentHandler implements GuiDefs.GuiCallback
+	{
+		@Override
+		public void onCall(Player player, int id, Object data)
+		{
+			if (id == GuiDefs.OK_ID)
+			{
+				extent	= (ProtArea.Extent)data;
+				updated	= true;
+				updateDoButton();
 			}
 		}
 	}
@@ -323,4 +318,29 @@ class GuiAreaEdit extends GuiModalWindow
 		doButton.setClickable(complete);
 	}
 
+	/**
+	 * Checks whether the area extent is different from `extent` and, in case,
+	 * adjust the area extent to correspond to it.
+	 * <p>(Currently, it creates a new area with the given `extent` and all other
+	 * current properties of `area`, as area extent cannot be changed once created.)
+	 * @param extent the extent to check
+	 */
+	private void checkAreaExtent(ProtArea.Extent extent)
+	{
+		Vector3f	areaFrom, areaTo, extentFrom, extentTo;
+		areaFrom	= Utils.ChunkUtils.getGlobalPosition(area.getStartChunkPosition(), area.getStartBlockPosition());
+		areaTo		= Utils.ChunkUtils.getGlobalPosition(area.getEndChunkPosition(), area.getEndBlockPosition());
+		extentFrom	= extent.getFrom();
+		extentTo	= extent.getTo();
+		if (areaFrom.x != extentFrom.x || areaFrom.y != extentFrom.y || areaFrom.z != extentFrom.z ||
+			areaTo.x != extentTo.x || areaTo.y != extentTo.y || areaTo.z != extentTo.z)
+		{
+			// create a new area (as area boudaries cannot be changed once created)
+			ProtArea	newArea	= new ProtArea(extentFrom, extentTo, area.name, area.permissions);
+			newArea.id			= area.id;
+			newArea.players		= area.players;
+			newArea.groups		= area.groups;
+			area	= newArea;
+		}
+	}
 }

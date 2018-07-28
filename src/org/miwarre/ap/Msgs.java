@@ -65,30 +65,32 @@ class Msgs
 	// Other GUI texts
 	static final int	gui_editeditPlayers		= 54;
 	static final int	gui_editeditGroups		= 55;
-	static final int	gui_notImplemented		= 56;
-	static final int	gui_specPermPlayersTitle= 57;
-	static final int	gui_specPermGroupsTitle	= 58;
-	static final int	gui_areaPlayerPermsTitle= 59;
-	static final int	gui_areaName			= 60;
-	static final int	gui_playerName			= 61;
-	static final int	gui_editCreate			= 62;
-	static final int	gui_editUpdate			= 63;
-	static final int	gui_editAdd				= 64;
-	static final int	gui_editDelete			= 65;
-	static final int	gui_editEdit			= 66;
-	static final int	gui_editKeep			= 67;
-	static final int	gui_noDefinedArea		= 68;
-	static final int	gui_noOwnedArea			= 69;
-	static final int	gui_customPerms			= 70;
-	static final int	gui_selectPlayer		= 71;
-	static final int	gui_selectGroup			= 72;
-	static final int	gui_selectPreset		= 73;
-	static final int	gui_topAreaHeight		= 74;
-	static final int	gui_bottomAreaHeight	= 75;
-	static final int	gui_setToDefault		= 76;
+	static final int	gui_editeditExtent		= 56;
+	static final int	gui_notImplemented		= 57;
+	static final int	gui_specPermPlayersTitle= 58;
+	static final int	gui_specPermGroupsTitle	= 59;
+	static final int	gui_areaPlayerPermsTitle= 60;
+	static final int	gui_areaName			= 61;
+	static final int	gui_playerName			= 62;
+	static final int	gui_editCreate			= 63;
+	static final int	gui_editUpdate			= 64;
+	static final int	gui_editAdd				= 65;
+	static final int	gui_editDelete			= 66;
+	static final int	gui_editEdit			= 67;
+	static final int	gui_editKeep			= 68;
+	static final int	gui_noDefinedArea		= 69;
+	static final int	gui_noOwnedArea			= 70;
+	static final int	gui_customPerms			= 71;
+	static final int	gui_selectPlayer		= 72;
+	static final int	gui_selectGroup			= 73;
+	static final int	gui_selectPreset		= 74;
+	static final int	gui_topAreaHeight		= 75;
+	static final int	gui_bottomAreaHeight	= 76;
+	static final int	gui_setToDefault		= 77;
 	// Other menu title
-	static final int	gui_selectArea			= 77;
-	static final int	gui_confirmAreaDelete	= 78;
+	static final int	gui_areaExtentTitle		= 78;
+	static final int	gui_selectArea			= 79;
+	static final int	gui_confirmAreaDelete	= 80;
 
 	private static final int	LAST_TEXT	= gui_confirmAreaDelete;
 
@@ -159,11 +161,12 @@ class Msgs
 			// other GUI texts
 			"Edit Players",
 			"Edit Groups",
+			"Edit Extent",
 			"Coming soon!",
 			"Players with special permissions",
 			"Groups with special permissions",
-			"Player/Group Permissions for Area",
-			"Area Name:",								// 60
+			"Player/Group Permissions for Area",		// 60
+			"Area Name:",
 			"Player/Group Name:",
 			"\n CREATE \n ",
 			"\n UPDATE \n ",
@@ -172,8 +175,8 @@ class Msgs
 			"\n EDIT \n ",
 			"\n KEEP \n",
 			"[No area defined]",
-			"[You own no area]",
-			"Custom",									// 70
+			"[You own no area]",						// 70
+			"Custom",
 			"Select a player:",
 			"Select a group:",
 			"Select a preset:",
@@ -181,8 +184,9 @@ class Msgs
 			"Bottom Height",
 			"Set to default",
 			// other menu titles
+			"\"%s\" area extent",
 			"Select an Area",
-			"Are you sure you want to delete the area:"
+			"Are you sure you want to delete the area:"	// 80
 	};
 
 	private static final	String		MSGS_FNAME	= "/locale/messages";
