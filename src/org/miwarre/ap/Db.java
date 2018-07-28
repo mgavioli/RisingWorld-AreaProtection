@@ -290,7 +290,10 @@ public class Db
 					text	+= (text.isEmpty() ? " " : "| ");
 					text	+= name + " ";
 				}
-				cumulPerm	&= entry.getValue();		// accumulate permissions
+// PERM AND
+//				cumulPerm	&= entry.getValue();		// accumulate permissions
+// PERM OR
+				cumulPerm	|= entry.getValue();		// accumulate permissions
 			}
 			if ((Boolean)player.getAttribute(AreaProtection.key_isAdmin))
 				text += "| Priv. " + (AreaProtection.adminNoPriv ? "OFF" : "ON");
@@ -733,7 +736,10 @@ public class Db
 				if (aPerm == null)
 					aPerm	= area.permissions;
 				// mask cumulative permissions with player permissions for this area
-				cumulPerm	&= aPerm;
+// PERM AND
+//				cumulPerm	&= aPerm;
+// PERM OR
+				cumulPerm	|= aPerm;
 			}
 		}
 		return cumulPerm;
@@ -791,7 +797,10 @@ public class Db
 				if (aPerm == null)
 					aPerm	= area.permissions;
 				// mask cumulative permissions with player permissions for this area
-				cumulPerm	&= aPerm;
+//PERM AND
+//				cumulPerm	&= aPerm;
+// PERM OR
+				cumulPerm	|= aPerm;
 			}
 		}
 		return cumulPerm;
