@@ -142,6 +142,12 @@ class GuiMainMenu extends GuiMenu
 				menuItem	= (GuiLabel)getChildFromId(MENU_ADMINSACCESS_ID);
 				if (menuItem != null)
 					menuItem.setText(Msgs.msg[AreaProtection.adminNoPriv ? Msgs.gui_adminsOn : Msgs.gui_adminsOff]);
+				// update admin text
+				for(Player pl : AreaProtection.plugin.getServer().getAllPlayers())
+				{
+					if ((boolean)pl.getAttribute(AreaProtection.key_isAdmin))
+						Db.playerText(pl);
+				}
 				break;
 			}
 		}

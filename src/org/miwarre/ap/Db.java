@@ -306,6 +306,29 @@ public class Db
 		return retVal;
 	}
 
+	static void playerText(Player player)
+	{
+		// retrieve the list of areas the player is in
+		HashMap<Integer,Long>	inAreas		= (HashMap<Integer, Long>)player.getAttribute(AreaProtection.key_inAreas);
+		if (inAreas != null)
+		{
+			String	text	= "";
+			for (Map.Entry<Integer,Long> entry : inAreas.entrySet())
+			{
+				String	name	= areas.get(entry.getKey()).getName();	// the area name
+				if (name != null)
+				{
+					// chain names of areas the player is in
+					text	+= (text.isEmpty() ? " " : "| ");
+					text	+= name + " ";
+				}
+			}
+			if ((Boolean)player.getAttribute(AreaProtection.key_isAdmin))
+				text += "| Priv. " + (AreaProtection.adminNoPriv ? "OFF" : "ON");
+			((GuiLabel)player.getAttribute(AreaProtection.key_areasText)).setText(text);
+		}
+	}
+
 	//********************
 	//	AREA MANAGEMENT
 	//********************
