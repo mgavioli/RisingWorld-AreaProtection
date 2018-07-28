@@ -292,6 +292,8 @@ public class Db
 				}
 				cumulPerm	&= entry.getValue();		// accumulate permissions
 			}
+			if ((Boolean)player.getAttribute(AreaProtection.key_isAdmin))
+				text += "| Priv. " + (AreaProtection.adminNoPriv ? "OFF" : "ON");
 			((GuiLabel)player.getAttribute(AreaProtection.key_areasText)).setText(text);
 		}
 		// if admin (and admin privileges are not limited), any permission is enabled

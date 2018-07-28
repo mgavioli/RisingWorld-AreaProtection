@@ -100,16 +100,16 @@ class Msgs
 	static String[]		msg = {
 			// Main menu texts
 			"Area Protection",							// 0
-			"Show areas",
-			"Hide areas",
-			"New area",
-			"Go to area",
-			"Edit area",
-			"Delete area",
-			"Chest access (NOT impl.)",
+			"Show Areas",
+			"Hide Areas",
+			"New Area",
+			"Go to Area",
+			"Edit Area",
+			"Delete Area",
+			"Chest Access (NOT impl.)",
 			"Area Managers",
-			"Admin priv. OFF",
-			"Admin priv. ON",							// 10
+			"Turn Admin Priv. OFF",
+			"Turn Admin Priv. ON",							// 10
 			// Cardinal points
 			"N",
 			"E",
