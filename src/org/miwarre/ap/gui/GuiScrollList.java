@@ -281,14 +281,18 @@ public class GuiScrollList extends GuiGroup
 	@Override
 	public GuiElement getChildFromId(int id)
 	{
-		int	count	= 0;
-		for (Pair<String,Pair<Integer, Object>> item : items)
+		int		from	= firstItem;
+		int		to		= firstItem + numOfShownItems - 1;
+		if (firstItem >= items.size())
+			return null;
+		if (to >= items.size())
+			to	= items.size() - 1;
+		for (int i = from; i <= to; i++)
 		{
-			if (item == null)
+			if (items.get(i) == null)
 				continue;
-			if (item.getR().getL() == id)
-				return guiItems[count - firstItem];
-			count++;
+			if (items.get(i).getR().getL() == id)
+				return guiItems[i - firstItem];
 		}
 		return null;
 	}
