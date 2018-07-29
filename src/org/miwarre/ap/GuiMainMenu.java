@@ -68,7 +68,7 @@ class GuiMainMenu extends GuiMenu
 			addTextItem(Msgs.msg[Msgs.gui_newArea],		MENU_NEWAREA_ID,		null);
 			addTextItem(Msgs.msg[Msgs.gui_gotoArea],		MENU_GOTOAREA_ID,		null);
 			addTextItem(Msgs.msg[Msgs.gui_deleteArea],	MENU_DELETEAREA_ID,		null);
-			addTextItem(Msgs.msg[Msgs.gui_chestAccess], MENU_CHESTACCESS_ID,	null);
+//			addTextItem(Msgs.msg[Msgs.gui_chestAccess], MENU_CHESTACCESS_ID,	null);
 			if (player.isAdmin())
 			{
 				addTextItem(Msgs.msg[Msgs.gui_areaManagers],MENU_AREAMANAGERS_ID,	null);
