@@ -44,6 +44,7 @@ public class AreaProtection extends Plugin
 	static final int		VERSION_INT			= 010004;
 	static final	String	publicName			= "Area Protection";
 	static final	int		AREAMANAGER_AREAID	= -1;
+	static final	int		AREACREAT_PRIORITY	= 3;
 	// Some common return codes
 	public static final	int		ERR_SUCCESS			= 0;
 	public static final	int		ERR_INVALID_ARG		= -1;

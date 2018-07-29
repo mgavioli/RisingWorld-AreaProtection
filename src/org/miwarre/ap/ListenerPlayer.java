@@ -135,10 +135,10 @@ class ListenerPlayer implements Listener
 	@EventMethod
 	public void onPlayerCommand(PlayerCommandEvent event)
 	{
-		String	cmd		= event.getCommand().split(" ")[0];
-		Player	player	= event.getPlayer();
+		String[]	cmd		= event.getCommand().split(" ");
+		Player		player	= event.getPlayer();
 
-		switch (cmd)
+		switch (cmd[0])
 		{
 		case "/showareas":
 			Db.showAreasToPlayer(player);
@@ -147,10 +147,75 @@ class ListenerPlayer implements Listener
 			Db.hideAreasToPlayer(player);
 			break;
 		default:
-			if (cmd.equals(AreaProtection.commandPrefix) )
+			if (!cmd[0].equals(AreaProtection.commandPrefix) )
+				break;
+			if (cmd.length == 1)
 				AreaProtection.plugin.mainGui(player);
+			else
+			{
+				int		length	= cmd[1].length();
+				if (cmd[1].regionMatches(0, "showareas", 0, length))
+					Db.showAreasToPlayer(player);
+				else if (cmd[1].regionMatches(0, "hideareas", 0, length))
+					Db.hideAreasToPlayer(player);
+				// other commands only available to admins OR if generally unrestricted
+				else if ( !(Boolean)player.getAttribute(AreaProtection.key_isAdmin) && AreaProtection.adminOnly)
+					break;
+				else if (cmd[1].regionMatches(0, "newarea", 0, length))
+				{
+					NewAreaCreation nac	= new NewAreaCreation(player);
+					nac.setPriority(AreaProtection.AREACREAT_PRIORITY);
+					nac.start();
+				}
+				else if (cmd[1].regionMatches(0, "gotoarea", 0, length))
+				{
+					GuiMainMenu	mainMenu	= new GuiMainMenu(player);
+					mainMenu.show(player);
+					mainMenu.command(player, GuiMainMenu.MENU_GOTOAREA_ID);
+				}
+				else if (cmd[1].regionMatches(0, "editarea", 0, length))
+				{
+					GuiMainMenu	mainMenu	= new GuiMainMenu(player);
+					mainMenu.show(player);
+					mainMenu.command(player, GuiMainMenu.MENU_EDITAREA_ID);
+				}
+				else if (cmd[1].regionMatches(0, "deletearea", 0, length))
+				{
+					GuiMainMenu	mainMenu	= new GuiMainMenu(player);
+					mainMenu.show(player);
+					mainMenu.command(player, GuiMainMenu.MENU_DELETEAREA_ID);
+				}
+				// following commands only available to true admins
+				else if (!player.isAdmin())
+					break;
+				else if (cmd[1].regionMatches(0, "managers", 0, length))
+				{
+					GuiMainMenu	mainMenu	= new GuiMainMenu(player);
+					mainMenu.show(player);
+					mainMenu.command(player, GuiMainMenu.MENU_AREAMANAGERS_ID);
+				}
+				else if (cmd[1].regionMatches(0, "priv", 0, length))
+					flipAdminPriv();
+			}
 			break;
 		}
+	}
+
+	/**
+	 * FLips ON/OFF the admin privileges.
+	 * @return the new admin privilege value.
+	 */
+	static boolean flipAdminPriv()
+	{
+		// flip admin privileges
+		AreaProtection.adminNoPriv = !AreaProtection.adminNoPriv;
+		// update admin text
+		for(Player pl : AreaProtection.plugin.getServer().getAllPlayers())
+		{
+			if ((boolean)pl.getAttribute(AreaProtection.key_isAdmin))
+				Db.playerText(pl);
+		}
+		return AreaProtection.adminNoPriv;
 	}
 
 	//
@@ -422,7 +487,7 @@ class ListenerPlayer implements Listener
 	{
 		if (!AreaProtection.adminNoPriv && (Boolean)player.getAttribute(AreaProtection.key_isAdmin))	// any permission is enabled
 			return;
-		Long	perms = AreaProtection.eventPos && eventPos != null ? Db.getPlayerPermissionsForPoint(player, eventPos)
+		Long	perms = (AreaProtection.eventPos && eventPos != null) ? Db.getPlayerPermissionsForPoint(player, eventPos)
 						: (Long)player.getAttribute(AreaProtection.key_areaPerms);
 		if (perms != null && (perms & permissionFlag) == 0)
 			event.setCancelled(true);

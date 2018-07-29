@@ -22,6 +22,7 @@ package org.miwarre.ap.gui;
 
 import org.miwarre.ap.gui.GuiDefs.GuiCallback;
 import net.risingworld.api.Plugin;
+import net.risingworld.api.objects.Player;
 
 /**
  * A class implementing a modal menu. Each menu is made of a top title bar,
@@ -63,4 +64,14 @@ public class GuiMenu extends GuiModalWindow
 				callback);
 	}
 
+	/**
+	 * Sends a command to the menu, simulating a menu item selection.
+	 * The menu responds as if the item with the given menuItemId has been selected.
+	 * @param	player		the player the menu is shown to
+	 * @param	menuItemId	the ID of the menu item to simulate
+	 */
+	public void command(Player player, int menuItemId)
+	{
+		_callback.onCall(player, menuItemId, null);
+	}
 }

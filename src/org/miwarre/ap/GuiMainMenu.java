@@ -38,15 +38,14 @@ class GuiMainMenu extends GuiMenu
 	// CONSTANTS
 	//
 	// The ID's of the menu items. Used by the MenuHandler.
-	private static final	int		MENU_SHOWAREAS_ID		= 1;
-	private static final	int		MENU_EDITAREA_ID		= 2;
-	private static final	int		MENU_NEWAREA_ID			= 3;
-	private static final	int		MENU_GOTOAREA_ID		= 4;
-	private static final	int		MENU_DELETEAREA_ID		= 5;
-	private static final	int		MENU_CHESTACCESS_ID		= 6;
-	private static final	int		MENU_AREAMANAGERS_ID	= 7;
-	private static final	int		MENU_ADMINSACCESS_ID	= 8;
-	private static final	int		AREACREAT_PRIORITY		= 3;
+	static final	int		MENU_SHOWAREAS_ID		= 1;
+	static final	int		MENU_EDITAREA_ID		= 2;
+	static final	int		MENU_NEWAREA_ID			= 3;
+	static final	int		MENU_GOTOAREA_ID		= 4;
+	static final	int		MENU_DELETEAREA_ID		= 5;
+	static final	int		MENU_CHESTACCESS_ID		= 6;
+	static final	int		MENU_AREAMANAGERS_ID	= 7;
+	static final	int		MENU_ADMINSACCESS_ID	= 8;
 
 	//
 	// FIELDS
@@ -102,7 +101,7 @@ class GuiMainMenu extends GuiMenu
 			case MENU_NEWAREA_ID:
 				pop(player);		// dismiss the menu; the other choices keep it for further commands
 				NewAreaCreation nac	= new NewAreaCreation(player);
-				nac.setPriority(AREACREAT_PRIORITY);
+				nac.setPriority(AreaProtection.AREACREAT_PRIORITY);
 				nac.start();
 				break;
 			case MENU_GOTOAREA_ID:
@@ -136,18 +135,11 @@ class GuiMainMenu extends GuiMenu
 				push(player, new GuiPlayersEdit(area, Db.LIST_TYPE_MANAGERS));
 				break;
 			case MENU_ADMINSACCESS_ID:
-				// flip admin privileges
-				AreaProtection.adminNoPriv = !AreaProtection.adminNoPriv;
+				ListenerPlayer.flipAdminPriv();
 				// update menu item text
 				menuItem	= (GuiLabel)getChildFromId(MENU_ADMINSACCESS_ID);
 				if (menuItem != null)
 					menuItem.setText(Msgs.msg[AreaProtection.adminNoPriv ? Msgs.gui_adminsOn : Msgs.gui_adminsOff]);
-				// update admin text
-				for(Player pl : AreaProtection.plugin.getServer().getAllPlayers())
-				{
-					if ((boolean)pl.getAttribute(AreaProtection.key_isAdmin))
-						Db.playerText(pl);
-				}
 				break;
 			}
 		}
